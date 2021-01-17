@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>SQL on lrtg</title><link>https://lrtg.ml/categories/SQL/</link><description>Recent content in SQL on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Sat, 16 Jan 2021 22:12:07 +0800</lastBuildDate><atom:link href="https://lrtg.ml/categories/SQL/index.xml" rel="self" type="application/rss+xml"/><item><title>MySQL InnoDB 事务隔离级别总结</title><link>https://lrtg.ml/2021/01/16/mysql-innodb-tx-isolation/</link><pubDate>Sat, 16 Jan 2021 22:12:07 +0800</pubDate><guid>https://lrtg.ml/2021/01/16/mysql-innodb-tx-isolation/</guid><description>
+&lt;h3 id="sql-事务隔离级别说明">SQL 事务隔离级别说明&lt;/h3>
+&lt;p>SQL 标准定义了 4 类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。&lt;/p>
+&lt;p>&lt;strong>Read Uncommitted（读取未提交内容）&lt;/strong>&lt;/p>
+&lt;p>在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。&lt;/p>
+&lt;p>&lt;strong>Read Committed（读取提交内容）&lt;/strong>&lt;/p>
+&lt;p>这是大多数数据库系统的默认隔离级别（但不是 MySQL 默认的）。它满足了隔离的简单定义：一个事务只能看见已经提交事务所做的改变。这种隔离级别 也支持所谓的不可重复读（Nonrepeatable Read），因为同一事务的其他实例在该实例处理其间可能会有新的 commit，所以同一 select 可能返回不同结果。&lt;/p>
+&lt;p>&lt;strong>Repeatable Read（可重读）&lt;/strong>&lt;/p>
+&lt;p>这是 MySQL 的默认事务隔离级别，它确保同一事务的多个实例在并发读取数据时，会看到同样的数据行。不过理论上，这会导致另一个棘手的问题：幻读 （Phantom Read）。简单的说，幻读指当用户读取某一范围的数据行时，另一个事务又在该范围内插入了新行，当用户再读取该范围的数据行时，会发现有新的 “幻影” 行。InnoDB 和 Falcon 存储引擎通过多版本并发控制（MVCC，Multiversion Concurrency Control）机制解决了该问题。&lt;/p>
+&lt;p>&lt;strong>Serializable（可串行化）&lt;/strong>&lt;/p>
+&lt;p>这是最高的隔离级别，它通过强制事务排序，使之不可能相互冲突，从而解决幻读问题。简言之，它是在每个读的数据行上加上共享锁。在这个级别，可能导致大量的超时现象和锁竞争。&lt;/p>
+&lt;h3 id="事务隔离带来的问题">事务隔离带来的问题&lt;/h3>
+&lt;p>这四种隔离级别采取不同的锁类型来实现，若读取的是同一个数据的话，就容易发生问题。例如：&lt;/p>
+&lt;p>&lt;strong>脏读 (Drity Read)&lt;/strong>：一个事务读取到另一事务未提交的更新数据。当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交到数据库中（这个数据在有可能会回滚），这时，另外一个事务也访问这个数据，然后使用了这个数据。&lt;/p>
+&lt;p>&lt;strong>不可重复读 (Non-repeatable read)&lt;/strong>：在一个事务内，前后两次读到的数据是不一样。在 T1 事务两次读取同一数据之间，T2 事务对该数据进行了修改，就会发生 T1 事务中的两次数据读取不一样的结果。相反， &lt;strong>可重复读&lt;/strong>：在同一事务中多次读取数据时，能够保证所读数据一样，也就是后续读取不能读到另一事务已提交的更新数据。&lt;/p>
+&lt;p>&lt;strong>幻读 (Phantom Read)&lt;/strong>：指当事务不是独立执行时发生的一种现象，例如：T1 事务对表中的 &amp;ldquo;全部数据行&amp;rdquo; 进行了修改，同时 T2 事务向表中插入了一行 &amp;ldquo;新数据&amp;rdquo;，操作 T1 事务的用户发现表中&lt;strong>还存在没有修改&lt;/strong>的数据行，就好象发生了幻觉一 样。一般解决幻读的方法是增加范围锁 RangeS，锁定检锁范围为只读，这样就避免了幻读。&lt;/p>
+&lt;p>&lt;strong>不可重复读和幻读的异同&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>两者都表现为两次读取的结果不一致&lt;/li>
+&lt;li>不可重复读是由于另一个事务对数据的更改所造成的&lt;/li>
+&lt;li>幻读是由于另一个事务插入或删除引起的&lt;/li>
+&lt;li>对于不可重复读，只需要锁住满足条件的记录&lt;/li>
+&lt;li>对于幻读，要锁住满足条件及其相近的记录&lt;/li>
+&lt;li>不可重复读表达的是：记录（一行或多行）的值在同一次事务中出现两个不同的结果&lt;/li>
+&lt;li>幻读表达的是：同一事务中查询两次得到两个不同的结果集&lt;/li>
+&lt;li>不可重复读侧重表达 &lt;code>读 - 读&lt;/code>&lt;/li>
+&lt;li>幻读则是说 &lt;code>读 - 写&lt;/code>，用写来证实读的是鬼影&lt;/li>
+&lt;/ul>
+&lt;p>&lt;a href="https://www.zhihu.com/question/47007926/answer/222348887">&lt;strong>关于幻读&lt;/strong>&lt;/a>&lt;/p>
+&lt;p>这里给出 MySQL 在 Repeatable Read 隔离界别下幻读的比较形象的场景：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>时间&lt;/th>
+&lt;th>事务 1&lt;/th>
+&lt;th>事务 2&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>T1&lt;/td>
+&lt;td>start transaction;&lt;!-- raw HTML omitted -->select * from users where id = 1;&lt;!-- raw HTML omitted -->结果为：0&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>T2&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>start transaction;&lt;!-- raw HTML omitted -->insert into &lt;code>users&lt;/code>(&lt;code>id&lt;/code>, &lt;code>name&lt;/code>) values (1, &amp;lsquo;big cat&amp;rsquo;);&lt;!-- raw HTML omitted -->commit;&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>T3&lt;/td>
+&lt;td>insert into &lt;code>users&lt;/code>(&lt;code>id&lt;/code>, &lt;code>name&lt;/code>) values (1, &amp;lsquo;big cat&amp;rsquo;);&lt;!-- raw HTML omitted -->主键冲突，插入失败&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>T4&lt;/td>
+&lt;td>select * from users where id = 1;&lt;!-- raw HTML omitted -->结果为：0&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>T5&lt;/td>
+&lt;td>rollback;&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>假设 users 表中 id 为主键&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>T1 的时间点事务 1 检测表中没有 id 为 1 的记录&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>T2 时间点事务 2 插入 id 为 1 的记录并提交事务&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>T3 时间点事务1 尝试插入 id 为 1 的数据时提示主键冲突&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>T4 时间点再去检查表中还是没有 id 为 1 的记录（由于 Repeatable Read 隔离级别，事务 2 的插入提交事务 1 读取不到）&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="mysql-隔离级别">MySQL 隔离级别&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th style="text-align:left">隔离级别&lt;/th>
+&lt;th style="text-align:left">脏读（Dirty Read）&lt;/th>
+&lt;th style="text-align:left">不可重复读（NonRepeatable Read）&lt;/th>
+&lt;th style="text-align:left">幻读（Phantom Read）&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td style="text-align:left">未提交读（Read uncommitted）&lt;/td>
+&lt;td style="text-align:left">可能&lt;/td>
+&lt;td style="text-align:left">可能&lt;/td>
+&lt;td style="text-align:left">可能&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">已提交读（Read committed）&lt;/td>
+&lt;td style="text-align:left">不可能&lt;/td>
+&lt;td style="text-align:left">可能&lt;/td>
+&lt;td style="text-align:left">可能&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">可重复读（Repeatable read）&lt;/td>
+&lt;td style="text-align:left">不可能&lt;/td>
+&lt;td style="text-align:left">不可能&lt;/td>
+&lt;td style="text-align:left">可能&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">可串行化（SERIALIZABLE）&lt;/td>
+&lt;td style="text-align:left">不可能&lt;/td>
+&lt;td style="text-align:left">不可能&lt;/td>
+&lt;td style="text-align:left">不可能&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="mysql-事务隔离级别设置">MySQL 事务隔离级别设置&lt;/h3>
+&lt;p>&lt;strong>InnoDB 默认是可重复读的（REPEATABLE READ）&lt;/strong>&lt;/p>
+&lt;p>修改全局默认的事务级别，在 my.inf 文件的 [mysqld] 节里类似如下设置该选项（不推荐）&lt;/p>
+&lt;pre>&lt;code>transaction-isolation = {READ-UNCOMMITTED | READ-COMMITTED | REPEATABLE-READ | SERIALIZABLE}
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>改变单个会话或者所有新进连接的隔离级别（推荐使用）&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>SET [SESSION | GLOBAL] TRANSACTION ISOLATION LEVEL {READ UNCOMMITTED | READ COMMITTED | REPEATABLE READ | SERIALIZABLE}
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>查询全局和会话事务隔离级别方法&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>#查询全局的事务隔离级别
+SELECT @@global.tx_isolation;
+#查询当前会话的事务级别
+SELECT @@session.tx_isolation;
+&lt;/code>&lt;/pre></description></item><item><title>SQL 事务隔离</title><link>https://lrtg.ml/2018/05/31/sql-transaction-isolation/</link><pubDate>Thu, 31 May 2018 13:55:26 +0000</pubDate><guid>https://lrtg.ml/2018/05/31/sql-transaction-isolation/</guid><description>
+&lt;p>SQL 标准定义了 4 类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。&lt;/p>
+&lt;h2 id="一sql-事务隔离级别说明">一、SQL 事务隔离级别说明&lt;/h2>
+&lt;h3 id="11-read-uncommitted读取未提交内容">1.1 Read Uncommitted（读取未提交内容）&lt;/h3>
+&lt;p>在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。&lt;/p>
+&lt;h3 id="12-read-committed读取提交内容">1.2 Read Committed（读取提交内容）&lt;/h3>
+&lt;p>这是大多数数据库系统的默认隔离级别（但不是 MySQL 默认的）。它满足了隔离的简单定义：一个事务只能看见已经提交事务所做的改变。这种隔离级别 也支持所谓的不可重复读（Nonrepeatable Read），因为同一事务的其他实例在该实例处理其间可能会有新的 commit，所以同一 select 可能返回不同结果。&lt;/p>
+&lt;h3 id="13-repeatable-read可重读">1.3 Repeatable Read（可重读）&lt;/h3>
+&lt;p>这是 MySQL 的默认事务隔离级别，它确保同一事务的多个实例在并发读取数据时，会看到同样的数据行。不过理论上，这会导致另一个棘手的问题：幻读 （Phantom Read）。简单的说，幻读指当用户读取某一范围的数据行时，另一个事务又在该范围内插入了新行，当用户再读取该范围的数据行时，会发现有新的 “幻影” 行。InnoDB 和 Falcon 存储引擎通过多版本并发控制（MVCC，Multiversion Concurrency Control）机制解决了该问题。&lt;/p>
+&lt;h3 id="14-serializable可串行化">1.4 Serializable（可串行化）&lt;/h3>
+&lt;p>这是最高的隔离级别，它通过强制事务排序，使之不可能相互冲突，从而解决幻读问题。简言之，它是在每个读的数据行上加上共享锁。在这个级别，可能导致大量的超时现象和锁竞争。&lt;/p>
+&lt;h2 id="二事务隔离带来的问题">二、事务隔离带来的问题&lt;/h2>
+&lt;p>这四种隔离级别采取不同的锁类型来实现，若读取的是同一个数据的话，就容易发生问题。例如：&lt;/p>
+&lt;h3 id="21-脏读drity-read">2.1 脏读（Drity Read）&lt;/h3>
+&lt;p>一个事务读取到另一事务未提交的更新数据。当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交到数据库中（这个数据在有可能会回滚），这时，另外一个事务也访问这个数据，然后使用了这个数据。&lt;/p>
+&lt;h3 id="22-不可重复读-non-repeatable-read">2.2 不可重复读 (Non-repeatable read）&lt;/h3>
+&lt;p>在一个事务内，前后两次读到的数据是不一样。在 T1 事务两次读取同一数据之间，T2 事务对该数据进行了修改，就会发生 T1 事务中的两次数据读取不一样的结果。相反， &lt;strong>可重复读&lt;/strong>：在同一事务中多次读取数据时，能够保证所读数据一样，也就是后续读取不能读到另一事务已提交的更新数据。&lt;/p>
+&lt;h3 id="23-幻读-phantom-read">2.3 幻读 (Phantom Read）&lt;/h3>
+&lt;p>指当事务不是独立执行时发生的一种现象，例如：T1 事务对表中的 &amp;ldquo;全部数据行&amp;rdquo; 进行了修改，同时 T2 事务向表中插入了一行 &amp;ldquo;新数据&amp;rdquo;，操作 T1 事务的用户发现表中&lt;strong>还存在没有修改&lt;/strong>的数据行，就好象发生了幻觉一 样。一般解决幻读的方法是增加范围锁 RangeS，锁定检锁范围为只读，这样就避免了幻读。&lt;/p>
+&lt;h3 id="24-不可重复读和幻读的异同">2.4 不可重复读和幻读的异同&lt;/h3>
+&lt;ul>
+&lt;li>两者都表现为两次读取的结果不一致&lt;/li>
+&lt;li>不可重复读是由于另一个事务对数据的更改所造成的，第二次读到了不一样的记录&lt;/li>
+&lt;li>幻读是由于另一个事务插入或删除引起的，第二次查询的结果发生了变化&lt;/li>
+&lt;li>对于不可重复读，只需要锁住满足条件的记录&lt;/li>
+&lt;li>对于幻读，要锁住满足条件及其相近的记录&lt;/li>
+&lt;/ul>
+&lt;h2 id="三mysql-隔离级别">三、MySQL 隔离级别&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th style="text-align:left">隔离级别&lt;/th>
+&lt;th style="text-align:left">脏读（Dirty Read）&lt;/th>
+&lt;th style="text-align:left">不可重复读（NonRepeatable Read）&lt;/th>
+&lt;th style="text-align:left">幻读（Phantom Read）&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td style="text-align:left">未提交读（Read uncommitted）&lt;/td>
+&lt;td style="text-align:left">可能&lt;/td>
+&lt;td style="text-align:left">可能&lt;/td>
+&lt;td style="text-align:left">可能&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">已提交读（Read committed）&lt;/td>
+&lt;td style="text-align:left">不可能&lt;/td>
+&lt;td style="text-align:left">可能&lt;/td>
+&lt;td style="text-align:left">可能&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">可重复读（Repeatable read）&lt;/td>
+&lt;td style="text-align:left">不可能&lt;/td>
+&lt;td style="text-align:left">不可能&lt;/td>
+&lt;td style="text-align:left">可能&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">可串行化（SERIALIZABLE）&lt;/td>
+&lt;td style="text-align:left">不可能&lt;/td>
+&lt;td style="text-align:left">不可能&lt;/td>
+&lt;td style="text-align:left">不可能&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="四mysql-事务隔离级别设置">四、MySQL 事务隔离级别设置&lt;/h2>
+&lt;h3 id="41-innodb-默认是可重复读的repeatable-read">4.1 InnoDB 默认是可重复读的（REPEATABLE READ）&lt;/h3>
+&lt;p>修改全局默认的事务级别，在 my.inf 文件的 [mysqld] 节里类似如下设置该选项（不推荐）&lt;/p>
+&lt;pre>&lt;code>transaction-isolation = {READ-UNCOMMITTED | READ-COMMITTED | REPEATABLE-READ | SERIALIZABLE}
+&lt;/code>&lt;/pre>&lt;h3 id="42-改变单个会话或者所有新进连接的隔离级别推荐使用">4.2 改变单个会话或者所有新进连接的隔离级别（推荐使用）&lt;/h3>
+&lt;pre>&lt;code>SET [SESSION | GLOBAL] TRANSACTION ISOLATION LEVEL {READ UNCOMMITTED | READ COMMITTED | REPEATABLE READ | SERIALIZABLE}
+&lt;/code>&lt;/pre>&lt;h3 id="43-查询全局和会话事务隔离级别方法">4.3 查询全局和会话事务隔离级别方法&lt;/h3>
+&lt;pre>&lt;code>#查询全局的事务隔离级别
+SELECT @@global.tx_isolation;
+#查询当前会话的事务级别
+SELECT @@session.tx_isolation;
+&lt;/code>&lt;/pre></description></item><item><title>Oracle 与 MySQL 知识总结</title><link>https://lrtg.ml/2016/07/28/Oracle-%E4%B8%8E-MySQL-%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/</link><pubDate>Thu, 28 Jul 2016 14:06:36 +0000</pubDate><guid>https://lrtg.ml/2016/07/28/Oracle-%E4%B8%8E-MySQL-%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/</guid><description>
+&lt;blockquote>
+&lt;p>对日常工作中使用 Oracle 和 MySQL 数据库知识对比总结。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="sqlplus-连接数据库的方式">SQLPlus 连接数据库的方式&lt;/h1>
+&lt;h2 id="cmd-中输入sqlplus-用户名密码数据库实例">cmd 中输入：sqlplus 用户名/密码@数据库实例&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sqlplus system/lxr316@oracle
+sqlplus sys/admin as sysdba
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="打开-sqlplus-直接输入用户名和密码">打开 SQLPlus 直接输入用户名和密码&lt;/h2>
+&lt;h2 id="使用命令">使用命令&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">connect sys/admin as sysdba
+connect system/lxr316
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="超级管理员登录">超级管理员登录&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sys as sysdba
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="断开数据库">断开数据库&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">disconnect; &lt;span style="color:#75715e"># 可简写 disconn&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="mysql-连接">MySQL 连接&lt;/h1>
+&lt;p>&lt;strong>命令：&lt;/strong> &lt;code>mysql [–h 服务器地址] –u 用户名 –p [密码]&lt;/code>（&lt;em>需要配置 mysql 数据库的 bin 到环境变量中&lt;/em>）&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mysql -h localhost –u root –p root
+mysql –u root -p
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="用户操作">用户操作&lt;/h1>
+&lt;h2 id="oracle">Oracle&lt;/h2>
+&lt;h3 id="创建用户">创建用户&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">create&lt;/span> &lt;span style="color:#66d9ef">user&lt;/span> [username] identified &lt;span style="color:#66d9ef">by&lt;/span> [password];
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="修改用户密码">修改用户密码&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">user&lt;/span> [username] identified &lt;span style="color:#66d9ef">by&lt;/span> [password];
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="账户上锁解锁">账户上锁、解锁&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">user&lt;/span> [username] account &lt;span style="color:#66d9ef">lock&lt;/span>&lt;span style="color:#f92672">|&lt;/span>unlock;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="用户首次登录时直接修改密码--密码失效">用户首次登录时直接修改密码&amp;ndash;密码失效&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">user&lt;/span> [username] password expire;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="mysql">MySQL&lt;/h2>
+&lt;h3 id="创建用户-1">创建用户:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">CREATE&lt;/span> &lt;span style="color:#66d9ef">USER&lt;/span> &lt;span style="color:#e6db74">&amp;#39;username&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;host&amp;#39;&lt;/span> IDENTIFIED &lt;span style="color:#66d9ef">BY&lt;/span> &lt;span style="color:#e6db74">&amp;#39;password&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>备注：&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>username：你将创建的用户名。&lt;/li>
+&lt;li>host：指定该用户在哪个主机上可以登陆,如果是本地用户可用localhost, 如果想让该用户可以从任意远程主机登陆,可以使用通配符%。&lt;/li>
+&lt;li>password：该用户的登陆密码,密码可以为空,如果为空则该用户可以不需要密码登陆服务器。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;em>例如：&lt;/em>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">CREATE&lt;/span> &lt;span style="color:#66d9ef">USER&lt;/span> &lt;span style="color:#e6db74">&amp;#39;dog&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;localhost&amp;#39;&lt;/span>IDENTIFIED &lt;span style="color:#66d9ef">BY&lt;/span> &lt;span style="color:#e6db74">&amp;#39;123456&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">CREATE&lt;/span> &lt;span style="color:#66d9ef">USER&lt;/span> &lt;span style="color:#e6db74">&amp;#39;pig&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;192.168.1.101_&amp;#39;&lt;/span>IDENDIFIED &lt;span style="color:#66d9ef">BY&lt;/span> &lt;span style="color:#e6db74">&amp;#39;123456&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">CREATE&lt;/span> &lt;span style="color:#66d9ef">USER&lt;/span> &lt;span style="color:#e6db74">&amp;#39;pig&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;%&amp;#39;&lt;/span> IDENTIFIED &lt;span style="color:#66d9ef">BY&lt;/span> &lt;span style="color:#e6db74">&amp;#39;123456&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">CREATE&lt;/span> &lt;span style="color:#66d9ef">USER&lt;/span> &lt;span style="color:#e6db74">&amp;#39;pig&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;%&amp;#39;&lt;/span> IDENTIFIED &lt;span style="color:#66d9ef">BY&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">CREATE&lt;/span> &lt;span style="color:#66d9ef">USER&lt;/span> &lt;span style="color:#e6db74">&amp;#39;pig&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;%&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="设置与更改用户密码">设置与更改用户密码&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">SET&lt;/span> PASSWORD &lt;span style="color:#66d9ef">FOR&lt;/span> &lt;span style="color:#e6db74">&amp;#39;username&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;host&amp;#39;&lt;/span> &lt;span style="color:#f92672">=&lt;/span> PASSWORD(&lt;span style="color:#e6db74">&amp;#39;newpassword&amp;#39;&lt;/span>);
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果是当前登陆用户&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">SET&lt;/span> PASSWORD &lt;span style="color:#f92672">=&lt;/span> PASSWORD(&lt;span style="color:#e6db74">&amp;#34;newpassword&amp;#34;&lt;/span>);
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="删除用户">删除用户&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">DROP&lt;/span> &lt;span style="color:#66d9ef">USER&lt;/span> &lt;span style="color:#e6db74">&amp;#39;username&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;host&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="权限管理">权限管理&lt;/h1>
+&lt;h2 id="oracle-1">Oracle&lt;/h2>
+&lt;h3 id="授权">授权&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">grant&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">权限&lt;/span> &lt;span style="color:#66d9ef">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">用户名&lt;/span>;
+&lt;span style="color:#66d9ef">grant&lt;/span> &lt;span style="color:#66d9ef">all&lt;/span> &lt;span style="color:#66d9ef">on&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> to用户&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">角色&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="收回权限">收回权限&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">revoke&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">权限&lt;/span>&lt;span style="color:#66d9ef">from&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">用户名&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>对象权限可以级联收回，但是系统权限不可以级联收回。&lt;/p>
+&lt;ul>
+&lt;li>系统权限： A 赋予一个系统权限给 B，B 再授予 C。然后A将该权限从 B 回收，此后 C 仍然有该权限。&lt;/li>
+&lt;li>对象权限： A 赋予一个对象权限给 B，B 再授予 C。然后A将该权限从 B 回收，此后 C 也失去了该权限。&lt;/li>
+&lt;/ul>
+&lt;h3 id="常用系统权限">常用系统权限&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">create&lt;/span> &lt;span style="color:#66d9ef">session&lt;/span> &lt;span style="color:#75715e">--用户登录
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">create&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#75715e">--创建表
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>unlimited tablespace &lt;span style="color:#75715e">--无限表空间
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="常用对象权限">常用对象权限&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">select&lt;/span> &lt;span style="color:#66d9ef">on&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span>; &lt;span style="color:#75715e">-- 查询权限
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">update&lt;/span> &lt;span style="color:#66d9ef">on&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span>; &lt;span style="color:#75715e">-- 更新权限
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">delete&lt;/span> &lt;span style="color:#66d9ef">on&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span>; &lt;span style="color:#75715e">-- 删除权限
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">insert&lt;/span> &lt;span style="color:#66d9ef">on&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span>; &lt;span style="color:#75715e">-- 插入权限
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="权限的级联授予">权限的级联授予&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">grant&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">权限&lt;/span> &lt;span style="color:#66d9ef">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">用户名&lt;/span> &lt;span style="color:#66d9ef">with&lt;/span> &lt;span style="color:#66d9ef">admin&lt;/span> &lt;span style="color:#66d9ef">option&lt;/span>&lt;span style="color:#f92672">|&lt;/span>&lt;span style="color:#66d9ef">with&lt;/span> &lt;span style="color:#66d9ef">grant&lt;/span> &lt;span style="color:#66d9ef">option&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>with admin option：系统权限&lt;/li>
+&lt;li>with grant option：对象权限&lt;/li>
+&lt;/ul>
+&lt;h2 id="mysql-1">MySQL&lt;/h2>
+&lt;h3 id="授权-1">授权:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">GRANT&lt;/span> &lt;span style="color:#66d9ef">privileges&lt;/span> &lt;span style="color:#66d9ef">ON&lt;/span> databasename.tablename &lt;span style="color:#66d9ef">TO&lt;/span> &lt;span style="color:#e6db74">&amp;#39;username&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;host&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>备注：&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>privileges：用户的操作权限,如 SELECT , INSERT , UPDATE 等；如果要授予所的权限则使用 ALL。&lt;/li>
+&lt;li>databasename：数据库名。&lt;/li>
+&lt;li>tablename：表名&lt;/li>
+&lt;/ul>
+&lt;p>如果要授予该用户对所有数据库和表的相应操作权限则可用 &lt;code>*&lt;/code> 表示, 如 &lt;code>*.*&lt;/code> 。
+&lt;em>例如：&lt;/em>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">GRANT&lt;/span> &lt;span style="color:#66d9ef">SELECT&lt;/span>, &lt;span style="color:#66d9ef">INSERT&lt;/span> &lt;span style="color:#66d9ef">ON&lt;/span> test.&lt;span style="color:#66d9ef">user&lt;/span> &lt;span style="color:#66d9ef">TO&lt;/span> &lt;span style="color:#e6db74">&amp;#39;pig&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;%&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">GRANT&lt;/span> &lt;span style="color:#66d9ef">ALL&lt;/span> &lt;span style="color:#66d9ef">ON&lt;/span> &lt;span style="color:#f92672">*&lt;/span>.&lt;span style="color:#f92672">*&lt;/span> &lt;span style="color:#66d9ef">TO&lt;/span> &lt;span style="color:#e6db74">&amp;#39;pig&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;%&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>注意：&lt;/strong> 用以上命令授权的用户不能给其它用户授权，如果想让该用户可以授权，用以下命令:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">GRANT&lt;/span> &lt;span style="color:#66d9ef">privileges&lt;/span> &lt;span style="color:#66d9ef">ON&lt;/span> databasename.tablename &lt;span style="color:#66d9ef">TO&lt;/span> &lt;span style="color:#e6db74">&amp;#39;username&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;host&amp;#39;&lt;/span> &lt;span style="color:#66d9ef">WITH&lt;/span> &lt;span style="color:#66d9ef">GRANT&lt;/span> &lt;span style="color:#66d9ef">OPTION&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="撤销用户权限">撤销用户权限&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">REVOKE&lt;/span> privilege &lt;span style="color:#66d9ef">ON&lt;/span> databasename.tablename &lt;span style="color:#66d9ef">FROM&lt;/span> &lt;span style="color:#e6db74">&amp;#39;username&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;host&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>说明：&lt;/strong> privilege, databasename, tablename - 同授权部分。
+&lt;em>例如：&lt;/em>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">REVOKE&lt;/span> &lt;span style="color:#66d9ef">SELECT&lt;/span> &lt;span style="color:#66d9ef">ON&lt;/span> &lt;span style="color:#f92672">*&lt;/span>.&lt;span style="color:#f92672">*&lt;/span> &lt;span style="color:#66d9ef">FROM&lt;/span> &lt;span style="color:#e6db74">&amp;#39;pig&amp;#39;&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#e6db74">&amp;#39;%&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>注意：&lt;/strong> 假如你在给用户 &lt;code>'pig'@'%'&lt;/code> 授权的时候是这样的（或类似的）：&lt;code>GRANT SELECT ON test.user TO 'pig'@'%';&lt;/code> 则在使用：&lt;code>REVOKE SELECT ON *.* FROM'pig'@'%';&lt;/code> 命令并不能撤销该用户对 test 数据库中 user 表的 SELECT 操作；相反，如果授权使用的是：&lt;code>GRANT SELECT ON *.* TO'pig'@'%';&lt;/code> 则：&lt;code>REVOKE SELECT ONtest.user FROM 'pig'@'%';&lt;/code> 命令也不能撤销该用户对 test 数据库中 user 表的 SELECT 权限。&lt;/p>
+&lt;p>具体信息可以用命令：&lt;code>SHOW GRANTS FOR 'pig'@'%';&lt;/code> 查看。&lt;/p>
+&lt;h1 id="oracle角色-role">Oracle角色 role&lt;/h1>
+&lt;p>角色：权限的集合&lt;/p>
+&lt;h2 id="角色数据字典表">角色数据字典表&lt;/h2>
+&lt;ul>
+&lt;li>查看当前用户中的角色：&lt;code>user_role_privs&lt;/code>&lt;/li>
+&lt;li>查看角色中的系统权限：&lt;code>role_sys_privs&lt;/code>&lt;/li>
+&lt;li>查看角色中的对象权限：&lt;code>role_tab_privs&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h2 id="建一个角色">建一个角色&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">create&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> role1;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="授权给角色">授权给角色&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">grant&lt;/span> &lt;span style="color:#66d9ef">create&lt;/span> &lt;span style="color:#66d9ef">any&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span>, &lt;span style="color:#66d9ef">create&lt;/span> &lt;span style="color:#66d9ef">procedure&lt;/span> &lt;span style="color:#66d9ef">to&lt;/span> role1;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="授予回收用户角色">授予/回收用户角色&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">grant&lt;/span> role1 &lt;span style="color:#66d9ef">to&lt;/span> user1;
+&lt;span style="color:#66d9ef">revoke&lt;/span> role1 &lt;span style="color:#66d9ef">from&lt;/span> user1;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="创建带有口令以角色">创建带有口令以角色&lt;/h2>
+&lt;p>在生效带有口令的角色时必须提供口令&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">create&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> role1 identified &lt;span style="color:#66d9ef">by&lt;/span> password1;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="修改角色是否需要口令">修改角色：是否需要口令&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> role1 &lt;span style="color:#66d9ef">not&lt;/span> identified;
+&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> role1 identified &lt;span style="color:#66d9ef">by&lt;/span> password1;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="设置当前用户要生效的角色">设置当前用户要生效的角色&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">set&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> role1; &lt;span style="color:#75715e">-- 使 role1 生效
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">set&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> role1, role2; &lt;span style="color:#75715e">-- 使 role1, role2 生效
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">set&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> role1 identified &lt;span style="color:#66d9ef">by&lt;/span> password1; &lt;span style="color:#75715e">-- 使用带有口令的 role1 生效
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">set&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> &lt;span style="color:#66d9ef">all&lt;/span>; &lt;span style="color:#75715e">-- 使用该用户的所有角色生效
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">set&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> &lt;span style="color:#66d9ef">none&lt;/span>; &lt;span style="color:#75715e">-- 设置所有角色失效
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">set&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> &lt;span style="color:#66d9ef">all&lt;/span> &lt;span style="color:#66d9ef">except&lt;/span> role1; &lt;span style="color:#75715e">-- 除 role1 外的该用户的所有其它角色生效
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">select&lt;/span> &lt;span style="color:#f92672">*&lt;/span> &lt;span style="color:#66d9ef">from&lt;/span> SESSION_ROLES; &lt;span style="color:#75715e">-- 查看当前用户的生效的角色。
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="修改指定用户设置其默认角色">修改指定用户，设置其默认角色&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">user&lt;/span> user1 &lt;span style="color:#66d9ef">default&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> role1;
+&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">user&lt;/span> user1 &lt;span style="color:#66d9ef">default&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> &lt;span style="color:#66d9ef">all&lt;/span> &lt;span style="color:#66d9ef">except&lt;/span> role1;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="删除角色">删除角色&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">drop&lt;/span> &lt;span style="color:#66d9ef">role&lt;/span> role1;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>注意：&lt;/strong> 角色删除后，原来拥用该角色的用户将失去该角色，相应的权限也将会失去。&lt;/p>
+&lt;h2 id="系统角色">系统角色&lt;/h2>
+&lt;ul>
+&lt;li>DBA: 拥有全部特权，是系统最高权限角色&lt;/li>
+&lt;li>RESOURCE：拥有 RESOURCE 角色权限的用户只可以创建实体&lt;/li>
+&lt;li>CONNECT：拥有 CONNECT 角色权限的用户只可以登录 Oracle&lt;/li>
+&lt;/ul>
+&lt;p>对于普通用户：授予 CONNECT，RESOURCE 角色权限；对于DBA管理用户：授予 CONNECT，RESOURCE， DBA 角色权限。&lt;/p>
+&lt;h1 id="查看表结构信息命令">查看表结构信息命令&lt;/h1>
+&lt;h2 id="oracle-2">Oracle&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">desc&lt;/span>(ribe) &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span>; &lt;span style="color:#75715e">-- 如：desc lxr
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="mysql-2">MySQL&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">desc&lt;/span>(ribe) &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="显示当前登录用户">显示当前登录用户&lt;/h1>
+&lt;h2 id="oracle-3">Oracle&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">show&lt;/span> &lt;span style="color:#66d9ef">user&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="mysql-3">MySQL&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">select&lt;/span> &lt;span style="color:#66d9ef">user&lt;/span>();
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="mysql-查看用户下的数据库">MySQL 查看用户下的数据库&lt;/h1>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">show&lt;/span> databases;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>查看表&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">show&lt;/span> tables;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="oracle-用户锁定与解锁">Oracle 用户锁定与解锁&lt;/h1>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">ALTER&lt;/span> &lt;span style="color:#66d9ef">USER&lt;/span> username ACCOUNT &lt;span style="color:#66d9ef">LOCK&lt;/span>; &lt;span style="color:#75715e">-- 锁定用户
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">ALTER&lt;/span> &lt;span style="color:#66d9ef">USER&lt;/span> username ACCOUNT UNLOCK; &lt;span style="color:#75715e">-- 解锁用户
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="清屏命令">清屏命令&lt;/h1>
+&lt;h2 id="sqlplus">SQLPlus&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">clear screen &lt;span style="color:#75715e">-- 简写：cl scr
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+cls &lt;span style="color:#75715e">-- dos 清屏命令
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="mysql-4">MySQL&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">system&lt;/span> clear; &lt;span style="color:#75715e">-- Linux 环境下
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">system&lt;/span> cls; &lt;span style="color:#75715e">-- dos 环境下
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="oracle-更改当前用户日期格式命令">Oracle 更改当前用户日期格式命令&lt;/h1>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">session&lt;/span> &lt;span style="color:#66d9ef">set&lt;/span> nls_date_format &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;yyyy-mm-dd&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="oracle-中的基本数据类型">Oracle 中的基本数据类型&lt;/h1>
+&lt;ul>
+&lt;li>数值：number(5,2)，int&lt;/li>
+&lt;li>字符：char，varchar2(4000)&lt;/li>
+&lt;li>日期：date&lt;/li>
+&lt;li>图片：BLOB (binaryLargeObject) 4G&lt;/li>
+&lt;li>文本：CLOB (Character LargeObject) 4G&lt;/li>
+&lt;/ul>
+&lt;h1 id="oracle-表结构操作">Oracle 表结构操作&lt;/h1>
+&lt;h2 id="表重命名">表重命名&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">rename&lt;/span> &lt;span style="color:#66d9ef">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">新表名&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="给表增加注释">给表增加注释&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">comment&lt;/span> &lt;span style="color:#66d9ef">on&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">is&lt;/span> &lt;span style="color:#e6db74">&amp;#39;注释内容&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="添加约束方式">添加约束方式&lt;/h2>
+&lt;h3 id="方式一">方式一&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">add&lt;/span> &lt;span style="color:#66d9ef">constraint&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">约束名&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">约束类型&lt;/span>(&lt;span style="color:#960050;background-color:#1e0010">约束的字段名&lt;/span>);
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Constraint 约束类型：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>值&lt;/th>
+&lt;th>名称&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>primary key&lt;/td>
+&lt;td>主键&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>unique&lt;/td>
+&lt;td>唯一&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>check&lt;/td>
+&lt;td>限制&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>not null&lt;/td>
+&lt;td>不能为null&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="方式二">方式二&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">add&lt;/span> &lt;span style="color:#66d9ef">constraint&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">约束名&lt;/span> &lt;span style="color:#66d9ef">foreign&lt;/span> &lt;span style="color:#66d9ef">key&lt;/span>(&lt;span style="color:#960050;background-color:#1e0010">字段名&lt;/span>) &lt;span style="color:#66d9ef">references&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span>(&lt;span style="color:#960050;background-color:#1e0010">字段名&lt;/span>);
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>foreign key 外键：&lt;/strong> 参照主键中存在的值，可以插入重复的记录、可以插入重复的空值&lt;/p>
+&lt;h2 id="删除约束方式">删除约束方式&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql"> &lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">drop&lt;/span> &lt;span style="color:#66d9ef">constraint&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">约束名&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="删除表结构">删除表结构&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">drop&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span>; &lt;span style="color:#75715e">-- 此操作属DDL，会自动提交且不可回滚
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="表中增加字段">表中增加字段&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">add&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">字段名&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">类型&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="删除字段">删除字段&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">drop&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">字段名&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>通常在系统不忙的时候删除不使用的字段，可以先设置字段为 unused&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> test3 &lt;span style="color:#66d9ef">set&lt;/span> unused &lt;span style="color:#66d9ef">column&lt;/span> address;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>再执行删除&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> test3 unused &lt;span style="color:#66d9ef">column&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="字段重命名">字段重命名&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">rename&lt;/span> &lt;span style="color:#66d9ef">column&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">字段名&lt;/span> &lt;span style="color:#66d9ef">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">新字段名&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="修改字段">修改字段&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">modify&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">字段名&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">新类型&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>添加 not null&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">modify&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">字段名&lt;/span> &lt;span style="color:#66d9ef">not&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>删除 not null&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">alter&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">modify&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">字段名&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="oracle-备份表">Oracle 备份表&lt;/h1>
+&lt;h2 id="在当前的数据库之内进行备份">在当前的数据库之内进行备份&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">create&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span>(&lt;span style="color:#960050;background-color:#1e0010">字段&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> &lt;span style="color:#66d9ef">select&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">查询语句&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="数据的移动">数据的移动&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">insert&lt;/span> &lt;span style="color:#66d9ef">into&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名（字段列表）&lt;/span>&lt;span style="color:#66d9ef">select&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">字段列表&lt;/span> &lt;span style="color:#66d9ef">from&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="数据库服务器之间拷贝表">数据库服务器之间拷贝表&lt;/h2>
+&lt;h3 id="客户端连接服务器">客户端连接服务器&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">copy&lt;/span> &lt;span style="color:#66d9ef">from&lt;/span> &lt;span style="color:#66d9ef">system&lt;/span>&lt;span style="color:#f92672">/&lt;/span>hhl&lt;span style="color:#f92672">@&lt;/span>hhl &lt;span style="color:#66d9ef">create&lt;/span> hhl_table &lt;span style="color:#66d9ef">using&lt;/span> &lt;span style="color:#66d9ef">select&lt;/span> &lt;span style="color:#f92672">*&lt;/span> &lt;span style="color:#66d9ef">from&lt;/span> scott.emp;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="从a服务器拷贝到自己的数据库中">从A服务器拷贝到自己的数据库中&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">copy&lt;/span> &lt;span style="color:#66d9ef">from&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">用户名&lt;/span>&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">密码&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">主机字符串&lt;/span> &lt;span style="color:#66d9ef">create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">查询语句&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="从自己的数据库中拷贝到a服务器">从自己的数据库中拷贝到A服务器&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">copy&lt;/span> &lt;span style="color:#66d9ef">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">用户用&lt;/span>&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">密码&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">主机字符串&lt;/span> &lt;span style="color:#66d9ef">create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">查询语句&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="从a服务器拷贝表到b服务器">从A服务器拷贝表到B服务器&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">copy&lt;/span> &lt;span style="color:#66d9ef">from&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">用户用&lt;/span>&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">密码&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">主机字符串&lt;/span> &lt;span style="color:#66d9ef">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">用户用&lt;/span>&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">密码&lt;/span>&lt;span style="color:#f92672">@&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">主机字符串&lt;/span> &lt;span style="color:#66d9ef">create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">查询语句&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="oracledblink-数据库连接">OracleDBLINK 数据库连接&lt;/h1>
+&lt;p>在当前的数据库内直接操作其他服务器中的表做增删改查，格式如下：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">create&lt;/span> &lt;span style="color:#66d9ef">database&lt;/span> link &lt;span style="color:#960050;background-color:#1e0010">名&lt;/span> &lt;span style="color:#66d9ef">connect&lt;/span> &lt;span style="color:#66d9ef">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">用户名&lt;/span> identified &lt;span style="color:#66d9ef">by&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">密码&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> &lt;span style="color:#e6db74">&amp;#39;主机字符串&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="mysql-查看数据库字符集">MySQL 查看数据库字符集&lt;/h1>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">show&lt;/span> variables &lt;span style="color:#66d9ef">like&lt;/span> &lt;span style="color:#e6db74">&amp;#39;character%&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">show&lt;/span> variables &lt;span style="color:#66d9ef">like&lt;/span> &lt;span style="color:#e6db74">&amp;#39;%collation%&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="truncate-与-delete">truncate 与 delete&lt;/h1>
+&lt;h2 id="使用格式">使用格式&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">truncate&lt;/span> &lt;span style="color:#66d9ef">table&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span>; &lt;span style="color:#75715e">-- 删除表中全部记录
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">delete&lt;/span> &lt;span style="color:#66d9ef">from&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">表名&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="truncate-与-delete-的区别">truncate 与 delete 的区别&lt;/h2>
+&lt;ul>
+&lt;li>truncate 删除速度比 delete 删除速度快；&lt;/li>
+&lt;li>truncate 不可以回滚，delete 可以回滚。&lt;/li>
+&lt;/ul>
+&lt;hr></description></item><item><title>MySQL日期函数</title><link>https://lrtg.ml/2016/07/20/MySQL%E6%97%A5%E6%9C%9F%E5%87%BD%E6%95%B0/</link><pubDate>Wed, 20 Jul 2016 14:16:17 +0000</pubDate><guid>https://lrtg.ml/2016/07/20/MySQL%E6%97%A5%E6%9C%9F%E5%87%BD%E6%95%B0/</guid><description>
+&lt;h4 id="1-取得当天">1. 取得当天&lt;/h4>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">mysql&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#66d9ef">SELECT&lt;/span> curdate();
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> curdate() &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#ae81ff">2013&lt;/span>&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">07&lt;/span>&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">29&lt;/span> &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">------------+
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="2-取得当前日期">2. 取得当前日期&lt;/h4>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">mysql&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#66d9ef">select&lt;/span> sysdate();
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">---------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> sysdate() &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">---------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#ae81ff">2016&lt;/span>&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">05&lt;/span>&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">30&lt;/span> &lt;span style="color:#ae81ff">13&lt;/span>:&lt;span style="color:#ae81ff">58&lt;/span>:&lt;span style="color:#ae81ff">17&lt;/span> &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">---------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">row&lt;/span> &lt;span style="color:#66d9ef">in&lt;/span> &lt;span style="color:#66d9ef">set&lt;/span>
+mysql&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#66d9ef">select&lt;/span> now();
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">---------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> now() &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">---------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#ae81ff">2016&lt;/span>&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">05&lt;/span>&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">30&lt;/span> &lt;span style="color:#ae81ff">13&lt;/span>:&lt;span style="color:#ae81ff">58&lt;/span>:&lt;span style="color:#ae81ff">29&lt;/span> &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">---------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">row&lt;/span> &lt;span style="color:#66d9ef">in&lt;/span> &lt;span style="color:#66d9ef">set&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="3-取得当前时间">3. 取得当前时间&lt;/h4>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">mysql&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#66d9ef">select&lt;/span> curtime();
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">-----------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> curtime() &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">-----------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#ae81ff">13&lt;/span>:&lt;span style="color:#ae81ff">54&lt;/span>:&lt;span style="color:#ae81ff">31&lt;/span> &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">-----------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">row&lt;/span> &lt;span style="color:#66d9ef">in&lt;/span> &lt;span style="color:#66d9ef">set&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="4-取得前一天">4. 取得前一天&lt;/h4>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">mysql&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#66d9ef">select&lt;/span> date_sub(curdate(),interval &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">day&lt;/span>);
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">------------------------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> date_sub(curdate(),interval &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">day&lt;/span>) &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">------------------------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#ae81ff">2013&lt;/span>&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">07&lt;/span>&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">28&lt;/span> &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">------------------------------------+
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="5-取得下一天">5. 取得下一天&lt;/h4>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">mysql&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#66d9ef">SELECT&lt;/span> DATE_ADD(NOW(),INTERVAL &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">DAY&lt;/span>);
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">--------------------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> DATE_ADD(NOW(),INTERVAL &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">DAY&lt;/span>) &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">--------------------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#ae81ff">2016&lt;/span>&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">05&lt;/span>&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">31&lt;/span> &lt;span style="color:#ae81ff">14&lt;/span>:&lt;span style="color:#ae81ff">09&lt;/span>:&lt;span style="color:#ae81ff">16&lt;/span> &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">--------------------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">row&lt;/span> &lt;span style="color:#66d9ef">in&lt;/span> &lt;span style="color:#66d9ef">set&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>括号中为当天时间的前一天，如果统计前几天就将括号中的’1’改成相应的天数。如果要算月或年，直接将day改为month或year即可&lt;/p>
+&lt;h4 id="6-取得前一天的年份">6. 取得前一天的年份&lt;/h4>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">mysql&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#66d9ef">SELECT&lt;/span> &lt;span style="color:#66d9ef">YEAR&lt;/span>(DATE_SUB(CURDATE(),INTERVAL &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">DAY&lt;/span>));
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">------------------------------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#66d9ef">YEAR&lt;/span>(DATE_SUB(CURDATE(),INTERVAL &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">DAY&lt;/span>)) &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">------------------------------------------+
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#ae81ff">2013&lt;/span> &lt;span style="color:#f92672">|&lt;/span>
+&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#75715e">------------------------------------------+
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="7-sysdate为2016-05-30-周一">7. SYSDATE()为：2016-05-30 周一&lt;/h4>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">&lt;span style="color:#66d9ef">SELECT&lt;/span> WEEK(SYSDATE()); &lt;span style="color:#75715e">-- 22
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">SELECT&lt;/span> WEEKOFYEAR(SYSDATE()); &lt;span style="color:#75715e">-- 22
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">SELECT&lt;/span> WEEKDAY(SYSDATE()); &lt;span style="color:#75715e">-- 0
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">SELECT&lt;/span> &lt;span style="color:#66d9ef">DAY&lt;/span>(SYSDATE()); &lt;span style="color:#75715e">-- 30
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">SELECT&lt;/span> &lt;span style="color:#66d9ef">MONTH&lt;/span>(SYSDATE()); &lt;span style="color:#75715e">-- 5
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">SELECT&lt;/span> &lt;span style="color:#66d9ef">YEAR&lt;/span>(SYSDATE()); &lt;span style="color:#75715e">-- 2016
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="8-date_sub函数的例子">8. date_sub()函数的例子&lt;/h4>
+&lt;p>今天是2013年5月20日&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql">date_sub(&lt;span style="color:#e6db74">&amp;#39;2012-05-25&amp;#39;&lt;/span>, INTERVAL &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">DAY&lt;/span>) &lt;span style="color:#75715e">-- 表示 2012-05-24
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>date_sub(&lt;span style="color:#e6db74">&amp;#39;2012-05-25&amp;#39;&lt;/span>, INTERVAL &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#66d9ef">DAY&lt;/span>) &lt;span style="color:#75715e">-- 表示 2012-05-25
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>date_sub(&lt;span style="color:#e6db74">&amp;#39;2012-05-25&amp;#39;&lt;/span>, INTERVAL &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">DAY&lt;/span>) &lt;span style="color:#75715e">-- 表示 2012-05-26
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>date_sub(&lt;span style="color:#e6db74">&amp;#39;2012-05-31&amp;#39;&lt;/span>, INTERVAL &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">DAY&lt;/span>) &lt;span style="color:#75715e">-- 表示 2012-06-01
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>date_sub(curdate(), INTERVAL &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">DAY&lt;/span>) &lt;span style="color:#75715e">-- 表示 2013-05-19
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>date_sub(curdate(), INTERVAL &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">DAY&lt;/span>) &lt;span style="color:#75715e">-- 表示 2013-05-21
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>date_sub(curdate(), INTERVAL &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">MONTH&lt;/span>) &lt;span style="color:#75715e">-- 表示 2013-04-20
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>date_sub(curdate(), INTERVAL &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">MONTH&lt;/span>) &lt;span style="color:#75715e">-- 表示 2013-06-20
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>date_sub(curdate(), INTERVAL &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">YEAR&lt;/span>) &lt;span style="color:#75715e">-- 表示 2012-05-20
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>date_sub(curdate(), INTERVAL &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">YEAR&lt;/span>) &lt;span style="color:#75715e">-- 表示 2014-05-20
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>

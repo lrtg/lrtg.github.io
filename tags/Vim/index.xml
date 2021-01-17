@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Vim on lrtg</title><link>https://lrtg.ml/tags/Vim/</link><description>Recent content in Vim on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Fri, 02 Dec 2016 20:46:05 +0000</lastBuildDate><atom:link href="https://lrtg.ml/tags/Vim/index.xml" rel="self" type="application/rss+xml"/><item><title>Vim Tab 设置为 4 个空格</title><link>https://lrtg.ml/2016/12/02/Vim-Tab-%E8%AE%BE%E7%BD%AE%E4%B8%BA-4-%E4%B8%AA%E7%A9%BA%E6%A0%BC/</link><pubDate>Fri, 02 Dec 2016 20:46:05 +0000</pubDate><guid>https://lrtg.ml/2016/12/02/Vim-Tab-%E8%AE%BE%E7%BD%AE%E4%B8%BA-4-%E4%B8%AA%E7%A9%BA%E6%A0%BC/</guid><description>
+&lt;p>在 &lt;code>vim&lt;/code> 的配置文件中（Liunx：&lt;code>/etc/vimrc&lt;/code>）中添加以下代码后，重启 &lt;code>vim&lt;/code> 即可实现按 &lt;code>TAB&lt;/code> 产生 &lt;code>4&lt;/code> 个空格：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">set ts&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">4&lt;/span> &lt;span style="color:#75715e"># 注：ts 是 tabstop 的缩写，设 TAB 宽 4 个空格&lt;/span>
+set expandtab
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>对于已保存的文件，可以使用下面的方法进行空格和 &lt;code>TAB&lt;/code> 的替换：&lt;/p>
+&lt;p>&lt;code>TAB&lt;/code> 替换为空格：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">:set ts&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">4&lt;/span>
+:set expandtab
+:%retab!
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>空格替换为 &lt;code>TAB&lt;/code>：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">:set ts&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">4&lt;/span>
+:set noexpandtab
+:%retab!
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>加 &lt;code>!&lt;/code> 是用于处理非空白字符之后的 &lt;code>TAB&lt;/code>，即所有的 &lt;code>TAB&lt;/code>，若不加 &lt;code>!&lt;/code>，则只处理行首的 &lt;code>TAB&lt;/code>。&lt;/p></description></item></channel></rss>

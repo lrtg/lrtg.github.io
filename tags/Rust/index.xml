@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Rust on lrtg</title><link>https://lrtg.ml/tags/Rust/</link><description>Recent content in Rust on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Sun, 04 Aug 2019 11:06:43 +0000</lastBuildDate><atom:link href="https://lrtg.ml/tags/Rust/index.xml" rel="self" type="application/rss+xml"/><item><title>Rust 中字符串总结</title><link>https://lrtg.ml/2019/08/04/string-in-rust/</link><pubDate>Sun, 04 Aug 2019 11:06:43 +0000</pubDate><guid>https://lrtg.ml/2019/08/04/string-in-rust/</guid><description>
+&lt;p>&lt;code>Rust&lt;/code> 中字符串和 &lt;code>Java&lt;/code> 和 &lt;code>Go&lt;/code> 中的表示有很大的区别，刚开始接触的时候有点儿懵，今天花点时间总结备忘一下。&lt;/p>
+&lt;p>&lt;code>Rust&lt;/code> 字符串有两种形式：&lt;code>str&lt;/code> 和 &lt;code>String&lt;/code>，&lt;code>str&lt;/code> 是内置的原始数据类型，通常是以借用的形式（&lt;code>&amp;amp;str&lt;/code> 字符串 &lt;code>slice&lt;/code>）使用，而 &lt;code>String&lt;/code> 是标准库提供的一种结构体，内部存储一个 &lt;code>u8&lt;/code> 类型的 &lt;code>Vec&lt;/code>：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> String {
+vec: Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">u8&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>,
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="str">str&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">let&lt;/span> s &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;hello world!&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// let s: &amp;amp;&amp;#39;static str = &amp;#34;hello world!&amp;#34;;
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>s&lt;/code> 变量是一个 &lt;code>&amp;amp;str&lt;/code> 类型，不可变的字符串，也可称为字面量，文本被直接储存在程序的二进制文件中，拥有固态生命周期（&lt;code>'static&lt;/code>），是 &lt;code>let s: &amp;amp;'static str = &amp;quot;hello world!&amp;quot;;&lt;/code> 的简写定义方式。&lt;/p>
+&lt;h2 id="string">String&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#66d9ef">mut&lt;/span> s1 &lt;span style="color:#f92672">=&lt;/span> String::new();
+&lt;span style="color:#75715e">// let mut s1 = String::from(&amp;#34;hello world!&amp;#34;);
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>s1.push_str(&lt;span style="color:#e6db74">&amp;#34;hello world!&amp;#34;&lt;/span>);
+s1.push_str(&lt;span style="color:#e6db74">&amp;#34; welcome.&amp;#34;&lt;/span>);
+println&lt;span style="color:#f92672">!&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;{}&amp;#34;&lt;/span>, s1);
+&lt;span style="color:#75715e">// Output:
+&lt;/span>&lt;span style="color:#75715e">// hello world! welcome.
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>String&lt;/code> 是可变的、有所有权的、堆上分配的 &lt;code>UTF-8&lt;/code> 的字节缓冲区。&lt;/p>
+&lt;h2 id="相互转换">相互转换&lt;/h2>
+&lt;ul>
+&lt;li>&amp;amp;str -&amp;gt; String&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">let&lt;/span> s &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;hello world!&amp;#34;&lt;/span>; &lt;span style="color:#75715e">// variable s: &amp;amp;str
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#66d9ef">let&lt;/span> s1 &lt;span style="color:#f92672">=&lt;/span> String::from(s); &lt;span style="color:#75715e">// variable s1: String
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">let&lt;/span> s1 &lt;span style="color:#f92672">=&lt;/span> s.to_string();
+&lt;span style="color:#66d9ef">let&lt;/span> s1 &lt;span style="color:#f92672">=&lt;/span> s.to_owned();
+&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>String -&amp;gt; &amp;amp;str&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">let&lt;/span> s &lt;span style="color:#f92672">=&lt;/span> String::from(&lt;span style="color:#e6db74">&amp;#34;hello world!&amp;#34;&lt;/span>); &lt;span style="color:#75715e">// variable s: String
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">let&lt;/span> s1 &lt;span style="color:#f92672">=&lt;/span> s.as_str(); &lt;span style="color:#75715e">// variable s1: &amp;amp;str
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">let&lt;/span> s1 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">&amp;amp;&lt;/span>s[..]; &lt;span style="color:#75715e">// 相当于：&amp;amp;s[0..s.len()];
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>&amp;amp;String&lt;/code> 可以当做是 &lt;code>&amp;amp;str&lt;/code>，例如：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#66d9ef">let&lt;/span> s &lt;span style="color:#f92672">=&lt;/span> String::from(&lt;span style="color:#e6db74">&amp;#34;hello world!&amp;#34;&lt;/span>);
+foo(&lt;span style="color:#f92672">&amp;amp;&lt;/span>s);
+}
+&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">foo&lt;/span>(s: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">str&lt;/span>) {
+println&lt;span style="color:#f92672">!&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;{}&amp;#34;&lt;/span>, s);
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-号运算">+ 号运算&lt;/h2>
+&lt;p>字符串 &lt;code>+&lt;/code> 号运算是 &lt;code>String&lt;/code> 的一个内联函数，定义如下：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">impl&lt;/span> Add&lt;span style="color:#f92672">&amp;lt;&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">str&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> String {
+&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Output&lt;/span> &lt;span style="color:#f92672">=&lt;/span> String;
+&lt;span style="color:#75715e">#[inline]&lt;/span>
+&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">add&lt;/span>(&lt;span style="color:#66d9ef">mut&lt;/span> self, other: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">str&lt;/span>) -&amp;gt; String {
+self.push_str(other);
+self
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>所以两个字面量字符串（&lt;code>&amp;amp;str&lt;/code>）不能使用 &lt;code>+&lt;/code>，例如：&lt;code>&amp;quot;hello &amp;quot; + &amp;quot;world&amp;quot;;&lt;/code> 会报错误： &lt;code>'+' cannot be used to concatenate two '&amp;amp;str' strings&lt;/code>。&lt;/p>
+&lt;p>根据 &lt;code>+&lt;/code> 的定义，一个可变的 &lt;code>String&lt;/code> 字符串进行 &lt;code>+&lt;/code> 后会失去所有权，例如：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-rust" data-lang="rust">&lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#66d9ef">mut&lt;/span> s &lt;span style="color:#f92672">=&lt;/span> String::from(&lt;span style="color:#e6db74">&amp;#34;hello world!&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">let&lt;/span> s1 &lt;span style="color:#f92672">=&lt;/span> s &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#e6db74">&amp;#34; welcome.&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// println!(&amp;#34;{}, {}&amp;#34;, s, s1);
+&lt;/span>&lt;span style="color:#75715e">// ^ value borrowed here after move
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>以上代码会出现以下警告：&lt;/p>
+&lt;pre>&lt;code>// |
+// | let mut s = String::from(&amp;quot;hello world!&amp;quot;);
+// | ----^
+// | |
+// | help: remove this `mut`
+// |
+// = note: #[warn(unused_mut)] on by default
+&lt;/code>&lt;/pre>&lt;p>查阅说是有 &lt;code>#[warn(unused_mut)]&lt;/code> 注解后 &lt;strong>variable does not need to be mutable&lt;/strong>。去掉以上代码中 &lt;code>String&lt;/code> 定义时候用以标识可变的 &lt;code>mut&lt;/code> 关键字就可以了。不太明白为啥可以这样，待日后详查。&lt;/p></description></item></channel></rss>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Windows 10 on lrtg</title><link>https://lrtg.ml/tags/Windows-10/</link><description>Recent content in Windows 10 on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Tue, 25 Oct 2016 11:48:31 +0000</lastBuildDate><atom:link href="https://lrtg.ml/tags/Windows-10/index.xml" rel="self" type="application/rss+xml"/><item><title>Windows 10 删除、恢复资源管理器中“视频、图片”等文件夹</title><link>https://lrtg.ml/2016/10/25/Windows-10-%E5%88%A0%E9%99%A4%E6%81%A2%E5%A4%8D%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86%E5%99%A8%E4%B8%AD%E8%A7%86%E9%A2%91%E5%9B%BE%E7%89%87%E7%AD%89%E6%96%87%E4%BB%B6%E5%A4%B9/</link><pubDate>Tue, 25 Oct 2016 11:48:31 +0000</pubDate><guid>https://lrtg.ml/2016/10/25/Windows-10-%E5%88%A0%E9%99%A4%E6%81%A2%E5%A4%8D%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86%E5%99%A8%E4%B8%AD%E8%A7%86%E9%A2%91%E5%9B%BE%E7%89%87%E7%AD%89%E6%96%87%E4%BB%B6%E5%A4%B9/</guid><description>
+&lt;blockquote>
+&lt;p>Windows 10 资源管理器中的&amp;quot;视频、图片、文档、下载、音乐、桌面&amp;quot;等文件夹目前通过一般途径是删除不了的，只能通过注册表的删除删掉，本文介绍一种比较简单的删除、恢复方法。&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20161025111013.jpg" alt="">&lt;/p>
+&lt;h2 id="准备">准备&lt;/h2>
+&lt;p>打开注册表（&lt;code>Win+R&lt;/code> 输入 &lt;code>regedit&lt;/code>）找到以下键：
+&lt;code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\&lt;/code> 单击 &lt;code>NameSpace&lt;/code> 右键 &lt;code>导出&lt;/code>，保存文件后缀名为 &lt;code>.reg&lt;/code>。&lt;/p>
+&lt;h2 id="删除">删除&lt;/h2>
+&lt;p>用文本编辑器打开该文件，只保留类似以下内容，并且在行首添加 &lt;code>-&lt;/code> 号，然后保存。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-reg" data-lang="reg">Windows Registry Editor Version 5.00
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{24ad3ad4-a569-4530-98e1-ab02f9417aa8}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3dfdf296-dbec-4fb4-81d1-6a3438bcf4de}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A0953C92-50DC-43bf-BE83-3742FED03C9C}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{d3162b92-9365-467a-956b-92703aca08af}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>双击该文件即可删除。&lt;/p>
+&lt;h2 id="恢复">恢复&lt;/h2>
+&lt;p>想要恢复，编辑文件，删除行首 &lt;code>-&lt;/code> 号，保存，双击运行即可恢复。&lt;/p>
+&lt;hr></description></item></channel></rss>

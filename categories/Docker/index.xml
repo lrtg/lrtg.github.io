@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Docker on lrtg</title><link>https://lrtg.ml/categories/Docker/</link><description>Recent content in Docker on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Mon, 09 Jan 2017 16:54:24 +0000</lastBuildDate><atom:link href="https://lrtg.ml/categories/Docker/index.xml" rel="self" type="application/rss+xml"/><item><title>Docker 利用数据卷容器来备份、恢复、迁移数据</title><link>https://lrtg.ml/2017/01/09/Docker-%E5%88%A9%E7%94%A8%E6%95%B0%E6%8D%AE%E5%8D%B7%E5%AE%B9%E5%99%A8%E6%9D%A5%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE/</link><pubDate>Mon, 09 Jan 2017 16:54:24 +0000</pubDate><guid>https://lrtg.ml/2017/01/09/Docker-%E5%88%A9%E7%94%A8%E6%95%B0%E6%8D%AE%E5%8D%B7%E5%AE%B9%E5%99%A8%E6%9D%A5%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE/</guid><description>
+&lt;blockquote>
+&lt;p>在 Docker 容器之间如果需要共享数据，可以创建一个数据卷容器来实现，并且可以方便的通过数据卷容器来备份、恢复、迁移数据。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="创建数据卷容器">创建数据卷容器&lt;/h1>
+&lt;p>创建一个名为：dbdata 的数据卷容器；设置挂载点为 &lt;code>/vdata&lt;/code>。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo docker run -d -v /vdata --name dbdata alpine sh
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>数据卷容器是一个普通的 Docker 容器，可以不需要启动。&lt;/p>
+&lt;h1 id="使用数据卷容器">使用数据卷容器&lt;/h1>
+&lt;p>使用命令 &lt;code>--volumes-from&lt;/code> 创建挂载数据卷容器 dbdata 的容器：db1、db2。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo docker run -it --volumes-from dbdata --name db1 alpine sh
+$ sudo docker run -it --volumes-from dbdata --name db1 alpine sh
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>在容器 db1 的挂载目录 &lt;code>/vdata&lt;/code> 目录下，创建文件 1.txt 等测试数据，查看容器 db2 的挂载目录 &lt;code>/vdata&lt;/code> 目录，就可以看到创建的文件数据了。&lt;/p>
+&lt;h1 id="备份数据卷数据">备份数据卷数据&lt;/h1>
+&lt;p>使用一个临时容器，完成备份数据容器操作。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo docker run --rm --volumes-from dbdata -v &lt;span style="color:#66d9ef">$(&lt;/span>pwd&lt;span style="color:#66d9ef">)&lt;/span>:/backup alpine tar cvf /backup/vdata-bak.tar /vdata
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>使用 &lt;code>tar cvf&lt;/code> 命令，备份数据卷容器 dbdata 中的目录 &lt;code>/vdata&lt;/code> 为 &lt;code>vdata-bak.tar&lt;/code>，并挂载到宿主机的当前目录下。&lt;/p>
+&lt;h1 id="恢复数据卷数据">恢复数据卷数据&lt;/h1>
+&lt;p>创建数据卷容器：dbdata2&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo docker run -d -v /vdata --name dbdata2 alpine sh
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>使用一个临时容器，恢复备份数据 &lt;code>vdata-bak.tar&lt;/code> 到 dbdata2&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo docker run --rm --volumes-from dbdata2 -v &lt;span style="color:#66d9ef">$(&lt;/span>pwd&lt;span style="color:#66d9ef">)&lt;/span>:/backup alpine tar xvf /backup/vdata-bak.tar
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>使用一个临时容器，查看 dbdata2 恢复的数据：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo docker run --rm --volumes-from dbdata2 alpine /bin/ls /vdata
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Docker 学习笔记</title><link>https://lrtg.ml/2016/11/03/Docker-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link><pubDate>Thu, 03 Nov 2016 15:46:19 +0000</pubDate><guid>https://lrtg.ml/2016/11/03/Docker-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid><description>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20161103001.png" alt="Docker">&lt;/p>
+&lt;h1 id="一centos-系统安装">一、CentOS 系统安装&lt;/h1>
+&lt;p>参考《Docker — 从入门到实践》 之 &lt;a href="https://github.com/yeasy/docker_practice/blob/master/install/centos.md">&amp;ldquo;CentOS 操作系统安装 Docker&amp;rdquo;&lt;/a>&lt;/p>
+&lt;h2 id="11-系统要求">1.1 系统要求&lt;/h2>
+&lt;p>Docker 最低支持 CentOS 7。&lt;/p>
+&lt;p>Docker 需要安装在 64 位的平台，并且内核版本不低于 3.10。 CentOS 7 满足最低内核的要求，但由于内核版本比较低，部分功能（如 &lt;code>overlay2&lt;/code> 存储层驱动）无法使用，并且部分功能可能不太稳定。&lt;/p>
+&lt;p>参考升级&lt;a href="http://ehlxr.me/2017/01/10/%E8%BD%AC-CentOS-%E5%8D%87%E7%BA%A7-kernel/">CentOS 升级 kernel&lt;/a>&lt;/p>
+&lt;h2 id="12-使用脚本自动安装">1.2 使用脚本自动安装&lt;/h2>
+&lt;p>Docker 官方为了简化安装流程，提供了一套安装脚本，CentOS 系统上可以使用这套脚本安装：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -sSL https://get.docker.com/ | sh
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>执行这个命令后，脚本就会自动的将一切准备工作做好，并且把 Docker 安装在系统中。&lt;/p>
+&lt;p>不过，由于伟大的墙的原因，在国内使用这个脚本可能会出现某些下载出现错误的情况。国内的一些云服务商提供了这个脚本的修改版本，使其使用国内的 Docker 软件源镜像安装，这样就避免了墙的干扰。&lt;/p>
+&lt;h3 id="121-阿里云的安装脚本">1.2.1 阿里云的安装脚本&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -sSL http://acs-public-mirror.oss-cn-hangzhou.aliyuncs.com/docker-engine/internet | sh -
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="122-daocloud-的安装脚本">1.2.2 DaoCloud 的安装脚本&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -sSL https://get.daocloud.io/docker | sh
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="13-手动安装">1.3 手动安装&lt;/h2>
+&lt;h3 id="131-添加内核参数">1.3.1 添加内核参数&lt;/h3>
+&lt;p>默认配置下，在 CentOS 使用 Docker 可能会碰到下面的这些警告信息：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">WARNING: bridge-nf-call-iptables is disabled
+WARNING: bridge-nf-call-ip6tables is disabled
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>添加内核配置参数以启用这些功能。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo tee -a /etc/sysctl.conf &lt;span style="color:#e6db74">&amp;lt;&amp;lt;-EOF
+&lt;/span>&lt;span style="color:#e6db74">net.bridge.bridge-nf-call-ip6tables = 1
+&lt;/span>&lt;span style="color:#e6db74">net.bridge.bridge-nf-call-iptables = 1
+&lt;/span>&lt;span style="color:#e6db74">EOF&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后重新加载 &lt;code>sysctl.conf&lt;/code> 即可&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo sysctl -p
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="132-添加-yum-源">1.3.2 添加 yum 源&lt;/h3>
+&lt;p>虽然 CentOS 软件源 &lt;code>Extras&lt;/code> 中有 Docker，名为 &lt;code>docker&lt;/code>，但是不建议使用系统源中的这个版本，它的版本相对比较陈旧，而且并非 Docker 官方维护的版本。因此，我们需要使用 Docker 官方提供的 CentOS 软件源。&lt;/p>
+&lt;p>执行下面的命令添加 &lt;code>yum&lt;/code> 软件源。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo tee /etc/yum.repos.d/docker.repo &lt;span style="color:#e6db74">&amp;lt;&amp;lt;-&amp;#39;EOF&amp;#39;
+&lt;/span>&lt;span style="color:#e6db74">[dockerrepo]
+&lt;/span>&lt;span style="color:#e6db74">name=Docker Repository
+&lt;/span>&lt;span style="color:#e6db74">baseurl=https://yum.dockerproject.org/repo/main/centos/7/
+&lt;/span>&lt;span style="color:#e6db74">enabled=1
+&lt;/span>&lt;span style="color:#e6db74">gpgcheck=1
+&lt;/span>&lt;span style="color:#e6db74">gpgkey=https://yum.dockerproject.org/gpg
+&lt;/span>&lt;span style="color:#e6db74">EOF&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="133-安装-docker">1.3.3 安装 Docker&lt;/h3>
+&lt;p>更新 &lt;code>yum&lt;/code> 软件源缓存，并安装 &lt;code>docker-engine&lt;/code>。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo yum update
+$ sudo yum install docker-engine
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="134-启动-docker-引擎">1.3.4 启动 Docker 引擎&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo systemctl enable docker
+$ sudo systemctl start docker
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="135-建立-docker-用户组">1.3.5 建立 docker 用户组&lt;/h3>
+&lt;p>默认情况下，&lt;code>docker&lt;/code> 命令会使用 &lt;a href="https://en.wikipedia.org/wiki/Unix_domain_socket">Unix socket&lt;/a> 与 Docker 引擎通讯。而只有 &lt;code>root&lt;/code> 用户和 &lt;code>docker&lt;/code> 组的用户才可以访问 Docker 引擎的 Unix socket。出于安全考虑，一般 Linux 系统上不会直接使用 &lt;code>root&lt;/code> 用户。因此，更好地做法是将需要使用 &lt;code>docker&lt;/code> 的用户加入 &lt;code>docker&lt;/code> 用户组。&lt;/p>
+&lt;p>建立 &lt;code>docker&lt;/code> 组：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo groupadd docker
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>将当前用户加入 &lt;code>docker&lt;/code> 组：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ sudo usermod -aG docker $USER
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="14-参考文档">1.4 参考文档&lt;/h2>
+&lt;p>参见 &lt;a href="https://docs.docker.com/engine/installation/linux/centos/">Docker 官方 CentOS 安装文档&lt;/a>。&lt;/p>
+&lt;h1 id="二基本概念">二、基本概念&lt;/h1>
+&lt;h2 id="21-docker-images">2.1 Docker images&lt;/h2>
+&lt;p>Docker image 是一个只读类型的模板。比如一个镜像可以是一个包含 apache 和你的 web 应用的 ubuntu 操作系统。我们经常使用镜像来创建容器。Docker 提供了一种快捷的方式来构建新镜像或者更新镜像，同时你也可以下载其他人已经创建好的镜像。Docker image 是 Docker 结构中的构建组件。&lt;/p>
+&lt;h2 id="22-docker-registries">2.2 Docker Registries&lt;/h2>
+&lt;p>Docker registries 用来保存镜像。它分为公开仓库和私有仓库，你可以从仓库中上传或者下载镜像。公开的 Docker 仓库称之为 &lt;a href="https://hub.docker.com/">Docker Hub&lt;/a>。它提供了你可以使用的非常多的镜像。你可以自由的创建镜像或者使用这里面其他人已经创建好的镜像。Docker registries 属于 Docker 中的分发组件。&lt;/p>
+&lt;h2 id="23-docker-containers">2.3 Docker containers&lt;/h2>
+&lt;p>Docker containers 同目录有几分相似。Docker containers 保存了执行应用所需的所有资源。每一个 Docker containers 都是由 image 创建的。Docker containers 可以 run, start, stop, restart, rm。需要注意的是，Docker containers 之间是隔离的。Docker containers 属于 Docker 中的执行组件。&lt;/p>
+&lt;h1 id="三常用命令">三、常用命令&lt;/h1>
+&lt;h2 id="31-镜像操作">3.1 镜像操作&lt;/h2>
+&lt;ul>
+&lt;li>拉取镜像：&lt;code>docker pull nginx:latest&lt;/code>&lt;/li>
+&lt;li>查看镜像列表：&lt;code>docker images&lt;/code>&lt;/li>
+&lt;li>删除镜像：&lt;code>docker rmi &amp;lt;image id&amp;gt;&lt;/code>&lt;/li>
+&lt;li>想要删除 untagged images（也就是那些 id 为 None 的镜像）：&lt;code>docker rmi $(docker images | grep &amp;quot;^&amp;lt;none&amp;gt;&amp;quot; | awk '{print $3}')&lt;/code>&lt;/li>
+&lt;li>删除全部镜像：&lt;code>docker rmi $(docker images -q)&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h2 id="32-创建容器">3.2 创建容器&lt;/h2>
+&lt;p>创建一个容器并运行，例如：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-stylus" data-lang="stylus">&lt;span style="color:#960050;background-color:#1e0010">docker&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">run&lt;/span> &lt;span style="color:#f92672">--&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">blog&lt;/span> &lt;span style="color:#f92672">--&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">privileged&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">true&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">v&lt;/span> &lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">home&lt;/span>&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">Hexo&lt;/span>&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">public&lt;/span>:&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">usr&lt;/span>&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">share&lt;/span>&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">nginx&lt;/span>&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#f92672">html&lt;/span>:&lt;span style="color:#960050;background-color:#1e0010">ro&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">d&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#f92672">p&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">80&lt;/span>:&lt;span style="color:#960050;background-color:#1e0010">80&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">docker&lt;/span>.&lt;span style="color:#a6e22e">io&lt;/span>&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">nginx&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;code>--name&lt;/code>：容器名称&lt;/li>
+&lt;li>&lt;code>--privileged=true&lt;/code>：设置权限&lt;/li>
+&lt;li>&lt;code>-v&lt;/code>：挂载本地磁盘目录，格式为本地磁盘绝对路径:容器路径&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>保证删除容器后，数据不被删除&lt;/p>
+&lt;/blockquote>
+&lt;ul>
+&lt;li>&lt;code>:ro&lt;/code>：只读&lt;/li>
+&lt;li>&lt;code>-d&lt;/code>：后台模式&lt;/li>
+&lt;li>&lt;code>i&lt;/code>：交互式操作&lt;/li>
+&lt;li>&lt;code>t&lt;/code>：终端&lt;/li>
+&lt;li>&lt;code>-p&lt;/code>：设置宿主计算机和容器端口映射&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>在Dockerfile 中有一条指令是 EXPOSE 22，如果使用 &lt;code>-P&lt;/code>，宿主机会随机选择一个 &lt;code>没有被使用的端口&lt;/code> 和 docker &lt;code>容器的 22 端口&lt;/code> 做 &lt;code>端口映射&lt;/code>，如果 docker 主机或者容器重启后，宿主机又会随机选择一个没有被使用的端口和 docker 容器的 22 端口做端口映射，这样端口会发生 &lt;code>变化&lt;/code>&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>如果使用 &lt;code>-p&lt;/code>，比如 &lt;code>2222:22&lt;/code>，这样不管是 docker 主机或者容器重启后，2222:22 端口都是这样来映射，&lt;code>不会发生改变&lt;/code>&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="33-容器操作">3.3 容器操作&lt;/h2>
+&lt;ul>
+&lt;li>启动：&lt;code>docker start blog&lt;/code>&lt;/li>
+&lt;li>停止：&lt;code>docker stop blog&lt;/code>；停止所有容器：&lt;code>docker stop $(docker ps -a -q)&lt;/code>&lt;/li>
+&lt;li>删除：&lt;code>docker rm blog&lt;/code>；删除所有容器：&lt;code>docker rm $(docker ps -a -q)&lt;/code>&lt;/li>
+&lt;li>查看：&lt;code>docker ps -a&lt;/code>（查看所有容器，包括已启动的和未启动的）&lt;/li>
+&lt;/ul>
+&lt;h2 id="33-进入容器">3.3 进入容器&lt;/h2>
+&lt;pre>&lt;code class="language-mel" data-lang="mel">sudo docker exec -it blog /bin/bash
+&lt;/code>&lt;/pre>&lt;h1 id="四docker-私有仓库">四、Docker 私有仓库&lt;/h1>
+&lt;p>Docker 提供了一个中央仓库，同时也允许我们使用 registry 搭建本地私有仓库。&lt;/p>
+&lt;h2 id="41-搭建-docker-私有仓库">4.1 搭建 Docker 私有仓库&lt;/h2>
+&lt;p>首先拉取 registry 镜像&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker pull registry
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>创建 register 容器并运行&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker run --name registry -d -p 5000:5000 --privileged&lt;span style="color:#f92672">=&lt;/span>true -v /opt/registry:/var/lib/registry/ registry
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>挂载容器中存放镜像的目录到本地 &lt;code>/opt/registry&lt;/code>，需要注意的一点是，容器中存放镜像的目录 registry 官方镜像示例中使用的是 &lt;code>/tmp/registry-dev&lt;/code> ，但实验证明在版本 &lt;code>2.5.0&lt;/code> 中，目录是 &lt;code>/var/lib/registry/&lt;/code>。&lt;/p>
+&lt;p>CentOS 系统挂载目录需要加上 &lt;code>--privileged=true&lt;/code> 解决挂载的目录没有权限的问题。&lt;/p>
+&lt;p>打开浏览器输入 register 容器宿主计算机地址加端口（如：http://192.168.237.128:5000/v2/ ），如果出现 &lt;code>{}&lt;/code>，即表明 register 容器运行成功。&lt;/p>
+&lt;h2 id="42-测试使用私有仓库">4.2 测试使用私有仓库&lt;/h2>
+&lt;p>首先给需要 push 到仓库的 images 打 TAG，前面需要带上私有仓库的地址。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ docker tag docker.io/registry:latest 192.168.237.128:5000/registry:2.5.0
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>push 到私有仓库&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ docker push 192.168.237.128:5000/registry:2.5.0
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>通过以下命令删除镜像 &lt;code>192.168.237.128:5000/registry:2.5.0&lt;/code>：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ docker rmi 192.168.237.128:5000/registry:2.5.0
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后通过以下命令即可拉取私有仓库的镜像：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ docker pull 192.168.237.128:5000/hexo:latest
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果 docker push 的时候出现以下错误信息：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ docker push 192.168.237.128:5000/registry:2.5.0
+The push refers to a repository &lt;span style="color:#f92672">[&lt;/span>192.168.237.128:5000/registry&lt;span style="color:#f92672">]&lt;/span>
+unable to ping registry endpoint https://192.168.237.128:5000/v0/
+v2 ping attempt failed with error: Get https://192.168.237.128:5000/v2/: http: server gave HTTP response to HTTPS client
+v1 ping attempt failed with error: Get https://192.168.237.128:5000/v1/_ping: http: server gave HTTP response to HTTPS client
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>修改文件 &lt;code>/etc/sysconfig/docker&lt;/code> 添加以下代码，然后重启 docker 服务即可重新 push。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ADD_REGISTRY&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;--add-registry 192.168.237.128:5000&amp;#39;&lt;/span>
+INSECURE_REGISTRY&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;--insecure-registry 192.168.237.128:5000&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="五dockerfile">五、Dockerfile&lt;/h1>
+&lt;h2 id="51-什么是dockerfile">5.1 什么是Dockerfile？&lt;/h2>
+&lt;blockquote>
+&lt;p>Dockerfile 是自动构建 docker 镜像的配置文件，Dockerfile 中的命令非常类似 linux shell 下的命令
+Dockerfile，可以让用户自定义构建 docker 镜像，支持以 # 开头的注释行&lt;/p>
+&lt;/blockquote>
+&lt;p>一般，Dockerfile分为4部分&lt;/p>
+&lt;ul>
+&lt;li>基础镜像（父镜像）信息&lt;/li>
+&lt;li>维护者信息&lt;/li>
+&lt;li>镜像操作命令&lt;/li>
+&lt;li>容器启动命令&lt;/li>
+&lt;/ul>
+&lt;h2 id="52-dockerfile-介绍">5.2 Dockerfile 介绍&lt;/h2>
+&lt;p>&lt;code>FROM centos:centos7.1.1503&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>基于 &lt;strong>父镜像&lt;/strong> 构建其他 docker 镜像，&lt;em>父镜像&lt;/em>：可以通过 docker pull 命令获得，也可以自己制作&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>MAINTAINER Carson,C.J.Zeong &amp;lt;zcy@nicescale.com&amp;gt;&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>Dockerfile 维护者&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>ENV TZ &amp;quot;Asia/Shanghai&amp;quot;&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>ENV（environment）设置环境变量，一个 Dockerfile 中可以写多个。以上例子是：设置 docker 容器的时区为 Shanghai&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;strong>Dockerfile 中有 2 条指令可以拷贝文件&lt;/strong>&lt;/p>
+&lt;p>&lt;code>ADD aliyun-mirror.repo /etc/yum.repos.d/CentOS-Base.repo&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>拷贝本地文件到 docker 容器里，还可以拷贝 URL 链接地址下的文件，ADD 还具有解压软件包的功能（支持 gzip, bzip2 or xz）&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>COPY test /mydir&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>拷贝本地文件到 docker 容器&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>RUN yum install -y curl wget....&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>RUN 命令，非常类似 Linux 下的 shell 命令 &lt;code>(the command is run in a shell - /bin/sh -c - shell form)&lt;/code>
+在 Dockerfile 中每执行一条指令（ENV、ADD、RUN等命令），都会生成一个 docker image layer&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>ADD supervisord.conf /etc/supervisord.conf&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>添加 supervisor 的主配置文件，到 docker 容器里&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>EXPOSE 22&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>端口映射 &lt;code>EXPOSE &amp;lt;host_port&amp;gt;:&amp;lt;container_port&amp;gt;&lt;/code>
+推荐使用 &lt;code>docker run -p &amp;lt;host_port&amp;gt;:&amp;lt;container_port&amp;gt;&lt;/code> 来固化端口&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>ENTRYPOINT [&amp;quot;/usr/bin/supervisord&amp;quot;, &amp;quot;-n&amp;quot;, &amp;quot;-c&amp;quot;, &amp;quot;/etc/supervisord.conf&amp;quot;]&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>一个 Dockerfile 中只有最后一条 &lt;code>ENTRYPOINT&lt;/code> 生效，并且每次启动 docker 容器，都会执行 &lt;code>ENTRYPOINT&lt;/code>&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>ONBUILD ADD . /app&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;code>ONBUILD&lt;/code> 在生成当前docker镜像的时候不生效，在子镜像生效；&lt;code>ONBUILD&lt;/code>在产品发布时起着非常重要的作用！举例
+A镜像中有&lt;code>ONBUILD&lt;/code>指令，在构建A镜像时&lt;code>ONBUILD&lt;/code>指令不执行；B镜像&lt;code>FROM A&lt;/code>,在构建B镜像时&lt;code>ONBUILD&lt;/code>指令开始执行；&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>VOLUME [&amp;quot;/var/lib/mysql&amp;quot;]&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>指定 docker 容器和宿主机做映射的文件目录&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="53-生成-docker-镜像">5.3 生成 docker 镜像&lt;/h2>
+&lt;p>以上文件就是用来生成第一个 docker 镜像的 Dockerfile，通过 &lt;code>docker build&lt;/code> 指令来生成 docker 镜像&lt;/p>
+&lt;p>&lt;code>docker build -t csphere/centos:7.1 .&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>如果 Dockerfile 在当前目录下，输入点 &lt;code>.&lt;/code> 就可以进行加载当前目录下的 &lt;code>Dockerfile&lt;/code>
+如果不在当前目录下需要运行 &lt;code>docker build -t csphere/centos:7.1 &amp;lt;Dockerfile_dir&amp;gt;&lt;/code> 加载相对路径下的 &lt;code>Dockerfile&lt;/code>&lt;/p>
+&lt;/blockquote>
+&lt;p>docker 镜像的命名规则 &lt;code>registry_url/namespace/image_name:tag&lt;/code> 默认 &lt;code>tag&lt;/code> 是 &lt;code>latest&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>在构建 Docker 镜像时，如果有自己内部的 yum 源，替换成自己内部的 yum 地址，可以加快构建速度。
+如果第一次构建失败，会有部分镜像 layer 生成，第二次构建会基于第一次构建所生成的 layer（use cache），继续构建&lt;/p>
+&lt;/blockquote>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">Step &lt;span style="color:#ae81ff">10&lt;/span> : EXPOSE &lt;span style="color:#ae81ff">22&lt;/span>
+---&amp;gt; Running in 0ed1c5479ebc
+---&amp;gt; c57a5bac41c8
+Removing intermediate container 0ed1c5479ebc
+Step &lt;span style="color:#ae81ff">11&lt;/span> : ENTRYPOINT /usr/bin/supervisord -n -c /etc/supervisord.conf
+---&amp;gt; Running in e16c7ac2fd45
+---&amp;gt; 185ef7b101a8
+Removing intermediate container e16c7ac2fd45
+Successfully built 185ef7b101a8
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>可以看到每执行一条 &lt;code>Dockerfile&lt;/code> 的指令都会生成一个镜像的 layer &lt;code>c57a5bac41c8&lt;/code> &lt;code>185ef7b101a8&lt;/code> 最后 &lt;code>185ef7b101a8&lt;/code> 这个是 docker 镜像的ID，&lt;code>185ef7b101a8&lt;/code> 是由 &lt;code>c57a5bac41c8&lt;/code> &lt;code>185ef7b101a8&lt;/code>&amp;hellip;layers 叠加而成，体现了 docker 镜像是分层的&lt;/p>
+&lt;hr>
+&lt;!-- raw HTML omitted --></description></item></channel></rss>

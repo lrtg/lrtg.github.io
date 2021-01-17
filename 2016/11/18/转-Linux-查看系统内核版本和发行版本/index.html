@@ -1,0 +1,111 @@
+<!doctype html><html lang=en><head><title>[转] Linux 查看系统内核版本和发行版本 ::
+lrtg — a hugo blog of lrtg</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="一、查看 Linux 内核版本命令 以下两条命令适合所有 Linux 系统。
+1、cat /proc/version $ cat /proc/version Linux version 3.10.0-327.el7.x86_64 (builder@kbuilder.dev.centos.org) (gcc version 4.8.3 20140911 (Red Hat 4.8.3-9) (GCC) ) #1 SMP Thu Nov 19 22:10:57 UTC 2015 ➜ ~ cat /proc/version Linux version 4.4.0-36-generic (buildd@lcy01-01) (gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.2) ) #55-Ubuntu SMP Thu Aug 11 18:01:55 UTC 2016 2、uname -a $ uname -a Linux centos 3.10.0-327.el7.x86_64 #1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux ➜ ~ uname -a Linux www 4.4.0-36-generic #55-Ubuntu SMP Thu Aug 11 18:01:55 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux"><meta name=keywords content="Linux,,Linux版本"><meta name=robots content="noodp"><link rel=canonical href=https://lrtg.ml/2016/11/18/%E8%BD%AC-Linux-%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E5%92%8C%E5%8F%91%E8%A1%8C%E7%89%88%E6%9C%AC/><link rel=stylesheet href=https://lrtg.ml/assets/style.css><link rel=stylesheet href=https://lrtg.ml/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://lrtg.ml/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://lrtg.ml/img/favicon.png><link href=https://lrtg.ml/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary"><meta name=twitter:title content="[转] Linux 查看系统内核版本和发行版本"><meta name=twitter:description content="# 一、查看 Linux 内核版本命令
+
+以下两条命令适合所有 `Linux` 系统。
+
+## 1、cat /proc/version
+
+```bash
+
+$ cat /proc/version
+
+Linux version 3.10.0-327.el7.x86_64 (builder@kbuilder.dev.centos.org) (gcc version 4.8.3 20140911 (Red Hat 4.8.3-9) (GCC) ) #1 SMP Thu Nov 19 22:10:57 UTC 2015
+
+➜  ~ cat /proc/version
+
+Linux version 4.4.0-36-generic (buildd@lcy01-01) (gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.2) ) #55-Ubuntu SMP Thu Aug 11 18:01:55 UTC 2016
+
+```
+
+## 2、uname -a
+
+```bash
+
+$ uname -a
+
+Linux centos 3.10.0-327.el7.x86_64 #1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux
+
+➜  ~ uname -a
+
+Linux www 4.4.0-36-generic #55-Ubuntu SMP Thu Aug 11 18:01:55 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+
+```"><meta property="og:title" content="[转] Linux 查看系统内核版本和发行版本"><meta property="og:description" content="# 一、查看 Linux 内核版本命令
+
+以下两条命令适合所有 `Linux` 系统。
+
+## 1、cat /proc/version
+
+```bash
+
+$ cat /proc/version
+
+Linux version 3.10.0-327.el7.x86_64 (builder@kbuilder.dev.centos.org) (gcc version 4.8.3 20140911 (Red Hat 4.8.3-9) (GCC) ) #1 SMP Thu Nov 19 22:10:57 UTC 2015
+
+➜  ~ cat /proc/version
+
+Linux version 4.4.0-36-generic (buildd@lcy01-01) (gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.2) ) #55-Ubuntu SMP Thu Aug 11 18:01:55 UTC 2016
+
+```
+
+## 2、uname -a
+
+```bash
+
+$ uname -a
+
+Linux centos 3.10.0-327.el7.x86_64 #1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux
+
+➜  ~ uname -a
+
+Linux www 4.4.0-36-generic #55-Ubuntu SMP Thu Aug 11 18:01:55 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+
+```"><meta property="og:type" content="article"><meta property="og:url" content="https://lrtg.ml/2016/11/18/%E8%BD%AC-Linux-%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E5%92%8C%E5%8F%91%E8%A1%8C%E7%89%88%E6%9C%AC/"><meta property="article:published_time" content="2016-11-18T14:56:43+00:00"><meta property="article:modified_time" content="2020-07-20T21:49:42+08:00"><meta property="og:site_name" content="lrtg"><meta name=google-site-verification content="1sqm8XMeeEHHbiKb2V2OrWT2WoAg7TUCXvXXLbP8O2s"></head><body class=dark-theme><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>lrtg's blog</span>
+<span class=logo__cursor></span></a><span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><ul class=menu__sub-inner><li class=menu__sub-inner-more-trigger>Show more
+<span class=menu__sub-inner-more-trigger-icon><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span></li><ul class="menu__sub-inner-more hidden"><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></ul></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41C32.4934 41 41 32.4934 41 22 41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>[转] Linux 查看系统内核版本和发行版本</h1><div class=post-meta><span class=post-date>2016-11-18</span>
+<span class=post-moddate>(Modified:
+2020-07-20)</span>
+<span class=post-read-time>— 2 min read</span></div><span class=post-tags><a href=https://lrtg.ml/tags/Linux/>#Linux</a>&nbsp;
+<a href=https://lrtg.ml/tags/Linux%E7%89%88%E6%9C%AC/>#Linux版本</a>&nbsp;</span><div class=post-content><h2>Table of Contents</h2><aside class=table-of-contents><nav id=TableOfContents><ul><li><a href=#1cat-procversion>1、cat /proc/version</a></li><li><a href=#2uname--a>2、uname -a</a></li></ul><ul><li><a href=#1lsb_release--a>1、lsb_release -a</a></li><li><a href=#2cat-etcredhat-release>2、cat /etc/redhat-release</a></li><li><a href=#3cat-etcissue>3、cat /etc/issue</a></li></ul></nav></aside><h1 id=一查看-linux-内核版本命令>一、查看 Linux 内核版本命令</h1><p>以下两条命令适合所有 <code>Linux</code> 系统。</p><h2 id=1cat-procversion>1、cat /proc/version</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ cat /proc/version
+Linux version 3.10.0-327.el7.x86_64 <span style=color:#f92672>(</span>builder@kbuilder.dev.centos.org<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>gcc version 4.8.3 <span style=color:#ae81ff>20140911</span> <span style=color:#f92672>(</span>Red Hat 4.8.3-9<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>GCC<span style=color:#f92672>)</span> <span style=color:#f92672>)</span> <span style=color:#75715e>#1 SMP Thu Nov 19 22:10:57 UTC 2015</span>
+
+➜  ~ cat /proc/version
+Linux version 4.4.0-36-generic <span style=color:#f92672>(</span>buildd@lcy01-01<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>gcc version 5.4.0 <span style=color:#ae81ff>20160609</span> <span style=color:#f92672>(</span>Ubuntu 5.4.0-6ubuntu1~16.04.2<span style=color:#f92672>)</span> <span style=color:#f92672>)</span> <span style=color:#75715e>#55-Ubuntu SMP Thu Aug 11 18:01:55 UTC 2016</span>
+</code></pre></div><h2 id=2uname--a>2、uname -a</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ uname -a
+Linux centos 3.10.0-327.el7.x86_64 <span style=color:#75715e>#1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux</span>
+
+➜  ~ uname -a
+Linux www 4.4.0-36-generic <span style=color:#75715e>#55-Ubuntu SMP Thu Aug 11 18:01:55 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux</span>
+</code></pre></div><h1 id=二查看-linux-系统版本的命令>二、查看 Linux 系统版本的命令</h1><h2 id=1lsb_release--a>1、lsb_release -a</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ lsb_release -a
+LSB Version:    :core-4.1-amd64:core-4.1-noarch
+Distributor ID: CentOS
+Description:    CentOS Linux release 7.2.1511 <span style=color:#f92672>(</span>Core<span style=color:#f92672>)</span>
+Release:        7.2.1511
+Codename:       Core
+
+➜  ~ lsb_release -a
+No LSB modules are available.
+Distributor ID: Ubuntu
+Description:    Ubuntu 16.04.1 LTS
+Release:    16.04
+Codename:   xenial
+</code></pre></div><p>这个命令适用于所有的 <code>Linux</code> 发行版，包括 <code>Redhat</code>、<code>SuSE</code>、<code>Debian…</code> 等发行版。</p><p>有的系统中默认并没有安装 <code>lsb_release</code>，需要安装。下面介绍一下 <code>CentOS</code> 系统中安装方法。</p><p>首先查找 <code>lsb_release</code> 安装包：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ yum provides lsb_release
+已加载插件：fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirrors.btte.net
+ * extras: mirrors.btte.net
+ * updates: mirrors.btte.net
+redhat-lsb-core-4.1-27.el7.centos.1.i686 : LSB Core module support
+源    ：base
+匹配来源：
+文件名    ：/usr/bin/lsb_release
+</code></pre></div><p>安装：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ sudo yum install -y redhat-lsb-core
+</code></pre></div><h2 id=2cat-etcredhat-release>2、cat /etc/redhat-release</h2><p>这种方法只适合查看 <code>Redhat</code> 系的 <code>Linux</code>，如：<code>CentOS</code>。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ cat /etc/redhat-release
+CentOS Linux release 7.2.1511 <span style=color:#f92672>(</span>Core<span style=color:#f92672>)</span>
+</code></pre></div><h2 id=3cat-etcissue>3、cat /etc/issue</h2><p>此命令适用于所有的 <code>Linux</code> 发行版。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>➜  ~ cat /etc/issue
+Ubuntu 16.04.1 LTS <span style=color:#ae81ff>\n</span> <span style=color:#ae81ff>\l</span>
+</code></pre></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://lrtg.ml/2016/11/30/%E5%BF%99%E5%BF%99%E7%A2%8C%E7%A2%8C%E7%9A%84%E5%8D%81%E4%B8%80%E6%9C%88%E4%BB%BD/><span class=button__icon>←</span>
+<span class=button__text>忙忙碌碌的十一月份</span></a></span>
+<span class="button next"><a href=https://lrtg.ml/2016/11/18/Test-daocloud-CI/><span class=button__text>Test daocloud CI</span>
+<span class=button__icon>→</span></a></span></div></div><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
+var d=document,s=d.createElement('script');s.async=true;s.src='//'+"lrtg"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user">© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</div></div></footer><script src=https://lrtg.ml/assets/main.js></script><script src=https://lrtg.ml/assets/prism.js></script></div></body></html>

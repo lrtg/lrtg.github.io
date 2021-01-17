@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>分布式 on lrtg</title><link>https://lrtg.ml/categories/%E5%88%86%E5%B8%83%E5%BC%8F/</link><description>Recent content in 分布式 on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Fri, 25 Jan 2019 15:59:11 +0000</lastBuildDate><atom:link href="https://lrtg.ml/categories/%E5%88%86%E5%B8%83%E5%BC%8F/index.xml" rel="self" type="application/rss+xml"/><item><title>可靠消息最终一致性分布式事务实现方案</title><link>https://lrtg.ml/2019/01/25/eventually-consistency/</link><pubDate>Fri, 25 Jan 2019 15:59:11 +0000</pubDate><guid>https://lrtg.ml/2019/01/25/eventually-consistency/</guid><description>
+&lt;p>提到分布式应用，就不得不考虑分布式事务。在分布式事务中，常见的有 &lt;code>CAP&lt;/code>，&lt;code>BASE&lt;/code> 理论，解决方案也有很多种，比如：&lt;code>2PC&lt;/code>、&lt;code>TCC&lt;/code> 、最终一致性等。&lt;/p>
+&lt;p>&lt;code>2PC&lt;/code>（两阶段提交）比较适合单块应用，跨多个库的分布式事务。因为严重依赖于数据库层面来搞定复杂的事务，效率很低，绝对不适合高并发的场景，而且，对于微服务而言，不推荐一个服务出现跨多个数据库操作， 如果需要操作其它数据库数据，推荐通过调用别的服务接口来实现。&lt;/p>
+&lt;p>&lt;code>TCC&lt;/code> 属于强一致性事务的方案，适用资金流转业务相关业务，比如：支付、交易等场景。根据 &lt;code>CAP&lt;/code> 理论，这种实现需要牺牲可用性。&lt;/p>
+&lt;p>如果是一般的分布式事务场景，比如：订单插入之后要调用库存服务更新库存，库存数据没有资金那么的敏感，可以用可靠消息最终一致性方案。&lt;/p>
+&lt;p>下面是一种可靠消息最终一致性事务方案的实现流程：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/eventually-consistency.png" alt="Eventually Consistency">&lt;/p>
+&lt;p>正常流程：&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>A 系统&lt;/strong>发送&lt;code>预发送&lt;/code>消息给&lt;strong>消息服务系统&lt;/strong>。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>消息服务系统&lt;/strong>存储预发送的消息到消息数据库。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>消息服务系统&lt;/strong>返回存储预发送消息的结果到 &lt;strong>A 系统&lt;/strong>。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>如果第 3 步返回的结果是成功的， &lt;strong>A 系统&lt;/strong>则执行业务操作，否则不执行。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>A 系统&lt;/strong>业务操作成功后，通知&lt;strong>消息服务系统&lt;/strong> 。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>消息服务系统&lt;/strong>发送消息到 &lt;strong>MQ&lt;/strong> ，并且更新&lt;code>预发送&lt;/code>消息状态为&lt;code>已发送&lt;/code>（但不是&lt;code>已消费&lt;/code>）。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>MQ&lt;/strong> 发送消息到 &lt;strong>B 系统&lt;/strong>。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>B 系统&lt;/strong>执行业务操作，保证幂等性，防止同一个消息重复执行。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>B 系统&lt;/strong>向 &lt;strong>MQ&lt;/strong> ack 此条消息，并向&lt;strong>消息服务系统&lt;/strong>进行确认成功消费消息，让&lt;strong>消息服务系统&lt;/strong>将消息状态置为&lt;code>已消费&lt;/code>。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>消息恢复系统&lt;/strong>定时去&lt;strong>消息服务系统&lt;/strong>查一下消息数据，查看有没有状态为&lt;strong>非&lt;/strong>&lt;code>已消费&lt;/code>（&lt;code>预发送&lt;/code>和&lt;code>已发送&lt;/code>）状态的&lt;strong>超时&lt;/strong>（比如 2 分钟以上还未消费的）消息。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>如果第 &lt;strong>10&lt;/strong> 步发现有&lt;strong>非&lt;/strong>&lt;code>已消费&lt;/code>状态的超时消息，调用 &lt;strong>A 系统&lt;/strong>提供的查询接口，查询次条消息对应的业务数据是否为处理成功。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>如果业务数据是处理成功的状态，那么就再次调用确认并发送消息，即进入第 &lt;strong>6&lt;/strong> 步。如果业务数据是处理失败的，那么就调用&lt;strong>消息服务系统&lt;/strong>进行删除该条消息数据。&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>再来看看有错（比如说网络断了或者服务器挂了）的时候，这个系统是怎么保证一致性的：&lt;/p>
+&lt;ul>
+&lt;li>第 &lt;strong>1&lt;/strong> 步失败，相当于什么都没做。&lt;/li>
+&lt;li>第 &lt;strong>2&lt;/strong> 步失败，第 &lt;strong>3&lt;/strong> 步会返回失败结果，&lt;strong>A 系统&lt;/strong>不执行业务操作。&lt;/li>
+&lt;li>第 &lt;strong>3&lt;/strong> 步失败，&lt;strong>A 系统&lt;/strong>不执行业务操作，&lt;strong>消息恢复系统&lt;/strong>在第 &lt;strong>12&lt;/strong> 步判断业务处理失败。&lt;/li>
+&lt;li>第 &lt;strong>4&lt;/strong> 步失败，&lt;strong>A 系统&lt;/strong>回滚业务，同样&lt;strong>消息恢复系统&lt;/strong>在第 &lt;strong>12&lt;/strong> 步判断业务处理失败。&lt;/li>
+&lt;li>第 &lt;strong>5、6、7、8、9&lt;/strong> 步失败，&lt;strong>消息恢复系统&lt;/strong>在第 &lt;strong>12&lt;/strong> 步判断业务处理成功，重试第 &lt;strong>6&lt;/strong> 步直到成功为止。如果在第 &lt;strong>9&lt;/strong> 步失败了，&lt;strong>B 系统&lt;/strong>会重复消费某条消息，所以 &lt;strong>B 系统&lt;/strong>要设计成幂等操作，对于同一操作发起的一次请求或者多次请求的结果是一致的，不会因为多次调用而产生了副作用。&lt;/li>
+&lt;/ul>
+&lt;p>所以，只要消息数据持久化了，我们就可以假设后面一定会被消费，就算后面挂了一堆东西，但是我们把挂掉的服务再全部启动，这条消息还是会被消费，不会丢失，可以保证最终一致性。&lt;/p>
+&lt;p>这种实现方案弱化了对消息中间件（&lt;strong>MQ&lt;/strong>）的依赖，选用 &lt;code>RabbitMQ&lt;/code> 或者 &lt;code>ActiveMQ&lt;/code> 就可以实现。如果使用支持消息事物的 &lt;code>RocketMQ&lt;/code> 也可以简化消息恢复系统和消息服务系统。&lt;/p>
+&lt;hr></description></item><item><title>浅谈分布式事务</title><link>https://lrtg.ml/2019/01/25/distributed-system-transaction/</link><pubDate>Fri, 25 Jan 2019 15:57:42 +0000</pubDate><guid>https://lrtg.ml/2019/01/25/distributed-system-transaction/</guid><description>
+&lt;p>通俗的理解，事务是一组原子操作单元。我们希望一些列的操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。&lt;/p>
+&lt;p>传统的单机应用系统一般使用一个关系型数据库，利用数据库事务来保证数据的一致性，下面先了解一下本地数据库事务的一些特性。&lt;/p>
+&lt;h2 id="一本地数据库事务">一、本地数据库事务&lt;/h2>
+&lt;p>事务从数据库角度说，就是一组 &lt;code>SQL&lt;/code> 指令，要么全部执行成功，若因为某个原因其中一条指令执行有错误，则撤销先前执行过的所有指令。&lt;/p>
+&lt;p>关系型数据库（例如：&lt;code>MySQL&lt;/code>、&lt;code>SQL Server&lt;/code>、&lt;code>Oracle&lt;/code> 等）事务都有以下几个特性：&lt;strong>原子性&lt;/strong>（&lt;code>Atomicity&lt;/code>）、&lt;strong>一致性&lt;/strong>（&lt;code>Consistency&lt;/code>）、&lt;strong>隔离性或独立性&lt;/strong>（&lt;code>Isolation&lt;/code>）&lt;strong>和持久性&lt;/strong>（&lt;code>Durabilily&lt;/code>），简称就是 &lt;strong>ACID&lt;/strong>。&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>原子性&lt;/strong>：表示事务执行过程中的任何失败都将导致事务所做的任何修改失效。&lt;/li>
+&lt;li>&lt;strong>一致性&lt;/strong>：表示当事务执行失败时，所有被该事务影响的数据都应该恢复到事务执行前的状态。&lt;/li>
+&lt;li>&lt;strong>隔离性&lt;/strong>：表示在事务执行过程中对数据的修改，在事务提交之前对其他事务不可见。&lt;/li>
+&lt;li>&lt;strong>持久性&lt;/strong>：表示已提交的数据在事务执行失败时，数据的状态都应该正确。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://cdn.ehlxr.top/post/acid.jpg" alt="">&lt;/p>
+&lt;p>数据库事务操作也比较简单：开始一个事务，改变（插入，删除，更新）很多行，然后提交事务（如果有异常时回滚事务）。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">Connection con &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> &lt;span style="color:#75715e">// 工具类得到 connection 对象
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> con &lt;span style="color:#f92672">=&lt;/span> JdbcUtils&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getConnection&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> &lt;span style="color:#75715e">// 关闭自动提交，开启事务
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> con&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">setAutoCommit&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> &lt;span style="color:#75715e">// 增、删、改 等操作
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> &lt;span style="color:#f92672">...&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> &lt;span style="color:#75715e">// 成功操作后提交事务
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> con&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">commit&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> con&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">close&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>Exception e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> &lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> &lt;span style="color:#75715e">// 如果有异常时回滚事务
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> con&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">rollback&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> con&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">close&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> &lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>SQLException e1&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> e1&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">​&lt;/span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>更进一步，借助开发平台中的数据访问技术和框架（如：&lt;code>Spring&lt;/code>），我们需要做的事情更少，只需要关注数据本身的改变。&lt;/p>
+&lt;p>随着组织规模不断扩大，业务量不断增长，单机应用和数据库已经不足以支持庞大的业务量和数据量，这个时候需要对应用和数据库进行拆分，就出现了一个应用需要同时访问两个或两个以上的数据库情况。开始我们用分布式事务来保证一致性。&lt;/p>
+&lt;h2 id="二分布式事务理论">二、分布式事务理论&lt;/h2>
+&lt;h3 id="21-cap-定理">2.1 CAP 定理&lt;/h3>
+&lt;p>&lt;code>CAP&lt;/code> 定理是由加州大学伯克利分校 &lt;code>Eric Brewer&lt;/code> 教授提出来的，他指出 &lt;code>WEB&lt;/code> 服务无法同时满足以下 &lt;code>3&lt;/code> 个属性：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>一致性（Consistency）&lt;/strong>： 客户端知道一系列的操作都会同时发生（生效）&lt;/li>
+&lt;li>&lt;strong>可用性（Availability）&lt;/strong>：每个操作都必须以可预期的响应结束&lt;/li>
+&lt;li>&lt;strong>分区容错性（Partition tolerance）&lt;/strong>：即使出现单个组件无法可用, 操作依然可以完成&lt;/li>
+&lt;/ul>
+&lt;p>&lt;code>CAP&lt;/code> 理论告诉我们，在分布式系统中，&lt;strong>C、A、P&lt;/strong> 三个条件中我们最多只能选择两个。那么问题来了，究竟选择哪两个条件较为合适呢？&lt;/p>
+&lt;p>对于一个业务系统来说，可用性和分区容错性是必须要满足的两个条件，并且这两者是相辅相成的。业务系统之所以使用分布式系统，主要原因有两个：&lt;/p>
+&lt;ul>
+&lt;li>提升整体性能：当业务量猛增，单个服务器已经无法满足我们的业务需求的时候，就需要使用分布式系统，使用多个节点提供相同的功能，从而整体上提升系统的性能，这就是使用分布式系统的第一个原因。&lt;/li>
+&lt;li>实现分区容错性：单一节点或多个节点处于相同的网络环境下，那么会存在一定的风险，万一该机房断电、该地区发生自然灾害，那么业务系统就全面瘫痪了。为了防止这一问题，采用分布式系统，将多个子系统分布在不同的地域、不同的机房中，从而保证系统高可用性。&lt;/li>
+&lt;/ul>
+&lt;p>这说明分区容错性是分布式系统的根本，如果分区容错性不能满足，那使用分布式系统将失去意义。&lt;/p>
+&lt;p>此外，可用性对业务系统也尤为重要。在大谈用户体验的今天，如果业务系统时常出现 “系统异常”、响应时间过长等情况，这使得用户对系统的好感度大打折扣，在互联网行业竞争激烈的今天，相同领域的竞争者不甚枚举，系统的间歇性不可用会立马导致用户流向竞争对手。因此，我们只能通过牺牲一致性来换取系统的&lt;strong>可用性（A）&lt;strong>和&lt;/strong>分区容错性（P）&lt;/strong>。这也就是下面要介绍的 &lt;code>BASE&lt;/code> 理论。&lt;/p>
+&lt;h3 id="22-base-理论">2.2 BASE 理论&lt;/h3>
+&lt;p>&lt;code>CAP&lt;/code> 理论告诉我们一个悲惨但不得不接受的事实——我们只能在 &lt;strong>C、A、P&lt;/strong> 中选择两个条件。而对于业务系统而言，我们往往选择牺牲一致性来换取系统的可用性和分区容错性。不过这里要指出的是，所谓的 “牺牲一致性” 并不是完全放弃数据一致性，而是牺牲强一致性换取弱一致性。下面来介绍下 &lt;code>BASE&lt;/code> 理论。&lt;/p>
+&lt;ul>
+&lt;li>**Basically Available（基本可用）**整个系统在某些不可抗力的情况下，仍然能够保证 “可用性”，即一定时间内仍然能够返回一个明确的结果。&lt;/li>
+&lt;li>**Soft state（软状态）**同一数据的不同副本的状态，可以不需要实时一致。&lt;/li>
+&lt;li>**Eventually Consistent（最终一致性）**同一数据的不同副本的状态，可以不需要实时一致，但一定要保证经过一定时间后仍然是一致的。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;code>BASE&lt;/code> 理论是对 &lt;code>CAP&lt;/code> 中的一致性和可用性进行一个权衡的结果，理论的核心思想就是：&lt;em>&lt;strong>我们无法做到强一致，但每个应用都可以根据自身的业务特点，采用适当的方式来使系统达到最终一致性&lt;/strong>&lt;/em>（&lt;code>Eventual Consistency&lt;/code>）。&lt;/p>
+&lt;p>有了以上理论之后，我们来看一下分布式事务的解决方案。&lt;/p>
+&lt;h2 id="三分布式事务">三、分布式事务&lt;/h2>
+&lt;h3 id="31-两阶段提交2pc">3.1 两阶段提交（2PC）&lt;/h3>
+&lt;p>两阶段提交协议（Two-phase Commit，2PC）经常被用来实现分布式事务。一般分为&lt;code>协调器&lt;/code>和若干&lt;code>事务执行者&lt;/code>两种角色，这里的事务执行者就是具体的数据库，抽象点可以说是可以控制数据库的程序。 协调器可以和事务执行器在一台机器上。&lt;/p>
+&lt;p>在分布式系统中，每个节点虽然可以知晓自己的操作时成功或者失败，却无法知道其他节点的操作的成功或失败。当一个事务跨越多个节点时，为了保持事务的 &lt;code>ACID&lt;/code> 特性，需要引入一个作为协调者的组件来统一掌控所有节点 (称作参与者)。&lt;/p>
+&lt;p>图示从支付宝向余额宝转账是怎样保证一致性的&lt;/p>
+&lt;p>&lt;img src="https://cdn.ehlxr.top/post/2pc.jpg" alt="">&lt;/p>
+&lt;ol>
+&lt;li>用户发起转账申请，首先到事务协调器&lt;/li>
+&lt;li>事务协调器通知（prepare）支付宝扣款，同时通知余额宝收款&lt;/li>
+&lt;li>支付宝、余额宝分别执行扣款、收款业务操作，本地事务不提交。并且把执行结果反馈给事务协调器，成功反馈 yes，失败反馈 no&lt;/li>
+&lt;li>事务协调器收到支付宝和余额宝的反馈如果都是 yes，则通知支付宝和余额宝系统提交事务（commit），否则通知回顾事务（abort）&lt;/li>
+&lt;li>事务协调器、支付宝和余额宝在整个过程收到通知都要记录日志（log），类似日常生活中的凭证。如果某个节点宕机，可以保证从日志中恢复后续操作。&lt;/li>
+&lt;/ol>
+&lt;p>两阶段提交这种解决方案属于牺牲了一部分可用性来换取的一致性。&lt;/p>
+&lt;p>&lt;strong>优点：&lt;/strong> 尽量保证了数据的强一致，适合对数据强一致要求很高的关键领域。（其实也不能 &lt;code>100%&lt;/code> 保证强一致）
+&lt;strong>缺点：&lt;/strong> 涉及多次节点间的网络通信时，牺牲了可用性，对性能影响较大，不适合高并发高性能场景，如果分布式系统跨接口调用。&lt;/p>
+&lt;h3 id="32-补偿事务tcc">3.2 补偿事务（TCC）&lt;/h3>
+&lt;p>&lt;code>TCC&lt;/code> 其实就是采用的补偿机制，其核心思想是：针对每个操作，都要注册一个与其对应的确认和补偿（撤销）操作。它分为三个阶段：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Try 阶段&lt;/strong>：主要是对业务系统做检测及资源预留&lt;/li>
+&lt;li>&lt;strong>Confirm 阶段&lt;/strong>：主要是对业务系统做确认提交，&lt;code>Try&lt;/code> 阶段执行成功并开始执行 &lt;code>Confirm&lt;/code> 阶段时，默认 &lt;code>Confirm&lt;/code> 阶段是不会出错的。即：只要 &lt;code>Try&lt;/code> 成功，&lt;code>Confirm&lt;/code> 一定成功。&lt;/li>
+&lt;li>&lt;strong>Cancel 阶段&lt;/strong>：主要是在业务执行错误，需要回滚的状态下执行的业务取消，预留资源释放。&lt;/li>
+&lt;/ul>
+&lt;p>举个例子，假如 &lt;code>Bob&lt;/code> 要向 &lt;code>Smith&lt;/code> 转账，思路大概是：&lt;/p>
+&lt;p>我们有一个本地方法，里面依次调用&lt;/p>
+&lt;ol>
+&lt;li>首先在 &lt;code>Try&lt;/code> 阶段，要先调用远程接口把 &lt;code>Smith&lt;/code> 和 &lt;code>Bob&lt;/code> 的钱给冻结起来。&lt;/li>
+&lt;li>在 &lt;code>Confirm&lt;/code> 阶段，执行远程调用的转账的操作，转账成功进行解冻。&lt;/li>
+&lt;li>如果第 2 步执行成功，那么转账成功，如果第二步执行失败，则调用远程冻结接口对应的解冻方法（&lt;code>Cancel&lt;/code>）。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;strong>优点：&lt;/strong> 跟 &lt;code>2PC&lt;/code> 比起来，实现以及流程相对简单了一些，但数据的一致性比 &lt;code>2PC&lt;/code> 也要差一些&lt;/p>
+&lt;p>&lt;strong>缺点：&lt;/strong> 缺点还是比较明显的，在 &lt;code>2&lt;/code>、&lt;code>3&lt;/code> 步中都有可能失败。&lt;code>TCC&lt;/code> 属于应用层的一种补偿方式，所以需要程序员在实现的时候多写很多补偿的代码，在一些场景中，一些业务流程可能用 &lt;code>TCC&lt;/code> 不太好定义及处理。&lt;/p>
+&lt;h3 id="33-分布式事务框架">3.3 分布式事务框架&lt;/h3>
+&lt;p>常用开源的分布式事务框架：&lt;/p>
+&lt;ul>
+&lt;li>阿里巴巴开源的分布式事务解决方案 &lt;a href="https://github.com/seata/seata">Seata&lt;/a>&lt;/li>
+&lt;li>一款事务协调性框架 &lt;a href="https://github.com/codingapi/tx-lcn">TX-LCN&lt;/a>&lt;/li>
+&lt;li>强一致分布式事务框架 &lt;a href="https://github.com/dromara/raincat">Raincat&lt;/a>&lt;/li>
+&lt;li>提供柔性事务的支持，包含 TCC, TAC(自动生成回滚 SQL) 方案 &lt;a href="https://github.com/dromara/hmily">Hmily&lt;/a>&lt;/li>
+&lt;li>TCC 型事务 java 实现 &lt;a href="https://github.com/changmingxie/tcc-transaction">tcc-transaction&lt;/a>&lt;/li>
+&lt;li>基于事务管理器（TransactionManager）实现的 TCC 全局事务 &lt;a href="https://github.com/liuyangming/ByteTCC">ByteTCC&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;hr></description></item></channel></rss>

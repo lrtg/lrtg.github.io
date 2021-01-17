@@ -1,0 +1,5 @@
+# ehlxr robots.txt
+User-agent: *
+Allow: /
+
+Disallow: /images/

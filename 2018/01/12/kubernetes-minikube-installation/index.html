@@ -1,0 +1,94 @@
+<!doctype html><html lang=en><head><title>Kubernetes 学习笔记之 MiniKube 安装 ::
+lrtg — a hugo blog of lrtg</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Kubernetes 集群的搭建是有一定难度的，尤其是对于初学者来说，好多概念和原理不懂，即使有现成的教程也会出现很多不可预知的问题，很容易打击学习的积极性，就此弃坑。好在 Kubernetes 社区提供了可以在本地开发和体验的极简集群安装 MiniKube，对于入门学习来说很方便。
+{% img https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1fo7n00rkl6j20b40b4goj.jpg 300 %}
+MiniKube 官方安装介绍已经非常详细了，可以参考 installation。但是在国内由于网络访问原因（懂的），即使有梯子也很折腾，所以记录一下阿里修改后的 MiniKube 安装。使用阿里修改后的 MiniKube 就可以从阿里云的镜像地址来获取所需 Docker 镜像和配置，其它的并没有差异，下文着重介绍。"><meta name=keywords content="minikube,,kubernetes,,k8s"><meta name=robots content="noodp"><link rel=canonical href=https://lrtg.ml/2018/01/12/kubernetes-minikube-installation/><link rel=stylesheet href=https://lrtg.ml/assets/style.css><link rel=stylesheet href=https://lrtg.ml/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://lrtg.ml/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://lrtg.ml/img/favicon.png><link href=https://lrtg.ml/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary"><meta name=twitter:title content="Kubernetes 学习笔记之 MiniKube 安装"><meta name=twitter:description content="Kubernetes 集群的搭建是有一定难度的，尤其是对于初学者来说，好多概念和原理不懂，即使有现成的教程也会出现很多不可预知的问题，很容易打击学习的积极性，就此弃坑。好在 Kubernetes 社区提供了可以在本地开发和体验的极简集群安装 MiniKube，对于入门学习来说很方便。"><meta property="og:title" content="Kubernetes 学习笔记之 MiniKube 安装"><meta property="og:description" content="Kubernetes 集群的搭建是有一定难度的，尤其是对于初学者来说，好多概念和原理不懂，即使有现成的教程也会出现很多不可预知的问题，很容易打击学习的积极性，就此弃坑。好在 Kubernetes 社区提供了可以在本地开发和体验的极简集群安装 MiniKube，对于入门学习来说很方便。"><meta property="og:type" content="article"><meta property="og:url" content="https://lrtg.ml/2018/01/12/kubernetes-minikube-installation/"><meta property="article:published_time" content="2018-01-12T09:23:01+00:00"><meta property="article:modified_time" content="2020-07-20T21:49:42+08:00"><meta property="og:site_name" content="lrtg"><meta name=google-site-verification content="1sqm8XMeeEHHbiKb2V2OrWT2WoAg7TUCXvXXLbP8O2s"></head><body class=dark-theme><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>lrtg's blog</span>
+<span class=logo__cursor></span></a><span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><ul class=menu__sub-inner><li class=menu__sub-inner-more-trigger>Show more
+<span class=menu__sub-inner-more-trigger-icon><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span></li><ul class="menu__sub-inner-more hidden"><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></ul></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41C32.4934 41 41 32.4934 41 22 41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>Kubernetes 学习笔记之 MiniKube 安装</h1><div class=post-meta><span class=post-date>2018-01-12</span>
+<span class=post-moddate>(Modified:
+2020-07-20)</span>
+<span class=post-read-time>— 2 min read</span></div><span class=post-tags><a href=https://lrtg.ml/tags/minikube/>#minikube</a>&nbsp;
+<a href=https://lrtg.ml/tags/kubernetes/>#kubernetes</a>&nbsp;
+<a href=https://lrtg.ml/tags/k8s/>#k8s</a>&nbsp;</span><div class=post-content><p>Kubernetes 集群的搭建是有一定难度的，尤其是对于初学者来说，好多概念和原理不懂，即使有现成的教程也会出现很多不可预知的问题，很容易打击学习的积极性，就此弃坑。好在 Kubernetes 社区提供了可以在本地开发和体验的极简集群安装 MiniKube，对于入门学习来说很方便。</p><p>{% img <a href=https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1fo7n00rkl6j20b40b4goj.jpg>https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1fo7n00rkl6j20b40b4goj.jpg</a> 300 %}</p><p>MiniKube 官方安装介绍已经非常详细了，可以参考 <a href=https://github.com/kubernetes/minikube#installation>installation</a>。但是在国内由于网络访问原因（懂的），即使有梯子也很折腾，所以记录一下阿里修改后的 MiniKube 安装。使用阿里修改后的 MiniKube 就可以从阿里云的镜像地址来获取所需 Docker 镜像和配置，其它的并没有差异，下文着重介绍。</p><h2 id=一kubectl-安装>一、kubectl 安装</h2><p>MiniKube 的安装需要先安装 kubectl 及相关驱动，这没什么好说的，参考<a href=https://github.com/kubernetes/minikube#requirements>官方介绍</a>。</p><p>另 kubectl 也可通过源代码编译安装，编译源码需要有 Git、Golang 环境的支撑。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>➜ git clone https://github.com/kubernetes/kubernetes.git
+➜ cd kubernetes
+➜ make
+➜ sudo cp _output/bin/kubectl /usr/local/bin/
+➜ sudo chmod +x /usr/local/bin/kubectl
+</code></pre></div><h2 id=二minikube-安装>二、MiniKube 安装</h2><p>MiniKube 是使用 Go 语言开发的，所以安装其实很方便，一是通过下载基于不同平台早已编译好的二级制文件安装，二是可以编译源文件安装。</p><h3 id=21-二级制文件安装>2.1 二级制文件安装</h3><ul><li>Mac OSX 平台</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>➜ curl -Lo minikube http://kubernetes.oss-cn-hangzhou.aliyuncs.com/minikube/releases/v0.24.1/minikube-darwin-amd64 <span style=color:#f92672>&amp;&amp;</span> chmod +x minikube <span style=color:#f92672>&amp;&amp;</span> sudo mv minikube /usr/local/bin/
+</code></pre></div><ul><li>Linux 平台</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>➜ curl -Lo minikube http://kubernetes.oss-cn-hangzhou.aliyuncs.com/minikube/releases/v0.24.1/minikube-linux-amd64 <span style=color:#f92672>&amp;&amp;</span> chmod +x minikube <span style=color:#f92672>&amp;&amp;</span> sudo mv minikube /usr/local/bin/
+</code></pre></div><ul><li>Windows 平台</li></ul><p>下载 <a href=http://kubernetes.oss-cn-hangzhou.aliyuncs.com/minikube/releases/v0.24.1/minikube-windows-amd64.exe>minikube-windows-amd64.exe</a> 文件，并重命名为 <code>minikube.exe</code>，然后加入到环境变量路径下即可。</p><h3 id=22-源码编译安装>2.2 源码编译安装</h3><p>编译源码需要有 Git、Golang 环境的支撑。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>➜ git clone https://github.com/AliyunContainerService/minikube
+➜ cd minikube
+➜ git checkout aliyun-v0.24.1
+➜ make
+➜ sudo cp out/minikube /usr/local/bin/
+➜ sudo chmod +x /usr/local/bin/minikube
+</code></pre></div><blockquote><p>示例版本是 <code>v0.24.1</code>，可更改为<a href=https://github.com/AliyunContainerService/minikube/branches/all>其它版本</a>。</p></blockquote><h2 id=三简单使用>三、简单使用</h2><h3 id=31-启动>3.1 启动</h3><p>默认启动使用的是 VirtualBox 驱动，使用 <code>--vm-driver</code> 参数可以指定其它驱动。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># 设置 docker 加速镜像</span>
+➜ minikube start --registry-mirror<span style=color:#f92672>=</span>https://registry.docker-cn.com
+Starting local Kubernetes v1.8.0 cluster...
+Starting VM...
+Getting VM IP address...
+Moving files into cluster...
+Setting up certs...
+Connecting to cluster...
+Setting up kubeconfig...
+Starting cluster components...
+Kubectl is now configured to use the cluster.
+Loading cached images from config file.
+</code></pre></div><h3 id=32-检测状态>3.2 检测状态</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>➜ minikube status
+minikube: Running
+cluster: Running
+kubectl: Correctly Configured: pointing to minikube-vm at 192.168.99.100
+</code></pre></div><h3 id=33-启动-kubernetes-dashboard>3.3 启动 kubernetes dashboard</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>➜ minikube dashboard
+Opening kubernetes dashboard in default browser...
+</code></pre></div><p>输入以上命令，浏览器中应该就会显示以下界面：</p><p><img src=https://cdn.jsdelivr.net/gh/0vo/oss/images/minikube-dashboard.jpg alt=minikube-dashboard></p><h3 id=34-测试>3.4 测试</h3><ul><li>运行一个 nginx 的 pod</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>➜ kubectl run hello --image<span style=color:#f92672>=</span>nginx --port<span style=color:#f92672>=</span><span style=color:#ae81ff>80</span>
+deployment <span style=color:#e6db74>&#34;hello&#34;</span> created
+</code></pre></div><ul><li>导出运行的 nginx 服务</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>➜ kubectl expose deployment hello --type<span style=color:#f92672>=</span>NodePort
+service <span style=color:#e6db74>&#34;hello&#34;</span> exposed
+</code></pre></div><ul><li>查看一下运行情况，需要等一会才会显示状态为 <code>Running</code></li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>➜ kubectl get pod
+NAME                    READY     STATUS    RESTARTS   AGE
+hello-6dbbbb95d-4cqwz   1/1       Running   <span style=color:#ae81ff>0</span>          2m
+</code></pre></div><ul><li>curl 访问测试</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>➜ curl <span style=color:#66d9ef>$(</span>minikube service hello --url<span style=color:#66d9ef>)</span>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+&lt;style&gt;
+    body <span style=color:#f92672>{</span>
+        width: 35em;
+        margin: <span style=color:#ae81ff>0</span> auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    <span style=color:#f92672>}</span>
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Welcome to nginx!&lt;/h1&gt;
+&lt;p&gt;If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.&lt;/p&gt;
+
+&lt;p&gt;For online documentation and support please refer to
+&lt;a href<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://nginx.org/&#34;</span>&gt;nginx.org&lt;/a&gt;.&lt;br/&gt;
+Commercial support is available at
+&lt;a href<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://nginx.com/&#34;</span>&gt;nginx.com&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Thank you <span style=color:#66d9ef>for</span> using nginx.&lt;/em&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></div><h3 id=35-其它>3.5 其它</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># 查看集群的所有资源</span>
+➜ kubectl get all
+➜ kubectl get all -o wide
+
+<span style=color:#75715e># 进入节点服务器</span>
+➜ minikube ssh
+
+<span style=color:#75715e># 执行节点服务器命令，例如查看节点 docker info</span>
+➜ minikube ssh -- docker info
+
+<span style=color:#75715e># 删除集群</span>
+➜ minikube delete
+
+<span style=color:#75715e># 关闭集群</span>
+➜ minikube stop
+</code></pre></div><h2 id=参考文献>参考文献</h2><ul><li><a href=https://yq.aliyun.com/articles/221687>Minikube - Kubernetes本地实验环境</a></li></ul><hr></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://lrtg.ml/2018/01/26/golang-reflect/><span class=button__icon>←</span>
+<span class=button__text>Golang 反射使用总结</span></a></span>
+<span class="button next"><a href=https://lrtg.ml/2017/12/31/summary-in-2017/><span class=button__text>又是一年岁末时...</span>
+<span class=button__icon>→</span></a></span></div></div><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
+var d=document,s=d.createElement('script');s.async=true;s.src='//'+"lrtg"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user">© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</div></div></footer><script src=https://lrtg.ml/assets/main.js></script><script src=https://lrtg.ml/assets/prism.js></script></div></body></html>

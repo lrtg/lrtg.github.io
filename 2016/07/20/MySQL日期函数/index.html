@@ -1,0 +1,174 @@
+<!doctype html><html lang=en><head><title>MySQL日期函数 ::
+lrtg — a hugo blog of lrtg</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="1. 取得当天 mysql&amp;gt; SELECT curdate(); +------------+ | curdate() | +------------+ | 2013-07-29 | +------------+ 2. 取得当前日期 mysql&amp;gt; select sysdate(); +---------------------+ | sysdate() | +---------------------+ | 2016-05-30 13:58:17 | +---------------------+ 1 row in set mysql&amp;gt; select now(); +---------------------+ | now() | +---------------------+ | 2016-05-30 13:58:29 | +---------------------+ 1 row in set"><meta name=keywords content="lrtg"><meta name=robots content="noodp"><link rel=canonical href=https://lrtg.ml/2016/07/20/MySQL%E6%97%A5%E6%9C%9F%E5%87%BD%E6%95%B0/><link rel=stylesheet href=https://lrtg.ml/assets/style.css><link rel=stylesheet href=https://lrtg.ml/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://lrtg.ml/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://lrtg.ml/img/favicon.png><link href=https://lrtg.ml/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary"><meta name=twitter:title content="MySQL日期函数"><meta name=twitter:description content="#### 1. 取得当天
+
+``` sql
+
+mysql> SELECT curdate();
+
++------------+
+
+| curdate()  |
+
++------------+
+
+| 2013-07-29 |
+
++------------+
+
+```
+
+#### 2. 取得当前日期
+
+``` sql
+
+mysql> select sysdate();
+
++---------------------+
+
+| sysdate()           |
+
++---------------------+
+
+| 2016-05-30 13:58:17 |
+
++---------------------+
+
+1 row in set
+
+mysql> select now();
+
++---------------------+
+
+| now()               |
+
++---------------------+
+
+| 2016-05-30 13:58:29 |
+
++---------------------+
+
+1 row in set
+
+```"><meta property="og:title" content="MySQL日期函数"><meta property="og:description" content="#### 1. 取得当天
+
+``` sql
+
+mysql> SELECT curdate();
+
++------------+
+
+| curdate()  |
+
++------------+
+
+| 2013-07-29 |
+
++------------+
+
+```
+
+#### 2. 取得当前日期
+
+``` sql
+
+mysql> select sysdate();
+
++---------------------+
+
+| sysdate()           |
+
++---------------------+
+
+| 2016-05-30 13:58:17 |
+
++---------------------+
+
+1 row in set
+
+mysql> select now();
+
++---------------------+
+
+| now()               |
+
++---------------------+
+
+| 2016-05-30 13:58:29 |
+
++---------------------+
+
+1 row in set
+
+```"><meta property="og:type" content="article"><meta property="og:url" content="https://lrtg.ml/2016/07/20/MySQL%E6%97%A5%E6%9C%9F%E5%87%BD%E6%95%B0/"><meta property="article:published_time" content="2016-07-20T14:16:17+00:00"><meta property="article:modified_time" content="2020-07-20T21:49:42+08:00"><meta property="og:site_name" content="lrtg"><meta name=google-site-verification content="1sqm8XMeeEHHbiKb2V2OrWT2WoAg7TUCXvXXLbP8O2s"></head><body class=dark-theme><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>lrtg's blog</span>
+<span class=logo__cursor></span></a><span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><ul class=menu__sub-inner><li class=menu__sub-inner-more-trigger>Show more
+<span class=menu__sub-inner-more-trigger-icon><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span></li><ul class="menu__sub-inner-more hidden"><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></ul></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41C32.4934 41 41 32.4934 41 22 41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>MySQL日期函数</h1><div class=post-meta><span class=post-date>2016-07-20</span>
+<span class=post-moddate>(Modified:
+2020-07-20)</span>
+<span class=post-read-time>— 2 min read</span></div><span class=post-tags><a href=https://lrtg.ml/tags/MySQL/>#MySQL</a>&nbsp;</span><div class=post-content><h2>Table of Contents</h2><aside class=table-of-contents><nav id=TableOfContents><ul><li><ul><li></li></ul></li></ul></nav></aside><h4 id=1-取得当天>1. 取得当天</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql>mysql<span style=color:#f92672>&gt;</span> <span style=color:#66d9ef>SELECT</span> curdate();
+<span style=color:#f92672>+</span><span style=color:#75715e>------------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> curdate()  <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>------------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> <span style=color:#ae81ff>2013</span><span style=color:#f92672>-</span><span style=color:#ae81ff>07</span><span style=color:#f92672>-</span><span style=color:#ae81ff>29</span> <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>------------+
+</span></code></pre></div><h4 id=2-取得当前日期>2. 取得当前日期</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql>mysql<span style=color:#f92672>&gt;</span> <span style=color:#66d9ef>select</span> sysdate();
+<span style=color:#f92672>+</span><span style=color:#75715e>---------------------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> sysdate()           <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>---------------------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> <span style=color:#ae81ff>2016</span><span style=color:#f92672>-</span><span style=color:#ae81ff>05</span><span style=color:#f92672>-</span><span style=color:#ae81ff>30</span> <span style=color:#ae81ff>13</span>:<span style=color:#ae81ff>58</span>:<span style=color:#ae81ff>17</span> <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>---------------------+
+</span><span style=color:#75715e></span><span style=color:#ae81ff>1</span> <span style=color:#66d9ef>row</span> <span style=color:#66d9ef>in</span> <span style=color:#66d9ef>set</span>
+
+mysql<span style=color:#f92672>&gt;</span> <span style=color:#66d9ef>select</span> now();
+<span style=color:#f92672>+</span><span style=color:#75715e>---------------------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> now()               <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>---------------------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> <span style=color:#ae81ff>2016</span><span style=color:#f92672>-</span><span style=color:#ae81ff>05</span><span style=color:#f92672>-</span><span style=color:#ae81ff>30</span> <span style=color:#ae81ff>13</span>:<span style=color:#ae81ff>58</span>:<span style=color:#ae81ff>29</span> <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>---------------------+
+</span><span style=color:#75715e></span><span style=color:#ae81ff>1</span> <span style=color:#66d9ef>row</span> <span style=color:#66d9ef>in</span> <span style=color:#66d9ef>set</span>
+</code></pre></div><h4 id=3-取得当前时间>3. 取得当前时间</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql>mysql<span style=color:#f92672>&gt;</span> <span style=color:#66d9ef>select</span> curtime();
+<span style=color:#f92672>+</span><span style=color:#75715e>-----------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> curtime() <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>-----------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> <span style=color:#ae81ff>13</span>:<span style=color:#ae81ff>54</span>:<span style=color:#ae81ff>31</span>  <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>-----------+
+</span><span style=color:#75715e></span><span style=color:#ae81ff>1</span> <span style=color:#66d9ef>row</span> <span style=color:#66d9ef>in</span> <span style=color:#66d9ef>set</span>
+</code></pre></div><h4 id=4-取得前一天>4. 取得前一天</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql>mysql<span style=color:#f92672>&gt;</span> <span style=color:#66d9ef>select</span> date_sub(curdate(),interval <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>day</span>);
+<span style=color:#f92672>+</span><span style=color:#75715e>------------------------------------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> date_sub(curdate(),interval <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>day</span>) <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>------------------------------------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> <span style=color:#ae81ff>2013</span><span style=color:#f92672>-</span><span style=color:#ae81ff>07</span><span style=color:#f92672>-</span><span style=color:#ae81ff>28</span>                         <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>------------------------------------+
+</span></code></pre></div><h4 id=5-取得下一天>5. 取得下一天</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql>mysql<span style=color:#f92672>&gt;</span> <span style=color:#66d9ef>SELECT</span> DATE_ADD(NOW(),INTERVAL <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>DAY</span>);
+<span style=color:#f92672>+</span><span style=color:#75715e>--------------------------------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> DATE_ADD(NOW(),INTERVAL <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>DAY</span>) <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>--------------------------------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> <span style=color:#ae81ff>2016</span><span style=color:#f92672>-</span><span style=color:#ae81ff>05</span><span style=color:#f92672>-</span><span style=color:#ae81ff>31</span> <span style=color:#ae81ff>14</span>:<span style=color:#ae81ff>09</span>:<span style=color:#ae81ff>16</span>            <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>--------------------------------+
+</span><span style=color:#75715e></span><span style=color:#ae81ff>1</span> <span style=color:#66d9ef>row</span> <span style=color:#66d9ef>in</span> <span style=color:#66d9ef>set</span>
+</code></pre></div><p>括号中为当天时间的前一天，如果统计前几天就将括号中的’1’改成相应的天数。如果要算月或年，直接将day改为month或year即可</p><h4 id=6-取得前一天的年份>6. 取得前一天的年份</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql>mysql<span style=color:#f92672>&gt;</span> <span style=color:#66d9ef>SELECT</span> <span style=color:#66d9ef>YEAR</span>(DATE_SUB(CURDATE(),INTERVAL <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>DAY</span>));
+<span style=color:#f92672>+</span><span style=color:#75715e>------------------------------------------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span> <span style=color:#66d9ef>YEAR</span>(DATE_SUB(CURDATE(),INTERVAL <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>DAY</span>)) <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>------------------------------------------+
+</span><span style=color:#75715e></span><span style=color:#f92672>|</span>                                     <span style=color:#ae81ff>2013</span> <span style=color:#f92672>|</span>
+<span style=color:#f92672>+</span><span style=color:#75715e>------------------------------------------+
+</span></code></pre></div><h4 id=7-sysdate为2016-05-30-周一>7. SYSDATE()为：2016-05-30 周一</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=color:#66d9ef>SELECT</span> WEEK(SYSDATE()); <span style=color:#75715e>-- 22
+</span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> WEEKOFYEAR(SYSDATE()); <span style=color:#75715e>-- 22
+</span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> WEEKDAY(SYSDATE()); <span style=color:#75715e>-- 0
+</span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> <span style=color:#66d9ef>DAY</span>(SYSDATE()); <span style=color:#75715e>-- 30
+</span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> <span style=color:#66d9ef>MONTH</span>(SYSDATE()); <span style=color:#75715e>-- 5
+</span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> <span style=color:#66d9ef>YEAR</span>(SYSDATE()); <span style=color:#75715e>-- 2016
+</span></code></pre></div><h4 id=8-date_sub函数的例子>8. date_sub()函数的例子</h4><p>今天是2013年5月20日</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql>date_sub(<span style=color:#e6db74>&#39;2012-05-25&#39;</span>, INTERVAL <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>DAY</span>) <span style=color:#75715e>-- 表示 2012-05-24
+</span><span style=color:#75715e></span>date_sub(<span style=color:#e6db74>&#39;2012-05-25&#39;</span>, INTERVAL <span style=color:#ae81ff>0</span> <span style=color:#66d9ef>DAY</span>) <span style=color:#75715e>-- 表示 2012-05-25
+</span><span style=color:#75715e></span>date_sub(<span style=color:#e6db74>&#39;2012-05-25&#39;</span>, INTERVAL <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>DAY</span>) <span style=color:#75715e>-- 表示 2012-05-26
+</span><span style=color:#75715e></span>date_sub(<span style=color:#e6db74>&#39;2012-05-31&#39;</span>, INTERVAL <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>DAY</span>) <span style=color:#75715e>-- 表示 2012-06-01
+</span><span style=color:#75715e></span>date_sub(curdate(), INTERVAL <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>DAY</span>) <span style=color:#75715e>-- 表示 2013-05-19
+</span><span style=color:#75715e></span>date_sub(curdate(), INTERVAL <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>DAY</span>) <span style=color:#75715e>-- 表示 2013-05-21
+</span><span style=color:#75715e></span>date_sub(curdate(), INTERVAL <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>MONTH</span>) <span style=color:#75715e>-- 表示 2013-04-20
+</span><span style=color:#75715e></span>date_sub(curdate(), INTERVAL <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>MONTH</span>) <span style=color:#75715e>-- 表示 2013-06-20
+</span><span style=color:#75715e></span>date_sub(curdate(), INTERVAL <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>YEAR</span>) <span style=color:#75715e>-- 表示 2012-05-20
+</span><span style=color:#75715e></span>date_sub(curdate(), INTERVAL <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span> <span style=color:#66d9ef>YEAR</span>) <span style=color:#75715e>-- 表示 2014-05-20
+</span></code></pre></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://lrtg.ml/2016/07/20/Java-List%E4%B8%8E%E6%95%B0%E7%BB%84%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2/><span class=button__icon>←</span>
+<span class=button__text>Java List与数组之间的转换</span></a></span>
+<span class="button next"><a href=https://lrtg.ml/2016/07/19/%E5%BC%80%E5%A7%8Bblog%E5%93%88%E5%93%88/><span class=button__text>开始blog，哈哈</span>
+<span class=button__icon>→</span></a></span></div></div><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
+var d=document,s=d.createElement('script');s.async=true;s.src='//'+"lrtg"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user">© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</div></div></footer><script src=https://lrtg.ml/assets/main.js></script><script src=https://lrtg.ml/assets/prism.js></script></div></body></html>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Mac on lrtg</title><link>https://lrtg.ml/tags/Mac/</link><description>Recent content in Mac on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Fri, 30 Mar 2018 20:45:40 +0000</lastBuildDate><atom:link href="https://lrtg.ml/tags/Mac/index.xml" rel="self" type="application/rss+xml"/><item><title>Mac 实用小工具</title><link>https://lrtg.ml/2018/03/30/mac-utility-tools/</link><pubDate>Fri, 30 Mar 2018 20:45:40 +0000</pubDate><guid>https://lrtg.ml/2018/03/30/mac-utility-tools/</guid><description>
+&lt;blockquote>
+&lt;p>记录备忘一下 Mac 系统下一些实用的小工具&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="收费">收费&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>Bartender&lt;/code> : 菜单栏管理工具，可以将菜单放进 Bartender 的二级菜单&lt;/li>
+&lt;li>&lt;code>SizeUp&lt;/code> : 实用分屏小工具&lt;/li>
+&lt;li>&lt;code>Proxifier&lt;/code> : 配合 ss/ssr 可以实现真正的全局代理软件&lt;/li>
+&lt;li>&lt;code>iStat Menus&lt;/code> : 能够在系统菜单栏实时监控 CPU、内存、硬盘、网络、温度、电池以及系统时间等&lt;/li>
+&lt;li>&lt;code>CleanMyMac&lt;/code> : 系统清理工具，可以清除 mac 系统多余的语言包、系统缓存、应用程序等&lt;/li>
+&lt;li>&lt;code>KeyCue&lt;/code> : 快捷键辅助工具，忘记一些快捷键的时候按住 Command 就会出现快捷键大全的菜单&lt;/li>
+&lt;li>&lt;code>Araxis Merge&lt;/code> : 可视化文件合并以及数据同步工具&lt;/li>
+&lt;li>&lt;code>BetterZip&lt;/code> : 功能非常强大的压缩解压缩软件&lt;/li>
+&lt;li>&lt;code>Parallels Desktop&lt;/code> : 最佳 Mac 虚拟机解决方案&lt;/li>
+&lt;li>&lt;code>TinyCal&lt;/code> : 小历 - 小而美的日历 (OS X)&lt;/li>
+&lt;/ul>
+&lt;h2 id="免费">免费&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>Vanilla&lt;/code> : &lt;code>Bartender&lt;/code> 的免费替代 APP &lt;a href="https://matthewpalmer.net/vanilla/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Hidden Bar&lt;/code> : 隐藏 macOS 菜单栏不常用的应用图标，替代 Bartender 3 &lt;a href="https://github.com/dwarvesf/hidden">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>AccessMenuBarApps&lt;/code> : 影藏菜单栏的左侧部分内容。配合 Hidden Bar 使用（设置为同一个快捷键） &lt;a href="http://www.ortisoft.de/en/accessmenubarapps/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Rectangle&lt;/code> : &lt;code>SizeUp&lt;/code> 的免费替代 APP &lt;a href="https://github.com/rxhanson/Rectangle">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>Alfred&lt;/code> : Mac 效率神器，Spotlight 完美替代产品（需要付费购买部分功能）&lt;a href="https://www.alfredapp.com/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>iTerm2&lt;/code> : 是一款完全免费的，专为 Mac OS 用户打造的命令行应用 &lt;a href="https://iterm2.com/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Typora&lt;/code> : 极致简洁的 markdown 编辑器 &lt;a href="https://www.typora.io/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Kap&lt;/code> : 免费开源的屏幕录像软件 &lt;a href="https://github.com/wulkano/kap">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>Karabiner Elements&lt;/code> : 修改键位映射软件 &lt;a href="https://github.com/pqrs-org/Karabiner-Elements">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>Gas Mask&lt;/code> : 免费开源的 hosts 管理软件 &lt;a href="https://github.com/2ndalpha/gasmask">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>KeePassX&lt;/code> : 免费开源的密码管理软件 &lt;a href="https://github.com/keepassx/keepassx">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>Keka&lt;/code> : 丑到极致的压缩、解压软件（不换图标不忍直视）&lt;a href="https://github.com/aonez/Keka">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>The Unarchiver&lt;/code> : 承诺会永久免费全能的解压缩软件 &lt;a href="https://theunarchiver.com/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Android 文件传输&lt;/code> : 安卓手机数据线传输助手 &lt;a href="https://www.android.com/filetransfer/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>AppCleaner&lt;/code> : 应用程序卸载助手 &lt;a href="https://freemacsoft.net/appcleaner/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Tencent Lemon&lt;/code> : 腾讯出品的 Mac 清理工具 &lt;a href="https://lemon.qq.com/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>IINA&lt;/code> : 很好用的本地视频播放器 &lt;a href="https://github.com/iina/iina">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>OpenInTerminal&lt;/code> : 在终端（或编辑器）中打开当前目录 &lt;a href="https://github.com/Ji4n1ng/OpenInTerminal">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>FileZilla&lt;/code> : 跨平台 FTP 客户端工具 &lt;a href="https://filezilla-project.org/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Mos&lt;/code> : 平滑鼠标滚动效果或单独设置滚动方向的小工具 &lt;a href="https://github.com/Caldis/Mos">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>Another.Redis.Desktop.Manager&lt;/code> : &lt;a href="https://github.com/qishibo/AnotherRedisDesktopManager">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>Draw.io&lt;/code> : 强大简洁的在线的绘图网站，也提供了多平台的离线桌面版可供下载 &lt;a href="https://github.com/jgraph/drawio">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>eZip&lt;/code> : 简洁易用的免费压缩软件 &lt;a href="https://ezip.awehunt.com/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>iRightMouse&lt;/code> : 超级右键，强大的右键菜单工具 &lt;a href="https://www.better365.cn/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Bob&lt;/code> : Bob 是一款 Mac 端翻译软件 &lt;a href="https://github.com/ripperhe/Bob">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>ImageOptim&lt;/code> : 是一款小巧免费且开源的 Mac 图片无损压缩优化工具 &lt;a href="https://imageoptim.com/mac">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Sourcetree&lt;/code> : SourceTree 是 Windows 和 Mac OS X 下免费的 Git 客户端 &lt;a href="https://www.sourcetreeapp.com/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>BitWarden&lt;/code> : 免费的开源密码管理服务 &lt;a href="https://github.com/bitwarden">github&lt;/a> ，自我托管服务搭建&lt;a href="https://github.com/dani-garcia/bitwarden_rs">github&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>占用端口、PID 查询总结</title><link>https://lrtg.ml/2017/05/24/query-port-pid/</link><pubDate>Wed, 24 May 2017 10:45:20 +0000</pubDate><guid>https://lrtg.ml/2017/05/24/query-port-pid/</guid><description>
+&lt;blockquote>
+&lt;p>总结一下日常工作学习中常用的查询占用端口、PID相关命令。主要有命令 ps、lsof、netstat 等命令。&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="ps">ps&lt;/h2>
+&lt;p>&lt;code>ps -ef&lt;/code> 或者 &lt;code>ps aux&lt;/code>&lt;/p>
+&lt;p>根据命令（IntelliJIDEALicenseServer）搜索 PID（17107）&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ ps -ef | grep IntelliJIDEALicenseServer | grep -v &lt;span style="color:#e6db74">&amp;#34;grep&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">501&lt;/span> &lt;span style="color:#ae81ff">17017&lt;/span> &lt;span style="color:#ae81ff">12203&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> 10:01上午 ttys000 0:00.02 IntelliJIDEALicenseServer -p &lt;span style="color:#ae81ff">21014&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="lsof">lsof&lt;/h2>
+&lt;p>根据 PID（17107）搜索占用端口（21014）&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ lsof -p &lt;span style="color:#ae81ff">17017&lt;/span> -nP | grep TCP
+COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
+IntelliJI &lt;span style="color:#ae81ff">17017&lt;/span> ehlxr 3u IPv4 0xc0df10496212b0e3 0t0 TCP *:21014 &lt;span style="color:#f92672">(&lt;/span>LISTEN&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#75715e"># 或者使用&lt;/span>
+$ lsof -nP -iTCP -sTCP:LISTEN | grep &lt;span style="color:#ae81ff">17017&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;ul>
+&lt;li>-n 表示不显示主机名&lt;/li>
+&lt;li>-P 表示不显示端口俗称&lt;/li>
+&lt;/ul>
+&lt;/blockquote>
+&lt;p>根据端口（21014）搜索 PID（17107）&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ lsof -i:21014
+COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
+IntelliJI &lt;span style="color:#ae81ff">17017&lt;/span> ehlxr 3u IPv4 0xc0df10496212b0e3 0t0 TCP *:21014 &lt;span style="color:#f92672">(&lt;/span>LISTEN&lt;span style="color:#f92672">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="netstat">netstat&lt;/h2>
+&lt;p>&lt;strong>仅 Linux 系统下好使，Mac 下无效&lt;/strong>&lt;/p>
+&lt;p>端口（21017），PID（1847）&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ netstat -antlp | grep IntelliJIDEA
+tcp &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> 0.0.0.0:21017 0.0.0.0:* LISTEN 1847/./IntelliJIDEA
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Mac 使用技巧总结</title><link>https://lrtg.ml/2017/02/21/Mac-%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/</link><pubDate>Tue, 21 Feb 2017 21:40:06 +0000</pubDate><guid>https://lrtg.ml/2017/02/21/Mac-%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/</guid><description>
+&lt;blockquote>
+&lt;p>Mac 系统日常使用技巧归纳总结。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="一mac-中-finder-显示关闭隐藏文件">一、Mac 中 Finder 显示、关闭隐藏文件&lt;/h1>
+&lt;h2 id="11-终端命令模式">1.1 终端命令模式&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>打开终端，输入：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">&lt;span style="color:#75715e"># 此命令显示隐藏文件&lt;/span>
+defaults write com.apple.finder AppleShowAllFiles -bool true
+&lt;span style="color:#75715e"># 此命令关闭显示隐藏文件&lt;/span>
+defaults write com.apple.finder AppleShowAllFiles -bool false
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>命令运行之后需要重新加载 Finder&lt;/p>
+&lt;p>快捷键 &lt;code>Option + Command + ESC&lt;/code>，选中 &lt;code>Finder&lt;/code>，重新启动即可&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="12-finder-快捷键">1.2 Finder 快捷键&lt;/h2>
+&lt;p>在 macOS Sierra（10.12） 版本的系统中，我们可以使用快捷键&lt;code>⌘⇧.&lt;/code>(&lt;code>Command + Shift + .&lt;/code>) 来快速（在 Finder 中）显示和隐藏隐藏文件了。&lt;/p>
+&lt;h1 id="二terminal-中使用-sublime-打开文件">二、Terminal 中使用 Sublime 打开文件&lt;/h1>
+&lt;h2 id="21-如果使用默认-shell">2.1 如果使用默认 Shell&lt;/h2>
+&lt;p>在 &lt;code>Terminal&lt;/code> 输入以下命令：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">sudo ln -s &lt;span style="color:#e6db74">&amp;#34;/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl&amp;#34;&lt;/span> /usr/bin/subl
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="22-如果使用-zsh">2.2 如果使用 zsh&lt;/h2>
+&lt;p>在文件 &lt;code>~/.zshrc&lt;/code> 最后添加&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">alias subl&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;#39;/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl&amp;#39;&amp;#34;&lt;/span>
+alias nano&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;subl&amp;#34;&lt;/span>
+export EDITOR&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;subl&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后在 &lt;code>Terminal&lt;/code> 中使用 &lt;code>subl&lt;/code> 就可以打开 &lt;code>Sublime&lt;/code> 了。&lt;/p>
+&lt;h2 id="23-使用-sublime-打开指定的文件">2.3 使用 Sublime 打开指定的文件&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">open -a Sublime&lt;span style="color:#ae81ff">\ &lt;/span>Text .m2/settings.xml
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>可以使用 &lt;code>Tab&lt;/code> 自定补全应用名称&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="三多屏切换-dock-显示">三、多屏切换 dock 显示&lt;/h1>
+&lt;p>如果 &lt;code>dock&lt;/code> 在屏幕底部显示，移动鼠标到要显示 &lt;code>dock&lt;/code> 的屏幕上，单击使屏幕处于选中状态，在屏幕底部中间部位向下滑动鼠标即可移动 &lt;code>dock&lt;/code> 到当前屏幕上显示。&lt;/p>
+&lt;h1 id="四terminal-重启-finderdock-等命令">四、Terminal 重启 Finder、dock 等命令&lt;/h1>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">&lt;span style="color:#75715e"># Finder 崩溃重启&lt;/span>
+killall -kill Finder
+&lt;span style="color:#75715e"># Dock 崩溃重启&lt;/span>
+killall -kill Dock
+&lt;span style="color:#75715e"># 菜单栏崩溃重启&lt;/span>
+killall -kill SystemUIServer
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="五terminal-中用打开当前路径的文件夹">五、Terminal 中用打开当前路径的文件夹&lt;/h1>
+&lt;p>在 &lt;code>Terminal&lt;/code> 中输入命令：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">open .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="六剪贴文件">六、剪贴文件&lt;/h1>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">&lt;span style="color:#75715e"># 复制&lt;/span>
+Command + c
+&lt;span style="color:#75715e"># 剪切到当前目录&lt;/span>
+Command + Option + v
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="七快速打开最小化程序">七、快速打开最小化程序&lt;/h1>
+&lt;p>&lt;code>Command + Tab&lt;/code> 切换程序的时候，最小化的程序不自动弹出窗口，解决办法如下：&lt;/p>
+&lt;ul>
+&lt;li>用 &lt;code>Command + Tab&lt;/code> 切换到要打开的程序&lt;/li>
+&lt;li>先松开 &lt;code>Tab&lt;/code> 键，不要松开 &lt;code>Command&lt;/code> 键&lt;/li>
+&lt;li>然后按住 &lt;code>Option&lt;/code> 键&lt;/li>
+&lt;li>然后依次松开 &lt;code>Command&lt;/code> 和 &lt;code>Option&lt;/code> 键&lt;/li>
+&lt;/ul>
+&lt;p>如上操作就可以快速打开最小化的程序了。&lt;/p>
+&lt;h1 id="八常用快捷键">八、常用快捷键&lt;/h1>
+&lt;p>&lt;a href="https://support.apple.com/zh-cn/HT201236">Mac 键盘快捷键官方参考&lt;/a>&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>功能&lt;/th>
+&lt;th>快捷键&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>预览文件&lt;/td>
+&lt;td>&lt;code>空格&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>重命名&lt;/td>
+&lt;td>&lt;code>Enter&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>打开文件&lt;/td>
+&lt;td>&lt;code>Command + o&lt;/code>、&lt;code>Command + ↓&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>显示桌面&lt;/td>
+&lt;td>&lt;code>F11&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>切换窗口全屏状态&lt;/td>
+&lt;td>&lt;code>Ctrl + Cmmad + f&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>影藏/显示 Dock&lt;/td>
+&lt;td>&lt;code>Command + Option + d&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>输入 emoji 表情&lt;/td>
+&lt;td>&lt;code>Ctrl + Cmmad + 空格&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h1 id="九ds_store-文件处理">九、.DS_Store 文件处理&lt;/h1>
+&lt;p>&lt;a href="https://zh.wikipedia.org/wiki/.DS_Store">.DS_Store (英文全称 Desktop Services Store) 是一种由苹果公司的 Mac OS X 操作系统所创造的隐藏文件，目的在于存贮目录的自定义属性，例如文件们的图标位置或者是背景色的选择。&lt;/a>&lt;/p>
+&lt;h2 id="91-清除文件">9.1 清除文件&lt;/h2>
+&lt;p>清除命令：&lt;/p>
+&lt;p>&lt;code>sudo find / -name &amp;quot;.DS_Store&amp;quot; -depth -exec rm {} \;&lt;/code>&lt;/p>
+&lt;h2 id="92-禁用或启用自动生成">9.2 禁用或启用自动生成&lt;/h2>
+&lt;p>执行以下命令，回车执行，重启 Mac 即可生效。&lt;/p>
+&lt;ul>
+&lt;li>禁止.DS_store生成：&lt;/li>
+&lt;/ul>
+&lt;p>&lt;code>defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE&lt;/code>&lt;/p>
+&lt;ul>
+&lt;li>恢复.DS_store生成：&lt;/li>
+&lt;/ul>
+&lt;p>&lt;code>defaults delete com.apple.desktopservices DSDontWriteNetworkStores&lt;/code>&lt;/p>
+&lt;h1 id="十ntfs-格式移动盘写入文件">十、NTFS 格式移动盘写入文件&lt;/h1>
+&lt;p>一般来说，MacOS 是不支持 NTFS 格式磁盘的写入，可以借助三方工具，例如：Tuxera NTFS，不过收费还挺高的。这里介绍一种方法，不需要借助三方工具也可以实现 NTFS 格式磁盘写入。（基于系统版本 &lt;code>macOS Sierra 10.12.4&lt;/code> 亲测可行）&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>插入移动硬盘，终端输入命令：&lt;code>$ diskutil list&lt;/code> 查看移动硬盘名称。例如：&lt;/p>
+&lt;pre>&lt;code>$ diskutil list
+....
+/dev/disk2 (external, physical):
+#: TYPE NAME SIZE IDENTIFIER
+0: FDisk_partition_scheme *500.1 GB disk2
+1: Windows_NTFS EHLXR 500.1 GB disk2s4
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>编辑系统文件 &lt;code>sudo vim /etc/fstab&lt;/code> ，写入以下内容，然后保存。&lt;/p>
+&lt;pre>&lt;code>LABEL=EHLXR none ntfs rw,auto,nobrowse
+&lt;/code>&lt;/pre>&lt;p>其中 &lt;code>EHLXR&lt;/code> 为移动硬盘名称。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>推出硬盘重新插入，这时候桌面已不再显示移动硬盘图标。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>在 Finder 中通过快捷键 &lt;code>Command + Shift + g&lt;/code> 输入&lt;code>/Volumes&lt;/code> 就可以重新看到移动硬盘，这时候打开移动硬盘就可以写入文件了。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>为了方便起见，可以通过命令：&lt;code>sudo ln -s /Volumes ~/Desktop/Volumes&lt;/code> 在桌面建立快捷方式，方便查看。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;p>&lt;em>未完待续&amp;hellip;&lt;/em>&lt;/p></description></item></channel></rss>

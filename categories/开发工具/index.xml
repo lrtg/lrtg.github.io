@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>开发工具 on lrtg</title><link>https://lrtg.ml/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/</link><description>Recent content in 开发工具 on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Fri, 30 Mar 2018 20:45:40 +0000</lastBuildDate><atom:link href="https://lrtg.ml/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/index.xml" rel="self" type="application/rss+xml"/><item><title>Mac 实用小工具</title><link>https://lrtg.ml/2018/03/30/mac-utility-tools/</link><pubDate>Fri, 30 Mar 2018 20:45:40 +0000</pubDate><guid>https://lrtg.ml/2018/03/30/mac-utility-tools/</guid><description>
+&lt;blockquote>
+&lt;p>记录备忘一下 Mac 系统下一些实用的小工具&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="收费">收费&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>Bartender&lt;/code> : 菜单栏管理工具，可以将菜单放进 Bartender 的二级菜单&lt;/li>
+&lt;li>&lt;code>SizeUp&lt;/code> : 实用分屏小工具&lt;/li>
+&lt;li>&lt;code>Proxifier&lt;/code> : 配合 ss/ssr 可以实现真正的全局代理软件&lt;/li>
+&lt;li>&lt;code>iStat Menus&lt;/code> : 能够在系统菜单栏实时监控 CPU、内存、硬盘、网络、温度、电池以及系统时间等&lt;/li>
+&lt;li>&lt;code>CleanMyMac&lt;/code> : 系统清理工具，可以清除 mac 系统多余的语言包、系统缓存、应用程序等&lt;/li>
+&lt;li>&lt;code>KeyCue&lt;/code> : 快捷键辅助工具，忘记一些快捷键的时候按住 Command 就会出现快捷键大全的菜单&lt;/li>
+&lt;li>&lt;code>Araxis Merge&lt;/code> : 可视化文件合并以及数据同步工具&lt;/li>
+&lt;li>&lt;code>BetterZip&lt;/code> : 功能非常强大的压缩解压缩软件&lt;/li>
+&lt;li>&lt;code>Parallels Desktop&lt;/code> : 最佳 Mac 虚拟机解决方案&lt;/li>
+&lt;li>&lt;code>TinyCal&lt;/code> : 小历 - 小而美的日历 (OS X)&lt;/li>
+&lt;/ul>
+&lt;h2 id="免费">免费&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>Vanilla&lt;/code> : &lt;code>Bartender&lt;/code> 的免费替代 APP &lt;a href="https://matthewpalmer.net/vanilla/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Hidden Bar&lt;/code> : 隐藏 macOS 菜单栏不常用的应用图标，替代 Bartender 3 &lt;a href="https://github.com/dwarvesf/hidden">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>AccessMenuBarApps&lt;/code> : 影藏菜单栏的左侧部分内容。配合 Hidden Bar 使用（设置为同一个快捷键） &lt;a href="http://www.ortisoft.de/en/accessmenubarapps/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Rectangle&lt;/code> : &lt;code>SizeUp&lt;/code> 的免费替代 APP &lt;a href="https://github.com/rxhanson/Rectangle">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>Alfred&lt;/code> : Mac 效率神器，Spotlight 完美替代产品（需要付费购买部分功能）&lt;a href="https://www.alfredapp.com/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>iTerm2&lt;/code> : 是一款完全免费的，专为 Mac OS 用户打造的命令行应用 &lt;a href="https://iterm2.com/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Typora&lt;/code> : 极致简洁的 markdown 编辑器 &lt;a href="https://www.typora.io/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Kap&lt;/code> : 免费开源的屏幕录像软件 &lt;a href="https://github.com/wulkano/kap">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>Karabiner Elements&lt;/code> : 修改键位映射软件 &lt;a href="https://github.com/pqrs-org/Karabiner-Elements">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>Gas Mask&lt;/code> : 免费开源的 hosts 管理软件 &lt;a href="https://github.com/2ndalpha/gasmask">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>KeePassX&lt;/code> : 免费开源的密码管理软件 &lt;a href="https://github.com/keepassx/keepassx">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>Keka&lt;/code> : 丑到极致的压缩、解压软件（不换图标不忍直视）&lt;a href="https://github.com/aonez/Keka">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>The Unarchiver&lt;/code> : 承诺会永久免费全能的解压缩软件 &lt;a href="https://theunarchiver.com/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Android 文件传输&lt;/code> : 安卓手机数据线传输助手 &lt;a href="https://www.android.com/filetransfer/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>AppCleaner&lt;/code> : 应用程序卸载助手 &lt;a href="https://freemacsoft.net/appcleaner/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Tencent Lemon&lt;/code> : 腾讯出品的 Mac 清理工具 &lt;a href="https://lemon.qq.com/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>IINA&lt;/code> : 很好用的本地视频播放器 &lt;a href="https://github.com/iina/iina">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>OpenInTerminal&lt;/code> : 在终端（或编辑器）中打开当前目录 &lt;a href="https://github.com/Ji4n1ng/OpenInTerminal">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>FileZilla&lt;/code> : 跨平台 FTP 客户端工具 &lt;a href="https://filezilla-project.org/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Mos&lt;/code> : 平滑鼠标滚动效果或单独设置滚动方向的小工具 &lt;a href="https://github.com/Caldis/Mos">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>Another.Redis.Desktop.Manager&lt;/code> : &lt;a href="https://github.com/qishibo/AnotherRedisDesktopManager">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>Draw.io&lt;/code> : 强大简洁的在线的绘图网站，也提供了多平台的离线桌面版可供下载 &lt;a href="https://github.com/jgraph/drawio">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>eZip&lt;/code> : 简洁易用的免费压缩软件 &lt;a href="https://ezip.awehunt.com/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>iRightMouse&lt;/code> : 超级右键，强大的右键菜单工具 &lt;a href="https://www.better365.cn/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Bob&lt;/code> : Bob 是一款 Mac 端翻译软件 &lt;a href="https://github.com/ripperhe/Bob">github&lt;/a>&lt;/li>
+&lt;li>&lt;code>ImageOptim&lt;/code> : 是一款小巧免费且开源的 Mac 图片无损压缩优化工具 &lt;a href="https://imageoptim.com/mac">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>Sourcetree&lt;/code> : SourceTree 是 Windows 和 Mac OS X 下免费的 Git 客户端 &lt;a href="https://www.sourcetreeapp.com/">官网&lt;/a>&lt;/li>
+&lt;li>&lt;code>BitWarden&lt;/code> : 免费的开源密码管理服务 &lt;a href="https://github.com/bitwarden">github&lt;/a> ，自我托管服务搭建&lt;a href="https://github.com/dani-garcia/bitwarden_rs">github&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>[转]Tmux 快捷键速查表</title><link>https://lrtg.ml/2017/10/25/tmux-cheat-sheet/</link><pubDate>Wed, 25 Oct 2017 14:45:24 +0000</pubDate><guid>https://lrtg.ml/2017/10/25/tmux-cheat-sheet/</guid><description>
+&lt;h1 id="tmux-快捷键--速查表">Tmux 快捷键 &amp;amp; 速查表&lt;/h1>
+&lt;p>启动新会话：&lt;/p>
+&lt;pre>&lt;code>tmux [new -s 会话名 -n 窗口名]
+&lt;/code>&lt;/pre>
+&lt;p>恢复会话：&lt;/p>
+&lt;pre>&lt;code>tmux at [-t 会话名]
+&lt;/code>&lt;/pre>
+&lt;p>列出所有会话：&lt;/p>
+&lt;pre>&lt;code>tmux ls
+&lt;/code>&lt;/pre>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->关闭会话：&lt;/p>
+&lt;pre>&lt;code>tmux kill-session -t 会话名
+&lt;/code>&lt;/pre>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->关闭所有会话：&lt;/p>
+&lt;pre>&lt;code>tmux ls | grep : | cut -d. -f1 | awk '{print substr($1, 0, length($1)-1)}' | xargs kill
+&lt;/code>&lt;/pre>
+&lt;h1 id="在-tmux-中按下-tmux-前缀-ctrlb然后">在 Tmux 中，按下 Tmux 前缀 &lt;code>ctrl+b&lt;/code>，然后：&lt;/h1>
+&lt;h2 id="会话">会话&lt;/h2>
+&lt;pre>&lt;code>:new&amp;lt;回车&amp;gt; 启动新会话
+s 列出所有会话
+$ 重命名当前会话
+&lt;/code>&lt;/pre>
+&lt;h2 id="a-namewindowstabsa窗口-标签页">&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->窗口 (标签页)&lt;/h2>
+&lt;pre>&lt;code>c 创建新窗口
+w 列出所有窗口
+n 后一个窗口
+p 前一个窗口
+f 查找窗口
+, 重命名当前窗口
+&amp;amp; 关闭当前窗口
+&lt;/code>&lt;/pre>
+&lt;h2 id="调整窗口排序">调整窗口排序&lt;/h2>
+&lt;pre>&lt;code>swap-window -s 3 -t 1 交换 3 号和 1 号窗口
+swap-window -t 1 交换当前和 1 号窗口
+move-window -t 1 移动当前窗口到 1 号
+&lt;/code>&lt;/pre>
+&lt;h2 id="a-namepanessplitsa窗格分割窗口">&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->窗格（分割窗口）&lt;/h2>
+&lt;pre>&lt;code>% 垂直分割
+&amp;quot; 水平分割
+o 交换窗格
+x 关闭窗格
+⍽ 左边这个符号代表空格键 - 切换布局
+q 显示每个窗格是第几个，当数字出现的时候按数字几就选中第几个窗格
+{ 与上一个窗格交换位置
+} 与下一个窗格交换位置
+z 切换窗格最大化/最小化
+&lt;/code>&lt;/pre>
+&lt;h2 id="a-namesyncpanesa同步窗格">&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->同步窗格&lt;/h2>
+&lt;p>这么做可以切换到想要的窗口，输入 Tmux 前缀和一个冒号呼出命令提示行，然后输入：&lt;/p>
+&lt;pre>&lt;code>:setw synchronize-panes
+&lt;/code>&lt;/pre>&lt;p>你可以指定开或关，否则重复执行命令会在两者间切换。
+这个选项值针对某个窗口有效，不会影响别的会话和窗口。
+完事儿之后再次执行命令来关闭。&lt;a href="http://blog.sanctum.geek.nz/sync-tmux-panes/">帮助&lt;/a>&lt;/p>
+&lt;h2 id="调整窗格尺寸">调整窗格尺寸&lt;/h2>
+&lt;p>如果你不喜欢默认布局，可以重调窗格的尺寸。虽然这很容易实现，但一般不需要这么干。这几个命令用来调整窗格：&lt;/p>
+&lt;pre>&lt;code>PREFIX : resize-pane -D 当前窗格向下扩大 1 格
+PREFIX : resize-pane -U 当前窗格向上扩大 1 格
+PREFIX : resize-pane -L 当前窗格向左扩大 1 格
+PREFIX : resize-pane -R 当前窗格向右扩大 1 格
+PREFIX : resize-pane -D 20 当前窗格向下扩大 20 格
+PREFIX : resize-pane -t 2 -L 20 编号为 2 的窗格向左扩大 20 格
+&lt;/code>&lt;/pre>
+&lt;h2 id="文本复制模式">文本复制模式：&lt;/h2>
+&lt;p>按下**前缀 [**进入文本复制模式。可以使用方向键在屏幕中移动光标。默认情况下，方向键是启用的。在配置文件中启用 Vim 键盘布局来切换窗口、调整窗格大小。Tmux 也支持 Vi 模式。要是想启用 Vi 模式，只需要把下面这一行添加到 .tmux.conf 中：&lt;/p>
+&lt;pre>&lt;code>setw -g mode-keys vi
+&lt;/code>&lt;/pre>
+&lt;p>启用这条配置后，就可以使用 h、j、k、l 来移动光标了。&lt;/p>
+&lt;p>想要退出文本复制模式的话，按下回车键就可以了。一次移动一格效率低下，在 Vi 模式启用的情况下，可以辅助一些别的快捷键高效工作。&lt;/p>
+&lt;p>例如，可以使用 w 键逐词移动，使用 b 键逐词回退。使用 f 键加上任意字符跳转到当前行第一次出现该字符的位置，使用 F 键达到相反的效果。&lt;/p>
+&lt;pre>&lt;code>vi emacs 功能
+^ M-m 反缩进
+Escape C-g 清除选定内容
+Enter M-w 复制选定内容
+j Down 光标下移
+h Left 光标左移
+l Right 光标右移
+L 光标移到尾行
+M M-r 光标移到中间行
+H M-R 光标移到首行
+k Up 光标上移
+d C-u 删除整行
+D C-k 删除到行末
+$ C-e 移到行尾
+: g 前往指定行
+C-d M-Down 向下滚动半屏
+C-u M-Up 向上滚动半屏
+C-f Page down 下一页
+w M-f 下一个词
+p C-y 粘贴
+C-b Page up 上一页
+b M-b 上一个词
+q Escape 退出
+C-Down or J C-Down 向下翻
+C-Up or K C-Up 向下翻
+n n 继续搜索
+? C-r 向前搜索
+/ C-s 向后搜索
+0 C-a 移到行首
+Space C-Space 开始选中
+C-t 字符调序
+&lt;/code>&lt;/pre>
+&lt;h2 id="杂项">杂项：&lt;/h2>
+&lt;pre>&lt;code>d 退出 tmux（tmux 仍在后台运行）
+t 窗口中央显示一个数字时钟
+? 列出所有快捷键
+: 命令提示符
+&lt;/code>&lt;/pre>
+&lt;h2 id="配置选项">配置选项：&lt;/h2>
+&lt;pre>&lt;code># 鼠标支持 - 设置为 on 来启用鼠标
+* setw -g mode-mouse off
+* set -g mouse-select-pane off
+* set -g mouse-resize-pane off
+* set -g mouse-select-window off
+# 设置默认终端模式为 256color
+set -g default-terminal &amp;quot;screen-256color&amp;quot;
+# 启用活动警告
+setw -g monitor-activity on
+set -g visual-activity on
+# 居中窗口列表
+set -g status-justify centre
+# 最大化/恢复窗格
+unbind Up bind Up new-window -d -n tmp \; swap-pane -s tmp.1 \; select-window -t tmp
+unbind Down
+bind Down last-window \; swap-pane -s tmp.1 \; kill-window -t tmp
+&lt;/code>&lt;/pre>
+&lt;h2 id="配置文件tmuxconf">配置文件（~/.tmux.conf）：&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># 基础设置&lt;/span>
+set -g default-terminal &lt;span style="color:#e6db74">&amp;#34;screen-256color&amp;#34;&lt;/span>
+set -g display-time &lt;span style="color:#ae81ff">3000&lt;/span>
+set -g escape-time &lt;span style="color:#ae81ff">0&lt;/span>
+set -g history-limit &lt;span style="color:#ae81ff">65535&lt;/span>
+set -g base-index &lt;span style="color:#ae81ff">1&lt;/span>
+set -g pane-base-index &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#75715e"># 前缀绑定 (Ctrl+a)&lt;/span>
+set -g prefix ^a
+unbind ^b
+bind a send-prefix
+&lt;span style="color:#75715e"># 分割窗口&lt;/span>
+unbind &lt;span style="color:#e6db74">&amp;#39;&amp;#34;&amp;#39;&lt;/span>
+bind - splitw -v
+unbind %
+bind | splitw -h
+&lt;span style="color:#75715e"># 选中窗口&lt;/span>
+bind-key k &lt;span style="color:#66d9ef">select&lt;/span>-pane -U
+bind-key j &lt;span style="color:#66d9ef">select&lt;/span>-pane -D
+bind-key h &lt;span style="color:#66d9ef">select&lt;/span>-pane -L
+bind-key l &lt;span style="color:#66d9ef">select&lt;/span>-pane -R
+&lt;span style="color:#75715e"># copy-mode 将快捷键设置为 vi 模式&lt;/span>
+setw -g mode-keys vi
+&lt;span style="color:#75715e"># 启用鼠标(Tmux v2.1)&lt;/span>
+set -g mouse on
+&lt;span style="color:#75715e"># 更新配置文件&lt;/span>
+bind r source-file ~/.tmux.conf &lt;span style="color:#ae81ff">\;&lt;/span> display &lt;span style="color:#e6db74">&amp;#34;已更新&amp;#34;&lt;/span>
+&lt;span style="color:#75715e">#&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&lt;/span>
+&lt;span style="color:#75715e"># Tmux Plugin Manager(Tmux v2.1)&lt;/span>
+&lt;span style="color:#75715e"># Tmux Resurrect&lt;/span>
+set -g @plugin &lt;span style="color:#e6db74">&amp;#39;tmux-plugins/tmux-resurrect&amp;#39;&lt;/span>
+&lt;span style="color:#75715e"># List of plugins&lt;/span>
+set -g @plugin &lt;span style="color:#e6db74">&amp;#39;tmux-plugins/tpm&amp;#39;&lt;/span>
+set -g @plugin &lt;span style="color:#e6db74">&amp;#39;tmux-plugins/tmux-sensible&amp;#39;&lt;/span>
+&lt;span style="color:#75715e"># Other examples:&lt;/span>
+&lt;span style="color:#75715e"># set -g @plugin &amp;#39;github_username/plugin_name&amp;#39;&lt;/span>
+&lt;span style="color:#75715e"># set -g @plugin &amp;#39;git@github.com/user/plugin&amp;#39;&lt;/span>
+&lt;span style="color:#75715e"># set -g @plugin &amp;#39;git@bitbucket.com/user/plugin&amp;#39;&lt;/span>
+&lt;span style="color:#75715e"># Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)&lt;/span>
+run &lt;span style="color:#e6db74">&amp;#39;~/.tmux/plugins/tpm/tpm&amp;#39;&lt;/span>
+&lt;span style="color:#75715e">#&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;p>&lt;a href="https://gist.github.com/ryerh/14b7c24dfd623ef8edc7">原文地址&lt;/a>&lt;/p></description></item><item><title>Mac 使用技巧总结</title><link>https://lrtg.ml/2017/02/21/Mac-%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/</link><pubDate>Tue, 21 Feb 2017 21:40:06 +0000</pubDate><guid>https://lrtg.ml/2017/02/21/Mac-%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/</guid><description>
+&lt;blockquote>
+&lt;p>Mac 系统日常使用技巧归纳总结。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="一mac-中-finder-显示关闭隐藏文件">一、Mac 中 Finder 显示、关闭隐藏文件&lt;/h1>
+&lt;h2 id="11-终端命令模式">1.1 终端命令模式&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>打开终端，输入：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">&lt;span style="color:#75715e"># 此命令显示隐藏文件&lt;/span>
+defaults write com.apple.finder AppleShowAllFiles -bool true
+&lt;span style="color:#75715e"># 此命令关闭显示隐藏文件&lt;/span>
+defaults write com.apple.finder AppleShowAllFiles -bool false
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>命令运行之后需要重新加载 Finder&lt;/p>
+&lt;p>快捷键 &lt;code>Option + Command + ESC&lt;/code>，选中 &lt;code>Finder&lt;/code>，重新启动即可&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="12-finder-快捷键">1.2 Finder 快捷键&lt;/h2>
+&lt;p>在 macOS Sierra（10.12） 版本的系统中，我们可以使用快捷键&lt;code>⌘⇧.&lt;/code>(&lt;code>Command + Shift + .&lt;/code>) 来快速（在 Finder 中）显示和隐藏隐藏文件了。&lt;/p>
+&lt;h1 id="二terminal-中使用-sublime-打开文件">二、Terminal 中使用 Sublime 打开文件&lt;/h1>
+&lt;h2 id="21-如果使用默认-shell">2.1 如果使用默认 Shell&lt;/h2>
+&lt;p>在 &lt;code>Terminal&lt;/code> 输入以下命令：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">sudo ln -s &lt;span style="color:#e6db74">&amp;#34;/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl&amp;#34;&lt;/span> /usr/bin/subl
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="22-如果使用-zsh">2.2 如果使用 zsh&lt;/h2>
+&lt;p>在文件 &lt;code>~/.zshrc&lt;/code> 最后添加&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">alias subl&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;#39;/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl&amp;#39;&amp;#34;&lt;/span>
+alias nano&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;subl&amp;#34;&lt;/span>
+export EDITOR&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;subl&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后在 &lt;code>Terminal&lt;/code> 中使用 &lt;code>subl&lt;/code> 就可以打开 &lt;code>Sublime&lt;/code> 了。&lt;/p>
+&lt;h2 id="23-使用-sublime-打开指定的文件">2.3 使用 Sublime 打开指定的文件&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">open -a Sublime&lt;span style="color:#ae81ff">\ &lt;/span>Text .m2/settings.xml
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>可以使用 &lt;code>Tab&lt;/code> 自定补全应用名称&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="三多屏切换-dock-显示">三、多屏切换 dock 显示&lt;/h1>
+&lt;p>如果 &lt;code>dock&lt;/code> 在屏幕底部显示，移动鼠标到要显示 &lt;code>dock&lt;/code> 的屏幕上，单击使屏幕处于选中状态，在屏幕底部中间部位向下滑动鼠标即可移动 &lt;code>dock&lt;/code> 到当前屏幕上显示。&lt;/p>
+&lt;h1 id="四terminal-重启-finderdock-等命令">四、Terminal 重启 Finder、dock 等命令&lt;/h1>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">&lt;span style="color:#75715e"># Finder 崩溃重启&lt;/span>
+killall -kill Finder
+&lt;span style="color:#75715e"># Dock 崩溃重启&lt;/span>
+killall -kill Dock
+&lt;span style="color:#75715e"># 菜单栏崩溃重启&lt;/span>
+killall -kill SystemUIServer
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="五terminal-中用打开当前路径的文件夹">五、Terminal 中用打开当前路径的文件夹&lt;/h1>
+&lt;p>在 &lt;code>Terminal&lt;/code> 中输入命令：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">open .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="六剪贴文件">六、剪贴文件&lt;/h1>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">&lt;span style="color:#75715e"># 复制&lt;/span>
+Command + c
+&lt;span style="color:#75715e"># 剪切到当前目录&lt;/span>
+Command + Option + v
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="七快速打开最小化程序">七、快速打开最小化程序&lt;/h1>
+&lt;p>&lt;code>Command + Tab&lt;/code> 切换程序的时候，最小化的程序不自动弹出窗口，解决办法如下：&lt;/p>
+&lt;ul>
+&lt;li>用 &lt;code>Command + Tab&lt;/code> 切换到要打开的程序&lt;/li>
+&lt;li>先松开 &lt;code>Tab&lt;/code> 键，不要松开 &lt;code>Command&lt;/code> 键&lt;/li>
+&lt;li>然后按住 &lt;code>Option&lt;/code> 键&lt;/li>
+&lt;li>然后依次松开 &lt;code>Command&lt;/code> 和 &lt;code>Option&lt;/code> 键&lt;/li>
+&lt;/ul>
+&lt;p>如上操作就可以快速打开最小化的程序了。&lt;/p>
+&lt;h1 id="八常用快捷键">八、常用快捷键&lt;/h1>
+&lt;p>&lt;a href="https://support.apple.com/zh-cn/HT201236">Mac 键盘快捷键官方参考&lt;/a>&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>功能&lt;/th>
+&lt;th>快捷键&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>预览文件&lt;/td>
+&lt;td>&lt;code>空格&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>重命名&lt;/td>
+&lt;td>&lt;code>Enter&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>打开文件&lt;/td>
+&lt;td>&lt;code>Command + o&lt;/code>、&lt;code>Command + ↓&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>显示桌面&lt;/td>
+&lt;td>&lt;code>F11&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>切换窗口全屏状态&lt;/td>
+&lt;td>&lt;code>Ctrl + Cmmad + f&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>影藏/显示 Dock&lt;/td>
+&lt;td>&lt;code>Command + Option + d&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>输入 emoji 表情&lt;/td>
+&lt;td>&lt;code>Ctrl + Cmmad + 空格&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h1 id="九ds_store-文件处理">九、.DS_Store 文件处理&lt;/h1>
+&lt;p>&lt;a href="https://zh.wikipedia.org/wiki/.DS_Store">.DS_Store (英文全称 Desktop Services Store) 是一种由苹果公司的 Mac OS X 操作系统所创造的隐藏文件，目的在于存贮目录的自定义属性，例如文件们的图标位置或者是背景色的选择。&lt;/a>&lt;/p>
+&lt;h2 id="91-清除文件">9.1 清除文件&lt;/h2>
+&lt;p>清除命令：&lt;/p>
+&lt;p>&lt;code>sudo find / -name &amp;quot;.DS_Store&amp;quot; -depth -exec rm {} \;&lt;/code>&lt;/p>
+&lt;h2 id="92-禁用或启用自动生成">9.2 禁用或启用自动生成&lt;/h2>
+&lt;p>执行以下命令，回车执行，重启 Mac 即可生效。&lt;/p>
+&lt;ul>
+&lt;li>禁止.DS_store生成：&lt;/li>
+&lt;/ul>
+&lt;p>&lt;code>defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE&lt;/code>&lt;/p>
+&lt;ul>
+&lt;li>恢复.DS_store生成：&lt;/li>
+&lt;/ul>
+&lt;p>&lt;code>defaults delete com.apple.desktopservices DSDontWriteNetworkStores&lt;/code>&lt;/p>
+&lt;h1 id="十ntfs-格式移动盘写入文件">十、NTFS 格式移动盘写入文件&lt;/h1>
+&lt;p>一般来说，MacOS 是不支持 NTFS 格式磁盘的写入，可以借助三方工具，例如：Tuxera NTFS，不过收费还挺高的。这里介绍一种方法，不需要借助三方工具也可以实现 NTFS 格式磁盘写入。（基于系统版本 &lt;code>macOS Sierra 10.12.4&lt;/code> 亲测可行）&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>插入移动硬盘，终端输入命令：&lt;code>$ diskutil list&lt;/code> 查看移动硬盘名称。例如：&lt;/p>
+&lt;pre>&lt;code>$ diskutil list
+....
+/dev/disk2 (external, physical):
+#: TYPE NAME SIZE IDENTIFIER
+0: FDisk_partition_scheme *500.1 GB disk2
+1: Windows_NTFS EHLXR 500.1 GB disk2s4
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>编辑系统文件 &lt;code>sudo vim /etc/fstab&lt;/code> ，写入以下内容，然后保存。&lt;/p>
+&lt;pre>&lt;code>LABEL=EHLXR none ntfs rw,auto,nobrowse
+&lt;/code>&lt;/pre>&lt;p>其中 &lt;code>EHLXR&lt;/code> 为移动硬盘名称。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>推出硬盘重新插入，这时候桌面已不再显示移动硬盘图标。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>在 Finder 中通过快捷键 &lt;code>Command + Shift + g&lt;/code> 输入&lt;code>/Volumes&lt;/code> 就可以重新看到移动硬盘，这时候打开移动硬盘就可以写入文件了。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>为了方便起见，可以通过命令：&lt;code>sudo ln -s /Volumes ~/Desktop/Volumes&lt;/code> 在桌面建立快捷方式，方便查看。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;p>&lt;em>未完待续&amp;hellip;&lt;/em>&lt;/p></description></item><item><title>Vim Tab 设置为 4 个空格</title><link>https://lrtg.ml/2016/12/02/Vim-Tab-%E8%AE%BE%E7%BD%AE%E4%B8%BA-4-%E4%B8%AA%E7%A9%BA%E6%A0%BC/</link><pubDate>Fri, 02 Dec 2016 20:46:05 +0000</pubDate><guid>https://lrtg.ml/2016/12/02/Vim-Tab-%E8%AE%BE%E7%BD%AE%E4%B8%BA-4-%E4%B8%AA%E7%A9%BA%E6%A0%BC/</guid><description>
+&lt;p>在 &lt;code>vim&lt;/code> 的配置文件中（Liunx：&lt;code>/etc/vimrc&lt;/code>）中添加以下代码后，重启 &lt;code>vim&lt;/code> 即可实现按 &lt;code>TAB&lt;/code> 产生 &lt;code>4&lt;/code> 个空格：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">set ts&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">4&lt;/span> &lt;span style="color:#75715e"># 注：ts 是 tabstop 的缩写，设 TAB 宽 4 个空格&lt;/span>
+set expandtab
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>对于已保存的文件，可以使用下面的方法进行空格和 &lt;code>TAB&lt;/code> 的替换：&lt;/p>
+&lt;p>&lt;code>TAB&lt;/code> 替换为空格：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">:set ts&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">4&lt;/span>
+:set expandtab
+:%retab!
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>空格替换为 &lt;code>TAB&lt;/code>：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">:set ts&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">4&lt;/span>
+:set noexpandtab
+:%retab!
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>加 &lt;code>!&lt;/code> 是用于处理非空白字符之后的 &lt;code>TAB&lt;/code>，即所有的 &lt;code>TAB&lt;/code>，若不加 &lt;code>!&lt;/code>，则只处理行首的 &lt;code>TAB&lt;/code>。&lt;/p></description></item><item><title>Windows 10 删除、恢复资源管理器中“视频、图片”等文件夹</title><link>https://lrtg.ml/2016/10/25/Windows-10-%E5%88%A0%E9%99%A4%E6%81%A2%E5%A4%8D%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86%E5%99%A8%E4%B8%AD%E8%A7%86%E9%A2%91%E5%9B%BE%E7%89%87%E7%AD%89%E6%96%87%E4%BB%B6%E5%A4%B9/</link><pubDate>Tue, 25 Oct 2016 11:48:31 +0000</pubDate><guid>https://lrtg.ml/2016/10/25/Windows-10-%E5%88%A0%E9%99%A4%E6%81%A2%E5%A4%8D%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86%E5%99%A8%E4%B8%AD%E8%A7%86%E9%A2%91%E5%9B%BE%E7%89%87%E7%AD%89%E6%96%87%E4%BB%B6%E5%A4%B9/</guid><description>
+&lt;blockquote>
+&lt;p>Windows 10 资源管理器中的&amp;quot;视频、图片、文档、下载、音乐、桌面&amp;quot;等文件夹目前通过一般途径是删除不了的，只能通过注册表的删除删掉，本文介绍一种比较简单的删除、恢复方法。&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20161025111013.jpg" alt="">&lt;/p>
+&lt;h2 id="准备">准备&lt;/h2>
+&lt;p>打开注册表（&lt;code>Win+R&lt;/code> 输入 &lt;code>regedit&lt;/code>）找到以下键：
+&lt;code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\&lt;/code> 单击 &lt;code>NameSpace&lt;/code> 右键 &lt;code>导出&lt;/code>，保存文件后缀名为 &lt;code>.reg&lt;/code>。&lt;/p>
+&lt;h2 id="删除">删除&lt;/h2>
+&lt;p>用文本编辑器打开该文件，只保留类似以下内容，并且在行首添加 &lt;code>-&lt;/code> 号，然后保存。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-reg" data-lang="reg">Windows Registry Editor Version 5.00
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{24ad3ad4-a569-4530-98e1-ab02f9417aa8}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3dfdf296-dbec-4fb4-81d1-6a3438bcf4de}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A0953C92-50DC-43bf-BE83-3742FED03C9C}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{d3162b92-9365-467a-956b-92703aca08af}]&lt;/span>
+&lt;span style="color:#66d9ef">[&lt;/span>&lt;span style="color:#f92672">-&lt;/span>HKEY_LOCAL_MACHINE&lt;span style="color:#66d9ef">\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>双击该文件即可删除。&lt;/p>
+&lt;h2 id="恢复">恢复&lt;/h2>
+&lt;p>想要恢复，编辑文件，删除行首 &lt;code>-&lt;/code> 号，保存，双击运行即可恢复。&lt;/p>
+&lt;hr></description></item><item><title>设置 Sublime Text3 主题透明</title><link>https://lrtg.ml/2016/10/24/%E8%AE%BE%E7%BD%AE-Sublime-Text3-%E4%B8%BB%E9%A2%98%E9%80%8F%E6%98%8E/</link><pubDate>Mon, 24 Oct 2016 17:30:55 +0000</pubDate><guid>https://lrtg.ml/2016/10/24/%E8%AE%BE%E7%BD%AE-Sublime-Text3-%E4%B8%BB%E9%A2%98%E9%80%8F%E6%98%8E/</guid><description>
+&lt;h1 id="1-下载安装包">1. 下载安装包&lt;/h1>
+&lt;p>下载地址：&lt;a href="https://github.com/vhanla/SublimeTextTrans">SublimeTextTrans&lt;/a>。&lt;/p>
+&lt;h1 id="2-安装插件">2. 安装插件&lt;/h1>
+&lt;p>解压到 Sublime Text3 的 Packages 存放目录下，命名为：&lt;code>SublimeTextTrans&lt;/code>。点击 Sublime Text3 的 &lt;code>Preferences -&amp;gt; Browse Packages&lt;/code> 打开 Packages 存放目录，一般情况是在 &lt;code>C:\Users\YOURNAME\AppData\Roaming\Sublime Text 3\Packages&lt;/code> 目录下。&lt;/p>
+&lt;h1 id="3-设置-sublime-text3-的透明度级别">3. 设置 Sublime Text3 的透明度级别。&lt;/h1>
+&lt;p>点击 Sublime Text3 的 &lt;code>Preferences -&amp;gt; Package Setting -&amp;gt; SublimeTextTrans -&amp;gt; Setting - User&lt;/code> 就可以设置透明度的级别了。&lt;/p>
+&lt;p>也可以通过 &lt;code>Ctrl+Shift+1、2、3、4、5、6&lt;/code> 加载预设的 6 个透明级别。预设的透明级别在 &lt;code>Preferences -&amp;gt; Package Setting -&amp;gt; SublimeTextTrans -&amp;gt; Setting - Default&lt;/code> 中可以查看。&lt;/p>
+&lt;hr></description></item><item><title>[转]用 Markdown 写印象笔记（Evernote）</title><link>https://lrtg.ml/2016/10/19/%E8%BD%AC%E7%94%A8-Markdown-%E5%86%99%E5%8D%B0%E8%B1%A1%E7%AC%94%E8%AE%B0Evernote/</link><pubDate>Wed, 19 Oct 2016 10:47:23 +0000</pubDate><guid>https://lrtg.ml/2016/10/19/%E8%BD%AC%E7%94%A8-Markdown-%E5%86%99%E5%8D%B0%E8%B1%A1%E7%AC%94%E8%AE%B0Evernote/</guid><description>
+&lt;p>使用印象笔记很久了，什么都觉得很好，就是不支持 Markdown 书写语法，实在是太遗憾了。今天发现网上有人介绍了一款 Sublime 的一个插件 &lt;a href="https://packagecontrol.io/packages/Evernote">Evernote&lt;/a>，尝试了一下觉得还是一个不错的方案，正好我也很喜欢使用 Sublime 编辑器，如此甚好，哈哈&amp;hellip;&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>{% img &lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/2016101901.png">https://cdn.jsdelivr.net/gh/0vo/oss/images/2016101901.png&lt;/a> 400 %}&lt;/p>
+&lt;h1 id="一安装">一、安装&lt;/h1>
+&lt;h2 id="11-用-sublime-的-packagecontrol-安装-evernote1-插件">1.1 用 Sublime 的 PackageControl 安装 &lt;a href="https://packagecontrol.io/packages/Evernote">Evernote&lt;/a> 插件&lt;/h2>
+&lt;h2 id="12-设置-sublime-与印象笔记做关联">1.2 设置 Sublime 与印象笔记做关联&lt;/h2>
+&lt;p>国内印象笔记用户打开链接：&lt;a href="https://app.yinxiang.com/api/DeveloperToken.action">https://app.yinxiang.com/api/DeveloperToken.action&lt;/a>，国际 Evernote 用户打开链接：&lt;a href="https://www.evernote.com/api/DeveloperToken.action">https://www.evernote.com/api/DeveloperToken.action&lt;/a>。然后点击页面按钮 &lt;code>Create a developer token&lt;/code> 生成开发者秘钥。&lt;/p>
+&lt;p>打开 Sublime &lt;code>Preferences -&amp;gt; Package Settings -&amp;gt; Evernote -&amp;gt; Settings - User&lt;/code> 在文件中贴入如下内容：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;noteStoreUrl&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;token&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>noteStoreUrl&lt;/code> 和 &lt;code>token&lt;/code> 值为之前打开的页面的上的值，然后保存。&lt;/p>
+&lt;p>测试是否成功：通过快捷键 &lt;code>ctrl+shift+p&lt;/code> 打开 Sublime 命令窗口，输入 &lt;code>evernote&lt;/code>，就会看见 Evernote 的许多命令，点击 &lt;code>evernote:list recent notes&lt;/code>，如果看到罗列出最新的笔记，则说明授权成功。&lt;/p>
+&lt;h1 id="二快捷键设置">二、快捷键设置&lt;/h1>
+&lt;p>插件默认没有添加快捷键，但可以自己配置。通过快捷键 &lt;code>ctrl+shift+p&lt;/code> 打开 Sublime 命令窗口，输入 &lt;code>key binding&lt;/code>，选择 &lt;code>User&lt;/code> 那，写入你的内容。&lt;/p>
+&lt;p>下面是我的设置：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">[
+{ &lt;span style="color:#f92672">&amp;#34;keys&amp;#34;&lt;/span>: [&lt;span style="color:#e6db74">&amp;#34;Ctrl+e&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Ctrl+o&amp;#34;&lt;/span>], &lt;span style="color:#f92672">&amp;#34;command&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;open_evernote_note&amp;#34;&lt;/span> },
+{ &lt;span style="color:#f92672">&amp;#34;keys&amp;#34;&lt;/span>: [&lt;span style="color:#e6db74">&amp;#34;Ctrl+s&amp;#34;&lt;/span>], &lt;span style="color:#f92672">&amp;#34;command&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;save_evernote_note&amp;#34;&lt;/span>, &lt;span style="color:#f92672">&amp;#34;context&amp;#34;&lt;/span>: [{&lt;span style="color:#f92672">&amp;#34;key&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;evernote_note&amp;#34;&lt;/span>}, {&lt;span style="color:#f92672">&amp;#34;key&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;evernote_has_guid&amp;#34;&lt;/span>}] },
+{ &lt;span style="color:#f92672">&amp;#34;keys&amp;#34;&lt;/span>: [&lt;span style="color:#e6db74">&amp;#34;Ctrl+s&amp;#34;&lt;/span>], &lt;span style="color:#f92672">&amp;#34;command&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;send_to_evernote&amp;#34;&lt;/span>, &lt;span style="color:#f92672">&amp;#34;context&amp;#34;&lt;/span>: [{&lt;span style="color:#f92672">&amp;#34;key&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;evernote_note&amp;#34;&lt;/span>}, {&lt;span style="color:#f92672">&amp;#34;key&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;evernote_has_guid&amp;#34;&lt;/span>, &lt;span style="color:#f92672">&amp;#34;operator&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;equal&amp;#34;&lt;/span>, &lt;span style="color:#f92672">&amp;#34;operand&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>}] }
+]
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>**解释：**意思是，按 &lt;code>ctrl+e, o&lt;/code> 后，会打开印象笔记，按 &lt;code>ctrl+s&lt;/code> 会将笔记保存并且同步到印象笔记。&lt;/p>
+&lt;h1 id="三常用命令">三、常用命令&lt;/h1>
+&lt;p>通过快捷键 &lt;code>ctrl+shift+p&lt;/code>，打开 Sublime 命令窗口就可以使用一些常用命令了。&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>Evernote: New empty note&lt;/code>：创建笔记&lt;/li>
+&lt;li>&lt;code>Evernote: Open Evernote Note&lt;/code>：打开印象笔记&lt;/li>
+&lt;li>&lt;code>Evernote: List recent notes&lt;/code>：打开最近笔记&lt;/li>
+&lt;li>&lt;code>Evernote: Search note&lt;/code>：搜索笔记&lt;/li>
+&lt;/ul>
+&lt;h1 id="四个人配置">四、个人配置&lt;/h1>
+&lt;p>主要更改了代码的字体和颜色，需要注意的是替换掉 &lt;code>noteStoreUrl&lt;/code> 和 &lt;code>token&lt;/code> 值为步骤 2 中获取内容。点击 Sublime Text 的 &lt;code>Preferences -&amp;gt; Package Settings -&amp;gt; Evernote -&amp;gt; Settings - User&lt;/code> 粘贴以下内容：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;noteStoreUrl&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;更换为步骤 2 中获取的 noteStoreUrl&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;token&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;更换为步骤 2 中获取的 token&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;inline_css&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;body&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;pre&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;color: #000000; font-family: Consolas,monospace; font-size: 0.9em; white-space: pre-wrap; word-wrap: break-word; border: 1px solid #cccccc; border-radius: 3px; overflow: auto; padding: 6px 10px; margin-bottom: 10px;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;code&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;color: black; font-family: Consolas,monospace; font-size: 1.1em;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;inline-code&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;color: #c7254e; font-family: Consolas,monospace; padding: 0.1em 0.2em; margin: 0.1em; font-size: 85%; background-color: #f9f2f4; border-radius: 3px; border: 1px solid #d6d6d6;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;h1&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;margin-bottom: 1em; margin-top: 1.2em;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;footnotes&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border-top: 1px solid #9AB39B; font-size: 80%;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;hr&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;color:#9AB39B;background-color:#9AB39B;height:1px;border:none;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;sup&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;color:#6D6D6D;font-size:1ex&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;blockquote&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border-left: .5ex solid #BFBFBF; margin-left: 0px; padding-left: 1em; margin-top: 1.4285em; margin-bottom: 1.4285em;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;table&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border-collapse: collapse; border-spacing: 0; margin: 1em;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;td&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border: 1px solid #DDD; padding: 6px 13px;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;th&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border: 1px solid #DDD; padding: 6px 13px;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;tr:odd&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border: 1px solid #DDD; padding: 6px 13px;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;tr:even&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border: 1px solid #DDD; padding: 6px 13px; background-color: #F8F8F8;&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;code_highlighting_style&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;github&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;code_friendly&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;gfm_tables&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;wiki_tables&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;emphasis_mark&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;_&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;strong_mark&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;**&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;item_mark&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;*&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;notes_order&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;updated&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;max_notes&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">100&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;update_on_save&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;evernote_autocomplete&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;sort_notebooks&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;show_stacks&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;open_single_result&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;tab_prefix&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Evernote: &amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;warn_on_close&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;p>&lt;a href="http://www.jianshu.com/p/0add426fdd26">原文地址&lt;/a>&lt;/p></description></item><item><title>Sublime Text 插件安装</title><link>https://lrtg.ml/2016/07/25/Sublime-Text-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85/</link><pubDate>Mon, 25 Jul 2016 21:06:57 +0000</pubDate><guid>https://lrtg.ml/2016/07/25/Sublime-Text-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85/</guid><description>
+&lt;blockquote>
+&lt;p>Sublime Text 官方介绍：&lt;/p>
+&lt;blockquote>
+&lt;p>“Sublime Text is a sophisticated text editor for code, markup and prose.You&amp;rsquo;ll love the slick user interface, extraordinary features and amazing performance.”&lt;/p>
+&lt;/blockquote>
+&lt;/blockquote>
+&lt;p>Sublime Text 是一款优秀的轻量级编辑器，而且支持跨平台，支持Windows、Linux、Mac OS X 等主流操作系统。虽然是一款收费软件，但也允许人们&lt;strong>无限期免费使用&lt;/strong>。（&lt;a href="http://www.sublimetext.com/3">官方下载地址&lt;/a>）&lt;/p>
+&lt;p>Sublime Text 具有漂亮的用户界面和强大可扩展插件功能，本文介绍如何安装 Sublime Text 插件。&lt;/p>
+&lt;p>打开 Sublime Text 编辑器的 Console（控制台）使用快捷键 &lt;!-- raw HTML omitted -->ctrl+`&lt;!-- raw HTML omitted --> 或者点击菜单 &lt;!-- raw HTML omitted --> View &amp;gt; Show Console menu &lt;!-- raw HTML omitted --> 打开 Console，如图：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20160725212921.png" alt="">&lt;/p>
+&lt;p>Sublime Text 2 粘贴以下代码：&lt;/p>
+&lt;pre>&lt;code class="language-livecodeserver" data-lang="livecodeserver">import urllib2,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); os.makedirs( ipp ) if not os.path.exists(ipp) else None; urllib2.install_opener( urllib2.build_opener( urllib2.ProxyHandler()) ); by = urllib2.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); open( os.path.join( ipp, pf), 'wb' ).write(by) if dh == h else None; print('Error validating download (got %s instead of %s), please try manual install' % (dh, h) if dh != h else 'Please restart Sublime Text to finish installation')
+&lt;/code>&lt;/pre>&lt;p>Sublime Text 3 粘贴以下代码：&lt;/p>
+&lt;pre>&lt;code class="language-livecodeserver" data-lang="livecodeserver">import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)
+&lt;/code>&lt;/pre>&lt;p>敲回车等待安装完成后重启 Sublime Text 即可，按下快捷键 &lt;!-- raw HTML omitted --> ctrl + shift + p &lt;!-- raw HTML omitted --> ,输入 &lt;code>pci&lt;/code>（Package Control Install 简写）如图：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20160725213757.png" alt="">&lt;/p>
+&lt;p>敲回车即可打开插件安装界面，输入想要安装插件的名称即可开始安装，如图：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20160725214353.png" alt="">&lt;/p>
+&lt;p>Sublime Text 插件安装介绍完了，需要注意的是安装过程中要保持网络畅通。&lt;/p>
+&lt;p>&lt;a href="https://packagecontrol.io/installation">参考网址&lt;/a>&lt;/p>
+&lt;hr></description></item></channel></rss>

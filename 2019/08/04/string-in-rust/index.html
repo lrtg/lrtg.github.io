@@ -1,0 +1,64 @@
+<!doctype html><html lang=en><head><title>Rust 中字符串总结 ::
+lrtg — a hugo blog of lrtg</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Rust 中字符串和 Java 和 Go 中的表示有很大的区别，刚开始接触的时候有点儿懵，今天花点时间总结备忘一下。
+Rust 字符串有两种形式：str 和 String，str 是内置的原始数据类型，通常是以借用的形式（&amp;amp;str 字符串 slice）使用，而 String 是标准库提供的一种结构体，内部存储一个 u8 类型的 Vec：
+pub struct String { vec: Vec&amp;lt;u8&amp;gt;, }"><meta name=keywords content="rust,,string,,&str"><meta name=robots content="noodp"><link rel=canonical href=https://lrtg.ml/2019/08/04/string-in-rust/><link rel=stylesheet href=https://lrtg.ml/assets/style.css><link rel=stylesheet href=https://lrtg.ml/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://lrtg.ml/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://lrtg.ml/img/favicon.png><link href=https://lrtg.ml/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary"><meta name=twitter:title content="Rust 中字符串总结"><meta name=twitter:description content="`Rust` 中字符串和 `Java` 和 `Go` 中的表示有很大的区别，刚开始接触的时候有点儿懵，今天花点时间总结备忘一下。"><meta property="og:title" content="Rust 中字符串总结"><meta property="og:description" content="`Rust` 中字符串和 `Java` 和 `Go` 中的表示有很大的区别，刚开始接触的时候有点儿懵，今天花点时间总结备忘一下。"><meta property="og:type" content="article"><meta property="og:url" content="https://lrtg.ml/2019/08/04/string-in-rust/"><meta property="article:published_time" content="2019-08-04T11:06:43+00:00"><meta property="article:modified_time" content="2019-12-30T14:26:36+08:00"><meta property="og:site_name" content="lrtg"><meta name=google-site-verification content="1sqm8XMeeEHHbiKb2V2OrWT2WoAg7TUCXvXXLbP8O2s"></head><body class=dark-theme><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>lrtg's blog</span>
+<span class=logo__cursor></span></a><span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><ul class=menu__sub-inner><li class=menu__sub-inner-more-trigger>Show more
+<span class=menu__sub-inner-more-trigger-icon><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span></li><ul class="menu__sub-inner-more hidden"><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></ul></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41C32.4934 41 41 32.4934 41 22 41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>Rust 中字符串总结</h1><div class=post-meta><span class=post-date>2019-08-04</span>
+<span class=post-moddate>(Modified:
+2019-12-30)</span>
+<span class=post-read-time>— 2 min read</span></div><span class=post-tags><a href=https://lrtg.ml/tags/Rust/>#Rust</a>&nbsp;</span><div class=post-content><p><code>Rust</code> 中字符串和 <code>Java</code> 和 <code>Go</code> 中的表示有很大的区别，刚开始接触的时候有点儿懵，今天花点时间总结备忘一下。</p><p><code>Rust</code> 字符串有两种形式：<code>str</code> 和 <code>String</code>，<code>str</code> 是内置的原始数据类型，通常是以借用的形式（<code>&str</code> 字符串 <code>slice</code>）使用，而 <code>String</code> 是标准库提供的一种结构体，内部存储一个 <code>u8</code> 类型的 <code>Vec</code>：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>struct</span> String {
+    vec: Vec<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>u8</span><span style=color:#f92672>&gt;</span>,
+}
+</code></pre></div><h2 id=str>str</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=color:#66d9ef>let</span> s <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;hello world!&#34;</span>;
+
+<span style=color:#75715e>// let s: &amp;&#39;static str = &#34;hello world!&#34;;
+</span></code></pre></div><p><code>s</code> 变量是一个 <code>&str</code> 类型，不可变的字符串，也可称为字面量，文本被直接储存在程序的二进制文件中，拥有固态生命周期（<code>'static</code>），是 <code>let s: &'static str = "hello world!";</code> 的简写定义方式。</p><h2 id=string>String</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=color:#66d9ef>let</span> <span style=color:#66d9ef>mut</span> s1 <span style=color:#f92672>=</span> String::new();
+<span style=color:#75715e>// let mut s1 = String::from(&#34;hello world!&#34;);
+</span><span style=color:#75715e></span>s1.push_str(<span style=color:#e6db74>&#34;hello world!&#34;</span>);
+s1.push_str(<span style=color:#e6db74>&#34; welcome.&#34;</span>);
+
+println<span style=color:#f92672>!</span>(<span style=color:#e6db74>&#34;{}&#34;</span>, s1);
+<span style=color:#75715e>// Output:
+</span><span style=color:#75715e>// hello world! welcome.
+</span></code></pre></div><p><code>String</code> 是可变的、有所有权的、堆上分配的 <code>UTF-8</code> 的字节缓冲区。</p><h2 id=相互转换>相互转换</h2><ul><li>&str -> String</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=color:#66d9ef>let</span> s <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;hello world!&#34;</span>; <span style=color:#75715e>// variable s: &amp;str
+</span><span style=color:#75715e></span>
+<span style=color:#66d9ef>let</span> s1 <span style=color:#f92672>=</span> String::from(s); <span style=color:#75715e>// variable s1: String
+</span><span style=color:#75715e></span><span style=color:#66d9ef>let</span> s1 <span style=color:#f92672>=</span> s.to_string();
+<span style=color:#66d9ef>let</span> s1 <span style=color:#f92672>=</span> s.to_owned();
+</code></pre></div><ul><li>String -> &str</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=color:#66d9ef>let</span> s <span style=color:#f92672>=</span> String::from(<span style=color:#e6db74>&#34;hello world!&#34;</span>); <span style=color:#75715e>// variable s: String
+</span><span style=color:#75715e></span><span style=color:#66d9ef>let</span> s1 <span style=color:#f92672>=</span> s.as_str(); <span style=color:#75715e>// variable s1: &amp;str
+</span><span style=color:#75715e></span><span style=color:#66d9ef>let</span> s1 <span style=color:#f92672>=</span> <span style=color:#f92672>&amp;</span>s[..]; <span style=color:#75715e>// 相当于：&amp;s[0..s.len()];
+</span><span style=color:#75715e></span>
+</code></pre></div><p><code>&String</code> 可以当做是 <code>&str</code>，例如：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>main</span>() {
+    <span style=color:#66d9ef>let</span> s <span style=color:#f92672>=</span> String::from(<span style=color:#e6db74>&#34;hello world!&#34;</span>);
+    foo(<span style=color:#f92672>&amp;</span>s);
+}
+<span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>foo</span>(s: <span style=color:#66d9ef>&amp;</span><span style=color:#66d9ef>str</span>) {
+    println<span style=color:#f92672>!</span>(<span style=color:#e6db74>&#34;{}&#34;</span>, s);
+}
+</code></pre></div><h2 id=-号运算>+ 号运算</h2><p>字符串 <code>+</code> 号运算是 <code>String</code> 的一个内联函数，定义如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=color:#66d9ef>impl</span> Add<span style=color:#f92672>&lt;&amp;</span><span style=color:#66d9ef>str</span><span style=color:#f92672>&gt;</span> <span style=color:#66d9ef>for</span> String {
+    <span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Output</span> <span style=color:#f92672>=</span> String;
+
+    <span style=color:#75715e>#[inline]</span>
+    <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>add</span>(<span style=color:#66d9ef>mut</span> self, other: <span style=color:#66d9ef>&amp;</span><span style=color:#66d9ef>str</span>) -&gt; String {
+        self.push_str(other);
+        self
+    }
+}
+</code></pre></div><p>所以两个字面量字符串（<code>&str</code>）不能使用 <code>+</code>，例如：<code>"hello " + "world";</code> 会报错误： <code>'+' cannot be used to concatenate two '&str' strings</code>。</p><p>根据 <code>+</code> 的定义，一个可变的 <code>String</code> 字符串进行 <code>+</code> 后会失去所有权，例如：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=color:#66d9ef>let</span> <span style=color:#66d9ef>mut</span> s <span style=color:#f92672>=</span> String::from(<span style=color:#e6db74>&#34;hello world!&#34;</span>);
+<span style=color:#66d9ef>let</span> s1 <span style=color:#f92672>=</span> s <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34; welcome.&#34;</span>;
+
+<span style=color:#75715e>// println!(&#34;{}, {}&#34;, s, s1);
+</span><span style=color:#75715e>//                    ^ value borrowed here after move
+</span></code></pre></div><p>以上代码会出现以下警告：</p><pre><code>//   |
+//   |     let mut s = String::from(&quot;hello world!&quot;);
+//   |         ----^
+//   |         |
+//   |         help: remove this `mut`
+//   |
+//   = note: #[warn(unused_mut)] on by default
+</code></pre><p>查阅说是有 <code>#[warn(unused_mut)]</code> 注解后 <strong>variable does not need to be mutable</strong>。去掉以上代码中 <code>String</code> 定义时候用以标识可变的 <code>mut</code> 关键字就可以了。不太明白为啥可以这样，待日后详查。</p></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://lrtg.ml/2019/12/31/thirty-years-old/><span class=button__icon>←</span>
+<span class=button__text>三十而立之年</span></a></span>
+<span class="button next"><a href=https://lrtg.ml/2019/07/19/control-traffic-by-rate/><span class=button__text>按比例控制流量的一种实现</span>
+<span class=button__icon>→</span></a></span></div></div><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
+var d=document,s=d.createElement('script');s.async=true;s.src='//'+"lrtg"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user">© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</div></div></footer><script src=https://lrtg.ml/assets/main.js></script><script src=https://lrtg.ml/assets/prism.js></script></div></body></html>

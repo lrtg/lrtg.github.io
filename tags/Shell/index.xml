@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Shell on lrtg</title><link>https://lrtg.ml/tags/Shell/</link><description>Recent content in Shell on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Fri, 30 Dec 2016 15:36:51 +0000</lastBuildDate><atom:link href="https://lrtg.ml/tags/Shell/index.xml" rel="self" type="application/rss+xml"/><item><title>[转] shell 中单引号、双引号、反引号、反斜杠区别</title><link>https://lrtg.ml/2016/12/30/%E8%BD%AC-shell-%E4%B8%AD%E5%8D%95%E5%BC%95%E5%8F%B7%E5%8F%8C%E5%BC%95%E5%8F%B7%E5%8F%8D%E5%BC%95%E5%8F%B7%E5%8F%8D%E6%96%9C%E6%9D%A0%E5%8C%BA%E5%88%AB/</link><pubDate>Fri, 30 Dec 2016 15:36:51 +0000</pubDate><guid>https://lrtg.ml/2016/12/30/%E8%BD%AC-shell-%E4%B8%AD%E5%8D%95%E5%BC%95%E5%8F%B7%E5%8F%8C%E5%BC%95%E5%8F%B7%E5%8F%8D%E5%BC%95%E5%8F%B7%E5%8F%8D%E6%96%9C%E6%9D%A0%E5%8C%BA%E5%88%AB/</guid><description>
+&lt;blockquote>
+&lt;p>&lt;code>shell&lt;/code> 可以识别 &lt;code>4&lt;/code> 种不同类型的引字符号：单引号字符 &lt;code>'&lt;/code>，双引号字符 &lt;code>&amp;quot;&lt;/code>，反斜杠字符 &lt;code>\&lt;/code>，反引号字符 &lt;!-- raw HTML omitted -->`&lt;!-- raw HTML omitted --> ，学习 &lt;code>shell&lt;/code> 编程的朋友可以看下。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="1-单引号--">1. 单引号( &lt;code>'&lt;/code> )&lt;/h1>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ grep Susan phonebook
+Susan Goldberg 403-212-4921
+Susan Topple 212-234-2343
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果我们想查找的是 &lt;code>Susan Goldberg&lt;/code>，不能直接使用 &lt;code>grep Susan Goldberg phonebook&lt;/code> 命令，&lt;code>grep&lt;/code> 会把 &lt;code>Goldberg&lt;/code> 和 &lt;code>phonebook&lt;/code> 当作需要搜索的文件。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ grep &lt;span style="color:#e6db74">&amp;#39;Susan Gold&amp;#39;&lt;/span> phonebook
+Susan Goldberg 403-212-4921
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>当 &lt;code>shell&lt;/code> 碰到第一个单引号时，它忽略掉其后直到右引号的所有特殊字符。&lt;/p>
+&lt;h1 id="2-双引号--">2. 双引号( &lt;code>&amp;quot;&lt;/code> )&lt;/h1>
+&lt;p>双引号作用与单引号类似，区别在于它没有那么严格。单引号告诉 &lt;code>shell&lt;/code> 忽略所有特殊字符，而双引号只要求忽略大多数，具体说，括在双引号中的三种特殊字符不被忽略：&lt;code>$&lt;/code>、&lt;code>\&lt;/code>、&lt;!-- raw HTML omitted -->`&lt;!-- raw HTML omitted -->。即双引号会解释字符串的特别意思，而单引号直接使用字符串。如果使用双引号将字符串赋给变量并反馈它，实际上与直接反馈变量并无差别。如果要查询包含空格的字符串，经常会用到双引号。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ x&lt;span style="color:#f92672">=&lt;/span>*
+$ echo $x
+hello.sh menus.sh misc.sh phonebook tshift.sh
+$ echo &lt;span style="color:#e6db74">&amp;#39;$x&amp;#39;&lt;/span>
+$x
+$ echo &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$x&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+*
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>这个例子可以看出无引号，单引号和双引号之间的区别。在最后一种情况中，双引号告诉 &lt;code>shell&lt;/code> 在引号内照样进行变量名替换，所以 &lt;code>shell&lt;/code> 把 &lt;code>$x&lt;/code> 替换为 &lt;code>＊&lt;/code>，因为双引号中不做文件名替换，所以就把 &lt;code>＊&lt;/code> 作为要显示的值传递给 &lt;code>echo&lt;/code>。&lt;/p>
+&lt;p>对于第一种情况需要进一步说明，&lt;code>shell&lt;/code> 在给变量赋值时不进行文件名替换（这从第三种情况中也能看出来），各步骤发生的精确次序如下： &lt;code>shell&lt;/code> 扫描命令行，把 &lt;code>x&lt;/code> 的值设为星号 &lt;code>＊&lt;/code>；
+&lt;code>shell&lt;/code> 再次扫描命令行，碰到星号 &lt;code>＊&lt;/code>，把它替换成当前目录下的文件清单；&lt;code>shell&lt;/code> 启动执行 &lt;code>echo&lt;/code> 命令，把文件清单作为参数传递给 &lt;code>echo&lt;/code>。&lt;/p>
+&lt;p>这个赋值的先后次序非常重要：&lt;code>shell&lt;/code> 先作变量替换，然后作文件名替换，最后把这行处理为参数。&lt;/p>
+&lt;h1 id="3-反引号codecode">3. 反引号(&lt;!-- raw HTML omitted -->`&lt;!-- raw HTML omitted -->)&lt;/h1>
+&lt;p>命令替换是指 &lt;code>shell&lt;/code> 能够将一个命令的标准输出插在一个命令行中任何位置。&lt;code>shell&lt;/code> 中有两种方法作命令替换：把 &lt;code>shell&lt;/code> 命令用反引号或者 &lt;code>$(...)&lt;/code> 结构括起来，其中 &lt;code>$(...)&lt;/code> 格式受到 &lt;code>POSIX&lt;/code> 标准支持，也利于嵌套。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$ echo The date and time is &lt;span style="color:#e6db74">`&lt;/span>date&lt;span style="color:#e6db74">`&lt;/span>
+The date and time is 2016年 12月 28日 星期三 16:15:44 CST
+$ echo The date and time is &lt;span style="color:#66d9ef">$(&lt;/span>date&lt;span style="color:#66d9ef">)&lt;/span>
+The date and time is 2016年 12月 28日 星期三 16:15:44 CST
+$ echo Your current working directory is &lt;span style="color:#66d9ef">$(&lt;/span>pwd&lt;span style="color:#66d9ef">)&lt;/span>
+Your current working directory is /home/howard/script
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="4-反斜杠-backslash-escaped--">4. 反斜杠 backslash-escaped( &lt;code>\&lt;/code> )&lt;/h1>
+&lt;p>反斜杠一般用作转义字符，或称逃脱字符。&lt;code>Linux&lt;/code> 如果 &lt;code>echo&lt;/code> 要让转义字符发生作用，就要使用 &lt;code>-e&lt;/code> 选项，且转义字符要使用双引号。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">echo -e &lt;span style="color:#e6db74">&amp;#34;\n&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>反斜杠的另一种作用，就是当反斜杠用于一行的最后一个字符时，&lt;strong>&lt;code>shell&lt;/code> 把行尾的反斜杠作为续行&lt;/strong>，这种结构在分几行输入长命令时经常使用。&lt;/p>
+&lt;hr>
+&lt;p>&lt;a href="http://www.jb51.net/article/33495.htm">原文地址&lt;/a>&lt;/p></description></item><item><title>Oh My Zsh 替换你的 Bash Shell</title><link>https://lrtg.ml/2016/09/24/using-oh-my-zsh/</link><pubDate>Sat, 24 Sep 2016 12:31:21 +0000</pubDate><guid>https://lrtg.ml/2016/09/24/using-oh-my-zsh/</guid><description>
+&lt;blockquote>
+&lt;p>Oh-My-Zsh is an open source, community-driven framework for managing your ZSH configuration. It comes bundled with a ton of helpful functions, helpers, plugins, themes, and a few things that make you shout&amp;hellip;&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;a href="http://ohmyz.sh/">Oh My ZSH!&lt;/a>&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/OMZLogo_BnW.png" alt="Oh My Zsh">&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h1 id="1-oh-my-zsh-简介">1. Oh My Zsh 简介&lt;/h1>
+&lt;p>无意中看见了 Linux 的一款 Shell，相比于 Bash 极其美艳，决定入坑试水一下，不试不知道，一试绝对有惊喜，不仅外观美艳而且功能强大，那还有不替换 Bash 的理由吗？搞起搞起&amp;hellip;&amp;hellip;&lt;/p>
+&lt;p>Linux 提供了很多种 Shell ，想要查看系统有安装哪些 Shell 可以通过命令：&lt;code>chsh -l&lt;/code> 或者 &lt;code>cat /etc/shells&lt;/code> 进行查看。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cat /etc/shells
+/bin/sh
+/bin/bash
+/sbin/nologin
+/usr/bin/sh
+/usr/bin/bash
+/usr/sbin/nologin
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>其中 Bash 是绝大多数 Linux 系统默认的 Shell，虽然 Zsh Shell 没有被所有 Linux 预安装，但几乎每一款 Linux 都包含 Zsh Shell， 根据不同版本的 Linux 可以用 apt-get、yum 等包管理器进行安装。&lt;/p>
+&lt;p>但是我们今天介绍的并非是 Zsh，而是 Oh My Zsh，这是个什么鬼了？虽说 Zsh Shell 很牛逼，但配置相当麻烦，所以阻挡了好多人尝试的勇气（我想这也是为啥 Zsh 不被 Linux 设为默认 Shell 的原因吧），但是永远不要低估一个爱折腾程序猿的创造力，国外一程序猿真就创造出了一款易于使用的 Zsh 版本：&lt;a href="https://github.com/robbyrussell/oh-my-zsh">Oh My Zsh&lt;/a>&lt;/p>
+&lt;p>Oh My Zsh 几乎兼容日常使用的所有 Bash Shell 指令，让你可以无缝接入，不需要再去花额外的时间去适应。当然还扩展了大量炫酷的指令，要不然干嘛用它对吧，而且支持更换主题和插件机制。下面就开始搞起吧！&lt;/p>
+&lt;h1 id="2-安装">2. 安装&lt;/h1>
+&lt;p>安装 Oh My Zsh 首先需要安装 git 和 zsh，如果已经安装，请自行忽略。本文是基于 CentOS 介绍，其它 Linux 大致相同。&lt;/p>
+&lt;h2 id="21-git-和-zsh-安装">2.1 git 和 zsh 安装&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># git&lt;/span>
+sodu yum install git
+&lt;span style="color:#75715e"># zsh&lt;/span>
+sodu yum install zsh
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="22-oh-my-zsh-安装">2.2 Oh My Zsh 安装&lt;/h2>
+&lt;p>Oh My Zsh 提供了 &lt;code>curl&lt;/code> 和 &lt;code>wget&lt;/code> 两种安装方式，选择任意一种自己方便的方式即可。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># via curl&lt;/span>
+sudo sh -c &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># via wget&lt;/span>
+sudo sh -c &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="3-配置使用">3. 配置使用&lt;/h1>
+&lt;h2 id="31-切换-shell">3.1 切换 Shell&lt;/h2>
+&lt;p>安装完成之后，使用以下命令即可切换当前 Shell：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># chsh -s /bin/zsh&lt;/span>
+usermod $USER -s /usr/bin/zsh
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>退出当前终端连接，再次登入即可看到当前的 Shell 已经成功更改为 Oh My Zsh。&lt;/p>
+&lt;h2 id="32-更改主题">3.2 更改主题&lt;/h2>
+&lt;p>Oh My Zsh 的配置文件路径为：&lt;code>~/.zshrc&lt;/code>，配置文件中的 &lt;code>ZSH_THEME&lt;/code> 就是主题配置字段，如下默认为 &lt;code>robbyrussell&lt;/code> 主题配色。更多主题配色可参考 &lt;a href="https://github.com/robbyrussell/oh-my-zsh/wiki/Themes">Oh My Zsh 主题&lt;/a>，这里我推荐是用 &lt;code>ys&lt;/code> 主题。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-vim" data-lang="vim">&lt;span style="color:#a6e22e">ZSH_THEME&lt;/span>=&lt;span style="color:#e6db74">&amp;#34;robbyrussell&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="33-其它-linux-用户配置使用">3.3 其它 Linux 用户配置使用&lt;/h2>
+&lt;p>Linux 其它用户想要使用 Oh My Zsh Shell，只需要拷贝当前用户家目录下的 &lt;code>~/.zshrc&lt;/code> 配置文件到当想要使用 Oh My Zsh Shell 用户的家目录下即可。需要注意的是配置文件中 Oh My Zsh 安装路径其它用户可以访问的到，所以最好更改为绝对路径，如下：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-vim" data-lang="vim">&lt;span style="color:#a6e22e">export&lt;/span> &lt;span style="color:#a6e22e">ZSH&lt;/span>=&lt;span style="color:#e6db74">/home/&lt;/span>&lt;span style="color:#a6e22e">ehlxr&lt;/span>/.&lt;span style="color:#a6e22e">oh&lt;/span>-&lt;span style="color:#a6e22e">my&lt;/span>-&lt;span style="color:#a6e22e">zsh&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="4-插件配置">4. 插件配置&lt;/h1>
+&lt;p>Oh My Zsh 支持插件机制，配置插件可以大大简化相关繁琐重复的命令。例如默认开启的 git 插件，就可以使用以下图表中的简写命令了：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1focmaot1m0j20jq0dcq3x.jpg" alt="Oh-My-Zsh Git Aliases">&lt;/p>
+&lt;p>那如何配置其它的插件了？只需要在 Oh My Zsh 的配置文件 &lt;code>~/.zshrc&lt;/code> 中找到 &lt;code>plugins=(git)&lt;/code> 字段，配置插件的名称即可，多个插件使用空格隔开。&lt;/p>
+&lt;p>那支持哪些插件了？Oh My Zsh 安装目录下的 plugins 目录下就是支持的所有插件。例如：&lt;code>ls ~/.oh-my-zsh/plugins&lt;/code> 就可以看到所有支持的插件名称了。&lt;/p>
+&lt;p>Oh My Zsh 支持插件的简写说明可以参看 &lt;a href="https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins">oh-my-zsh Plugins wiki&lt;/a>。&lt;/p>
+&lt;h1 id="5-常用命令简介">5. 常用命令简介&lt;/h1>
+&lt;ul>
+&lt;li>&lt;code>l&lt;/code> 等价与 &lt;code>ls -la&lt;/code>，查看当前目录下所有文件。&lt;/li>
+&lt;li>打开目录不需要再敲 &lt;code>cd&lt;/code>，直接输入目录名即可。&lt;/li>
+&lt;li>&lt;code>TAB&lt;/code> 提示更加聪明。&lt;/li>
+&lt;li>聪明的历史记录，例如：敲下 &lt;code>ls&lt;/code> 命令，按下键盘 &lt;code>up&lt;/code> 按键，就会带出以 &lt;code>ls&lt;/code> 开头的历史记录命令。&lt;/li>
+&lt;/ul>
+&lt;h1 id="6-常用插件">6. 常用插件&lt;/h1>
+&lt;blockquote>
+&lt;p>&lt;code>.zshrc&lt;/code> 配置&lt;/p>
+&lt;/blockquote>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">export JAVA_HOME&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>/usr/libexec/java_home -v 1.8&lt;span style="color:#66d9ef">)&lt;/span>
+export JAVA_6_HOME&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>/usr/libexec/java_home -v 1.8&lt;span style="color:#66d9ef">)&lt;/span>
+export JAVA_7_HOME&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>/usr/libexec/java_home -v 1.8&lt;span style="color:#66d9ef">)&lt;/span>
+export JAVA_8_HOME&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>/usr/libexec/java_home -v 1.8&lt;span style="color:#66d9ef">)&lt;/span>
+export ZSH&lt;span style="color:#f92672">=&lt;/span>/Users/ehlxr/.oh-my-zsh
+ZSH_THEME&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;ys&amp;#34;&lt;/span>
+plugins&lt;span style="color:#f92672">=(&lt;/span>git wd autojump sublime sudo zsh-autosuggestions zsh-syntax-highlighting extract history-substring-search&lt;span style="color:#f92672">)&lt;/span>
+source $ZSH/oh-my-zsh.sh
+alias h&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;hexo cl &amp;amp;&amp;amp; hexo g &amp;amp;&amp;amp; gulp &amp;amp;&amp;amp; hexo d&amp;#34;&lt;/span>
+alias gacp&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;git add --all &amp;amp;&amp;amp; git commit -v &amp;amp;&amp;amp; git push&amp;#39;&lt;/span>
+alias gacpm&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;git add --all &amp;amp;&amp;amp; git commit -m &amp;#34;update&amp;#34; &amp;amp;&amp;amp; git push&amp;#39;&lt;/span>
+alias js&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;j --stat&amp;#39;&lt;/span>
+source ~/.bash_profile
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="61-git-插件">6.1 git 插件&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>安装&lt;/p>
+&lt;p>直接在 &lt;code>.zshrc&lt;/code> 中启用。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>效果&lt;/p>
+&lt;p>默认开启的插件，提供了大量 &lt;code>git&lt;/code> 的 &lt;code>alias&lt;/code> ，参看 &lt;a href="https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins">oh-my-zsh Plugins wiki&lt;/a>。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="62-wd-插件">6.2 wd 插件&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>安装&lt;/p>
+&lt;p>直接在 &lt;code>.zshrc&lt;/code> 中启用。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>效果&lt;/p>
+&lt;p>给常用目录添加一个标识，然后就可以快速的切换到常用的目录。参考 &lt;a href="https://github.com/mfaerevaag/wd">wd&lt;/a> 。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="63-autojump-插件">6.3 autojump 插件&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>安装&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">&lt;span style="color:#75715e"># Mac，可以使用 brew 安装：&lt;/span>
+brew install autojump
+&lt;span style="color:#75715e"># CentOS 可以使用 yum 安装:&lt;/span>
+yum install -y epel-release
+yum install -y autojump-zsh
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后在 &lt;code>.zshrc&lt;/code> 中启用。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>效果&lt;/p>
+&lt;p>&lt;code>autojump &lt;/code> 按照你的使用频率记录路径，使得目录的跳转更为方便。参考&lt;a href="https://github.com/wting/autojump">autojump&lt;/a>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="64-sublime插件">6.4 sublime插件&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>安装&lt;/p>
+&lt;p>直接在 &lt;code>.zshrc&lt;/code> 中启用。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>效果&lt;/p>
+&lt;p>使用命令行打开 &lt;code>sublime&lt;/code>。
+常用命令如下：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">st &lt;span style="color:#75715e"># 直接打开sublime&lt;/span>
+st file_a &lt;span style="color:#75715e"># 用sublime打开文件 file&lt;/span>
+st dir_a &lt;span style="color:#75715e"># 用sublime打开目录 dir&lt;/span>
+stt &lt;span style="color:#75715e"># 在sublime打开当前目录，相当于 st .&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;h2 id="65-sudo-插件">6.5 sudo 插件&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>安装&lt;/p>
+&lt;p>直接在 &lt;code>.zshrc&lt;/code> 中启用。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>效果&lt;/p>
+&lt;p>按 &lt;code>2&lt;/code> 次 &lt;code>esc&lt;/code> 会在命令前自动输入 &lt;code>sudo&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="66-zsh-autosuggestions-插件">6.6 zsh-autosuggestions 插件&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>安装&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后在 &lt;code>.zshrc&lt;/code> 中启用。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>效果&lt;/p>
+&lt;p>根据历史记录智能自动补全命令，输入命令时会以暗色补全，按方向键右键完成输入。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="67-zsh-syntax-highlighting-插件">6.7 zsh-syntax-highlighting 插件&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>安装&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后在 &lt;code>.zshrc&lt;/code> 中启用。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>效果&lt;/p>
+&lt;p>&lt;code>fish shell&lt;/code> 风格的语法高亮插件。输入的命令根据主题自动高亮。比如我的主题是 &lt;code>ys-modified&lt;/code>，输入正确的命令是黄色，输入错误的命令是红色。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="68-extract-插件">6.8 extract 插件&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>安装&lt;/p>
+&lt;p>直接在 &lt;code>.zshrc&lt;/code> 中启用。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>效果&lt;/p>
+&lt;p>功能强大的解压插件，所有类型的文件解压一个命令 &lt;code>x&lt;/code> 全搞定，再也不需要去记 &lt;code>tar&lt;/code> 后面到底是哪几个参数了。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="69-history-substring-search-插件">6.9 history-substring-search 插件&lt;/h2>
+&lt;p>历史命令搜索插件，如果和 &lt;code>zsh-syntax-highlighting&lt;/code> 插件共用，要配置到语法高亮插件之后。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>安装&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">git clone https://github.com/zsh-users/zsh-history-substring-search.git $ZSH_CUSTOM/plugins/history-substring-search
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后在 &lt;code>.zshrc&lt;/code> 中启用。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>效果&lt;/p>
+&lt;p>上下键查询历史命令记录，可模糊匹配历史命令记录中任意字符串。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;hr></description></item></channel></rss>

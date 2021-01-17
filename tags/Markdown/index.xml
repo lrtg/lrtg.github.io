@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Markdown on lrtg</title><link>https://lrtg.ml/tags/Markdown/</link><description>Recent content in Markdown on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Wed, 19 Oct 2016 10:47:23 +0000</lastBuildDate><atom:link href="https://lrtg.ml/tags/Markdown/index.xml" rel="self" type="application/rss+xml"/><item><title>[转]用 Markdown 写印象笔记（Evernote）</title><link>https://lrtg.ml/2016/10/19/%E8%BD%AC%E7%94%A8-Markdown-%E5%86%99%E5%8D%B0%E8%B1%A1%E7%AC%94%E8%AE%B0Evernote/</link><pubDate>Wed, 19 Oct 2016 10:47:23 +0000</pubDate><guid>https://lrtg.ml/2016/10/19/%E8%BD%AC%E7%94%A8-Markdown-%E5%86%99%E5%8D%B0%E8%B1%A1%E7%AC%94%E8%AE%B0Evernote/</guid><description>
+&lt;p>使用印象笔记很久了，什么都觉得很好，就是不支持 Markdown 书写语法，实在是太遗憾了。今天发现网上有人介绍了一款 Sublime 的一个插件 &lt;a href="https://packagecontrol.io/packages/Evernote">Evernote&lt;/a>，尝试了一下觉得还是一个不错的方案，正好我也很喜欢使用 Sublime 编辑器，如此甚好，哈哈&amp;hellip;&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>{% img &lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/2016101901.png">https://cdn.jsdelivr.net/gh/0vo/oss/images/2016101901.png&lt;/a> 400 %}&lt;/p>
+&lt;h1 id="一安装">一、安装&lt;/h1>
+&lt;h2 id="11-用-sublime-的-packagecontrol-安装-evernote1-插件">1.1 用 Sublime 的 PackageControl 安装 &lt;a href="https://packagecontrol.io/packages/Evernote">Evernote&lt;/a> 插件&lt;/h2>
+&lt;h2 id="12-设置-sublime-与印象笔记做关联">1.2 设置 Sublime 与印象笔记做关联&lt;/h2>
+&lt;p>国内印象笔记用户打开链接：&lt;a href="https://app.yinxiang.com/api/DeveloperToken.action">https://app.yinxiang.com/api/DeveloperToken.action&lt;/a>，国际 Evernote 用户打开链接：&lt;a href="https://www.evernote.com/api/DeveloperToken.action">https://www.evernote.com/api/DeveloperToken.action&lt;/a>。然后点击页面按钮 &lt;code>Create a developer token&lt;/code> 生成开发者秘钥。&lt;/p>
+&lt;p>打开 Sublime &lt;code>Preferences -&amp;gt; Package Settings -&amp;gt; Evernote -&amp;gt; Settings - User&lt;/code> 在文件中贴入如下内容：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;noteStoreUrl&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;token&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>noteStoreUrl&lt;/code> 和 &lt;code>token&lt;/code> 值为之前打开的页面的上的值，然后保存。&lt;/p>
+&lt;p>测试是否成功：通过快捷键 &lt;code>ctrl+shift+p&lt;/code> 打开 Sublime 命令窗口，输入 &lt;code>evernote&lt;/code>，就会看见 Evernote 的许多命令，点击 &lt;code>evernote:list recent notes&lt;/code>，如果看到罗列出最新的笔记，则说明授权成功。&lt;/p>
+&lt;h1 id="二快捷键设置">二、快捷键设置&lt;/h1>
+&lt;p>插件默认没有添加快捷键，但可以自己配置。通过快捷键 &lt;code>ctrl+shift+p&lt;/code> 打开 Sublime 命令窗口，输入 &lt;code>key binding&lt;/code>，选择 &lt;code>User&lt;/code> 那，写入你的内容。&lt;/p>
+&lt;p>下面是我的设置：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">[
+{ &lt;span style="color:#f92672">&amp;#34;keys&amp;#34;&lt;/span>: [&lt;span style="color:#e6db74">&amp;#34;Ctrl+e&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Ctrl+o&amp;#34;&lt;/span>], &lt;span style="color:#f92672">&amp;#34;command&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;open_evernote_note&amp;#34;&lt;/span> },
+{ &lt;span style="color:#f92672">&amp;#34;keys&amp;#34;&lt;/span>: [&lt;span style="color:#e6db74">&amp;#34;Ctrl+s&amp;#34;&lt;/span>], &lt;span style="color:#f92672">&amp;#34;command&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;save_evernote_note&amp;#34;&lt;/span>, &lt;span style="color:#f92672">&amp;#34;context&amp;#34;&lt;/span>: [{&lt;span style="color:#f92672">&amp;#34;key&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;evernote_note&amp;#34;&lt;/span>}, {&lt;span style="color:#f92672">&amp;#34;key&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;evernote_has_guid&amp;#34;&lt;/span>}] },
+{ &lt;span style="color:#f92672">&amp;#34;keys&amp;#34;&lt;/span>: [&lt;span style="color:#e6db74">&amp;#34;Ctrl+s&amp;#34;&lt;/span>], &lt;span style="color:#f92672">&amp;#34;command&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;send_to_evernote&amp;#34;&lt;/span>, &lt;span style="color:#f92672">&amp;#34;context&amp;#34;&lt;/span>: [{&lt;span style="color:#f92672">&amp;#34;key&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;evernote_note&amp;#34;&lt;/span>}, {&lt;span style="color:#f92672">&amp;#34;key&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;evernote_has_guid&amp;#34;&lt;/span>, &lt;span style="color:#f92672">&amp;#34;operator&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;equal&amp;#34;&lt;/span>, &lt;span style="color:#f92672">&amp;#34;operand&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>}] }
+]
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>**解释：**意思是，按 &lt;code>ctrl+e, o&lt;/code> 后，会打开印象笔记，按 &lt;code>ctrl+s&lt;/code> 会将笔记保存并且同步到印象笔记。&lt;/p>
+&lt;h1 id="三常用命令">三、常用命令&lt;/h1>
+&lt;p>通过快捷键 &lt;code>ctrl+shift+p&lt;/code>，打开 Sublime 命令窗口就可以使用一些常用命令了。&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>Evernote: New empty note&lt;/code>：创建笔记&lt;/li>
+&lt;li>&lt;code>Evernote: Open Evernote Note&lt;/code>：打开印象笔记&lt;/li>
+&lt;li>&lt;code>Evernote: List recent notes&lt;/code>：打开最近笔记&lt;/li>
+&lt;li>&lt;code>Evernote: Search note&lt;/code>：搜索笔记&lt;/li>
+&lt;/ul>
+&lt;h1 id="四个人配置">四、个人配置&lt;/h1>
+&lt;p>主要更改了代码的字体和颜色，需要注意的是替换掉 &lt;code>noteStoreUrl&lt;/code> 和 &lt;code>token&lt;/code> 值为步骤 2 中获取内容。点击 Sublime Text 的 &lt;code>Preferences -&amp;gt; Package Settings -&amp;gt; Evernote -&amp;gt; Settings - User&lt;/code> 粘贴以下内容：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;noteStoreUrl&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;更换为步骤 2 中获取的 noteStoreUrl&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;token&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;更换为步骤 2 中获取的 token&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;inline_css&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;body&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;pre&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;color: #000000; font-family: Consolas,monospace; font-size: 0.9em; white-space: pre-wrap; word-wrap: break-word; border: 1px solid #cccccc; border-radius: 3px; overflow: auto; padding: 6px 10px; margin-bottom: 10px;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;code&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;color: black; font-family: Consolas,monospace; font-size: 1.1em;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;inline-code&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;color: #c7254e; font-family: Consolas,monospace; padding: 0.1em 0.2em; margin: 0.1em; font-size: 85%; background-color: #f9f2f4; border-radius: 3px; border: 1px solid #d6d6d6;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;h1&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;margin-bottom: 1em; margin-top: 1.2em;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;footnotes&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border-top: 1px solid #9AB39B; font-size: 80%;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;hr&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;color:#9AB39B;background-color:#9AB39B;height:1px;border:none;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;sup&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;color:#6D6D6D;font-size:1ex&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;blockquote&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border-left: .5ex solid #BFBFBF; margin-left: 0px; padding-left: 1em; margin-top: 1.4285em; margin-bottom: 1.4285em;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;table&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border-collapse: collapse; border-spacing: 0; margin: 1em;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;td&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border: 1px solid #DDD; padding: 6px 13px;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;th&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border: 1px solid #DDD; padding: 6px 13px;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;tr:odd&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border: 1px solid #DDD; padding: 6px 13px;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;tr:even&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;border: 1px solid #DDD; padding: 6px 13px; background-color: #F8F8F8;&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;code_highlighting_style&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;github&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;code_friendly&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;gfm_tables&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;wiki_tables&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;emphasis_mark&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;_&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;strong_mark&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;**&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;item_mark&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;*&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;notes_order&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;updated&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;max_notes&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">100&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;update_on_save&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;evernote_autocomplete&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;sort_notebooks&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;show_stacks&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;open_single_result&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;tab_prefix&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Evernote: &amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;warn_on_close&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;p>&lt;a href="http://www.jianshu.com/p/0add426fdd26">原文地址&lt;/a>&lt;/p></description></item></channel></rss>

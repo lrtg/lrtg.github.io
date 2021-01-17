@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Mock on lrtg</title><link>https://lrtg.ml/tags/Mock/</link><description>Recent content in Mock on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Tue, 25 Jul 2017 19:01:14 +0000</lastBuildDate><atom:link href="https://lrtg.ml/tags/Mock/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 PowerMock 进行单元测试</title><link>https://lrtg.ml/2017/07/25/use-introduction-of-powermock/</link><pubDate>Tue, 25 Jul 2017 19:01:14 +0000</pubDate><guid>https://lrtg.ml/2017/07/25/use-introduction-of-powermock/</guid><description>
+&lt;blockquote>
+&lt;p>单元测试（Unit Testing）又称为模块测试，是针对程序模块（软件设计的最小单位）来进行正确性检验的测试工作。如果我们写的代码依赖于某些模块对象，而单元测试过程中这些对象又很难手动创建，或者模块还没有开发完成，那么就使用一个虚拟的对象来完成单元测试，这就是所谓的 Mock。&lt;/p>
+&lt;/blockquote>
+&lt;p>Java 单元测试中比较流行的 Mock 测试框架有 &lt;a href="http://www.jmock.org/">jMock&lt;/a>、&lt;a href="http://easymock.org/">EasyMock&lt;/a>、&lt;a href="https://github.com/mockito/mockito">Mockito&lt;/a>，但是这些 Mock 工具都不能 Mock &lt;code>static&lt;/code>、&lt;code>final&lt;/code>、&lt;code>private&lt;/code> 方法等，而 &lt;a href="https://github.com/powermock/powermock">PowerMock&lt;/a> 能够做到。&lt;/p>
+&lt;p>使用 PowerMock，首先需要使用 &lt;code>@RunWith(PowerMockRunner.class)&lt;/code> 将测试用例的 Runner 改为 &lt;code>PowerMockRunner&lt;/code>。如果要 Mock &lt;code>static&lt;/code>、&lt;code>final&lt;/code>、&lt;code>private&lt;/code> 等方法的时候，就需要加注解 &lt;code>@PrepareForTest&lt;/code>。&lt;/p>
+&lt;p>PowerMock 有两个版本，一个是基于 EasyMock 实现的，另一个是基于 Mockito 实现的。&lt;/p>
+&lt;p>下面我将以 PowerMock 的 Mockito 的版本来讲述如何使用 PowerMock。&lt;/p>
+&lt;h2 id="1-普通-mockmock-参数传递的对象">1. 普通 Mock（Mock 参数传递的对象）&lt;/h2>
+&lt;p>测试对象&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callArgumentInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>File file&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> file&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">exists&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>测试用例&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TestClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallArgumentInstance&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e">// Mock 对象，也可以使用 org.mockito.Mock 注解标记来实现
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> File file &lt;span style="color:#f92672">=&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mock&lt;/span>&lt;span style="color:#f92672">(&lt;/span>File&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#75715e">// 录制 Mock 对象行为
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>file&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">exists&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#75715e">// 验证方法行为
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callArgumentInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>file&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>普通 Mock 不需要加 &lt;code>@RunWith&lt;/code> 和 &lt;code>@PrepareForTest&lt;/code> 注解。&lt;/p>
+&lt;h2 id="2-mock-方法内部-new-出来的对象">2. Mock 方法内部 new 出来的对象&lt;/h2>
+&lt;p>测试对象&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callInternalInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String path&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+File file &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> File&lt;span style="color:#f92672">(&lt;/span>path&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> file&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">exists&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>测试用例&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#75715e">// 必须加注解 @PrepareForTest 和 @RunWith
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">@RunWith&lt;/span>&lt;span style="color:#f92672">(&lt;/span>PowerMockRunner&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TestClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#75715e">// 在测试方法之上需要添加注解 @PrepareForTest，注解里写的类是需要 Mock 的 new 对象代码所在的类。
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallInternalInstance&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception &lt;span style="color:#f92672">{&lt;/span>
+File file &lt;span style="color:#f92672">=&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mock&lt;/span>&lt;span style="color:#f92672">(&lt;/span>File&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#75715e">// 当以参数为 bbb 创建 File 对象的时候，返回已经 Mock 的 File 对象。
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">whenNew&lt;/span>&lt;span style="color:#f92672">(&lt;/span>File&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">withArguments&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;bbb&amp;#34;&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>file&lt;span style="color:#f92672">);&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>file&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">exists&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callInternalInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;bbb&amp;#34;&lt;/span>&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-mock-普通对象的-final-方法">3. Mock 普通对象的 final 方法&lt;/h2>
+&lt;p>测试对象&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callFinalMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassDependency refer&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> refer&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isAlive&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClassDependency&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isAlive&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e">// do something
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>测试用例&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#75715e">// 必须加注解 @PrepareForTest 和 @RunWith
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">@RunWith&lt;/span>&lt;span style="color:#f92672">(&lt;/span>PowerMockRunner&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TestClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#75715e">// 在测试方法之上加注解 @PrepareForTest，注解里写的类是需要 Mock 的 final 方法所在的类。
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallFinalMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+ClassDependency depencency &lt;span style="color:#f92672">=&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mock&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>depencency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isAlive&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callFinalMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>depencency&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-mock-静态方法">4. Mock 静态方法。&lt;/h2>
+&lt;p>测试对象&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callStaticMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isExist&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClassDependency&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isExist&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e">// do something
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>测试用例&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#75715e">// 必须加注解 @PrepareForTest 和 @RunWith
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">@RunWith&lt;/span>&lt;span style="color:#f92672">(&lt;/span>PowerMockRunner&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TestClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#75715e">// 在测试方法之上加注解 @PrepareForTest，注解里写的类是需要 Mock 的 static 方法所在的类。
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallStaticMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#75715e">// 表示需要 Mock 这个类里的静态方法
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mockStatic&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isExist&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callStaticMethod&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-mock-私有方法">5. Mock 私有方法&lt;/h2>
+&lt;p>测试对象&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callPrivateMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> isExist&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isExist&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>测试用例&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#75715e">// 必须加注解 @PrepareForTest 和 @RunWith
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">@RunWith&lt;/span>&lt;span style="color:#f92672">(&lt;/span>PowerMockRunner&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TestClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#75715e">// 在测试方法之上加注解 @PrepareForTest，注解里写的类是需要 Mock 的 private 方法所在的类。
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallPrivateMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception &lt;span style="color:#f92672">{&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mock&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callPrivateMethod&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenCallRealMethod&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#e6db74">&amp;#34;isExist&amp;#34;&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callPrivateMethod&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-mock-jdk-中类的静态私有方法">6. Mock JDK 中类的静态、私有方法。&lt;/h2>
+&lt;p>测试对象&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callSystemFinalMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String str&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> str&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isEmpty&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> String &lt;span style="color:#a6e22e">callSystemStaticMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String str&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getProperty&lt;/span>&lt;span style="color:#f92672">(&lt;/span>str&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>测试用例&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#75715e">// 必须加注解 @PrepareForTest 和 @RunWith
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">@RunWith&lt;/span>&lt;span style="color:#f92672">(&lt;/span>PowerMockRunner&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TestClassUnderTest&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#75715e">// 和 Mock 普通对象的 static、final 方法一样，只不过注解 @PrepareForTest 里写的类不一样
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// 注解里写的类是需要调用系统方法所在的类。
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallSystemFinalMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+String str &lt;span style="color:#f92672">=&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mock&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>str&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isEmpty&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertFalse&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callSystemFinalMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>str&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallSystemStaticMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mockStatic&lt;/span>&lt;span style="color:#f92672">(&lt;/span>System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getProperty&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;aaa&amp;#34;&lt;/span>&lt;span style="color:#f92672">)).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;bbb&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertEquals&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;bbb&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callSystemStaticMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;aaa&amp;#34;&lt;/span>&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-mock-依赖类中的方法whennew">7. Mock 依赖类中的方法（whenNew）&lt;/h2>
+&lt;p>测试对象&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callDependency&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+ClassDependency classDependency &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassDependency&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> classDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isGod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;hh&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClassDependency&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isGod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String oh&lt;span style="color:#f92672">){&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>oh&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>测试用例&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#75715e">// 必须加注解 @PrepareForTest 和 @RunWith
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">@RunWith&lt;/span>&lt;span style="color:#f92672">(&lt;/span>PowerMockRunner&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TestClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#75715e">// 注解里写的类是依赖类所在的类。
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testDependency&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception &lt;span style="color:#f92672">{&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+ClassDependency dependency &lt;span style="color:#f92672">=&lt;/span> mock&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+whenNew&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">withAnyArguments&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>dependency&lt;span style="color:#f92672">);&lt;/span>
+when&lt;span style="color:#f92672">(&lt;/span>dependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isGod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>anyString&lt;span style="color:#f92672">())).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callDependency&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="8-完整示例代码">8. 完整示例代码&lt;/h2>
+&lt;h3 id="测试目标类">测试目标类&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">package&lt;/span> cn.enncloud.ceres.powermock&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> java.io.File&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#75715e">/**
+&lt;/span>&lt;span style="color:#75715e"> * Created by lixiangrong on 2017/7/21.
+&lt;/span>&lt;span style="color:#75715e"> */&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callArgumentInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>File file&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> file&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">exists&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callInternalInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String path&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+File file &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> File&lt;span style="color:#f92672">(&lt;/span>path&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> file&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">exists&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callFinalMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassDependency refer&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> refer&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isAlive&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callSystemFinalMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String str&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> str&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isEmpty&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callStaticMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isExist&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> String &lt;span style="color:#a6e22e">callSystemStaticMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String str&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getProperty&lt;/span>&lt;span style="color:#f92672">(&lt;/span>str&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callPrivateMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> isExist&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callVoidPrivateMethod&lt;/span>&lt;span style="color:#f92672">(){&lt;/span>
+testVoid&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isExist&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e">// do something
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testVoid&lt;/span>&lt;span style="color:#f92672">(){&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;do nothing&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">callDependency&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+ClassDependency classDependency &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassDependency&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> classDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isGod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;hh&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="依赖类">依赖类&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">package&lt;/span> cn.enncloud.ceres.powermock&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#75715e">/**
+&lt;/span>&lt;span style="color:#75715e"> * Created by lixiangrong on 2017/7/21.
+&lt;/span>&lt;span style="color:#75715e"> */&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ClassDependency&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isExist&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e">// do something
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isAlive&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e">// do something
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isGod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String oh&lt;span style="color:#f92672">){&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>oh&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="测试用例">测试用例&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">package&lt;/span> cn.enncloud.ceres.powermock.test&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> cn.enncloud.ceres.powermock.ClassDependency&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> cn.enncloud.ceres.powermock.ClassUnderTest&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> org.junit.Assert&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> org.junit.Test&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> org.junit.runner.RunWith&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> org.powermock.api.mockito.PowerMockito&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> org.powermock.core.classloader.annotations.PrepareForTest&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> org.powermock.modules.junit4.PowerMockRunner&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> java.io.File&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#75715e">/**
+&lt;/span>&lt;span style="color:#75715e"> * Created by lixiangrong on 2017/7/21.
+&lt;/span>&lt;span style="color:#75715e"> */&lt;/span>
+&lt;span style="color:#a6e22e">@RunWith&lt;/span>&lt;span style="color:#f92672">(&lt;/span>PowerMockRunner&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TestClassUnderTest&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallArgumentInstance&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+File file &lt;span style="color:#f92672">=&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mock&lt;/span>&lt;span style="color:#f92672">(&lt;/span>File&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>file&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">exists&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callArgumentInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>file&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallInternalInstance&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception &lt;span style="color:#f92672">{&lt;/span>
+File file &lt;span style="color:#f92672">=&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mock&lt;/span>&lt;span style="color:#f92672">(&lt;/span>File&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">whenNew&lt;/span>&lt;span style="color:#f92672">(&lt;/span>File&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">withArguments&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;bbb&amp;#34;&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>file&lt;span style="color:#f92672">);&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>file&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">exists&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callInternalInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;bbb&amp;#34;&lt;/span>&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallFinalMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+ClassDependency depencency &lt;span style="color:#f92672">=&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mock&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>depencency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isAlive&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callFinalMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>depencency&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallSystemFinalMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+String str &lt;span style="color:#f92672">=&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mock&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>str&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isEmpty&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertFalse&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callSystemFinalMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>str&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallStaticMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mockStatic&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isExist&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callStaticMethod&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallSystemStaticMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mockStatic&lt;/span>&lt;span style="color:#f92672">(&lt;/span>System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getProperty&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;aaa&amp;#34;&lt;/span>&lt;span style="color:#f92672">)).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;bbb&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertEquals&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;bbb&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callSystemStaticMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;aaa&amp;#34;&lt;/span>&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallPrivateMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception &lt;span style="color:#f92672">{&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mock&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callPrivateMethod&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenCallRealMethod&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#e6db74">&amp;#34;isExist&amp;#34;&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callPrivateMethod&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testCallVoidPrivateMethod&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception &lt;span style="color:#f92672">{&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">mock&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callVoidPrivateMethod&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">thenCallRealMethod&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+PowerMockito&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">doNothing&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">when&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#e6db74">&amp;#34;testVoid&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callVoidPrivateMethod&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Test&lt;/span>
+&lt;span style="color:#a6e22e">@PrepareForTest&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ClassUnderTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">testDependency&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception &lt;span style="color:#f92672">{&lt;/span>
+ClassUnderTest underTest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClassUnderTest&lt;span style="color:#f92672">();&lt;/span>
+ClassDependency dependency &lt;span style="color:#f92672">=&lt;/span> mock&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#75715e">// @PrepareForTest(ClassUnderTest.class)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> whenNew&lt;span style="color:#f92672">(&lt;/span>ClassDependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">withAnyArguments&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>dependency&lt;span style="color:#f92672">);&lt;/span>
+when&lt;span style="color:#f92672">(&lt;/span>dependency&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isGod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>anyString&lt;span style="color:#f92672">())).&lt;/span>&lt;span style="color:#a6e22e">thenReturn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">true&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Assert&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">assertTrue&lt;/span>&lt;span style="color:#f92672">(&lt;/span>underTest&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">callDependency&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="9-mock-与-spy">9. Mock 与 Spy&lt;/h2>
+&lt;p>Mock 不是真实的对象，它只是用类型的 class 创建了一个虚拟对象，并可以设置对象行为
+Spy 是一个真实的对象，但它可以设置对象行为&lt;/p>
+&lt;hr></description></item></channel></rss>

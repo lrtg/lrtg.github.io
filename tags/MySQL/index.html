@@ -1,0 +1,70 @@
+<!doctype html><html lang=en><head><title>MySQL ::
+lrtg — a hugo blog of lrtg</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content><meta name=keywords content="lrtg"><meta name=robots content="noodp"><link rel=canonical href=https://lrtg.ml/tags/MySQL/><link rel=stylesheet href=https://lrtg.ml/assets/style.css><link rel=stylesheet href=https://lrtg.ml/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://lrtg.ml/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://lrtg.ml/img/favicon.png><link href=https://lrtg.ml/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary"><meta name=twitter:title content="MySQL"><meta name=twitter:description content><meta property="og:title" content="MySQL"><meta property="og:description" content><meta property="og:type" content="website"><meta property="og:url" content="https://lrtg.ml/tags/MySQL/"><meta property="og:updated_time" content="2021-01-16T22:15:40+08:00"><meta property="og:site_name" content="lrtg"><link rel=alternate type=application/rss+xml href=/tags/MySQL/index.xml title=lrtg><meta name=google-site-verification content="1sqm8XMeeEHHbiKb2V2OrWT2WoAg7TUCXvXXLbP8O2s"></head><body class=dark-theme><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>lrtg's blog</span>
+<span class=logo__cursor></span></a><span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><ul class=menu__sub-inner><li class=menu__sub-inner-more-trigger>Show more
+<span class=menu__sub-inner-more-trigger-icon><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span></li><ul class="menu__sub-inner-more hidden"><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></ul></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41C32.4934 41 41 32.4934 41 22 41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=posts><div class="post on-list"><h1 class=post-title><a href=https://lrtg.ml/2021/01/16/mysql-innodb-tx-isolation/>MySQL InnoDB 事务隔离级别总结</a></h1><div class=post-meta><span class=post-date>2021-01-16</span>
+<span class=post-read-time>— 2 min read</span></div><span class=post-tags><a href=https://lrtg.ml/tags/MySQL/>#MySQL</a>&nbsp;</span><div class=post-content>SQL 标准定义了 4 类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。</div><div><a class="read-more button" href=/2021/01/16/mysql-innodb-tx-isolation/>Read more →</a></div></div><div class="post on-list"><h1 class=post-title><a href=https://lrtg.ml/2018/05/31/sql-transaction-isolation/>SQL 事务隔离</a></h1><div class=post-meta><span class=post-date>2018-05-31</span>
+<span class=post-moddate>(Modified:
+2020-07-20)</span>
+<span class=post-read-time>— 1 min read</span></div><span class=post-tags><a href=https://lrtg.ml/tags/SQL/>#SQL</a>&nbsp;
+<a href=https://lrtg.ml/tags/MySQL/>#MySQL</a>&nbsp;
+<a href=https://lrtg.ml/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1/>#数据库事务</a>&nbsp;
+<a href=https://lrtg.ml/tags/%E4%BA%8B%E5%8A%A1/>#事务</a>&nbsp;</span><div class=post-content><p>SQL 标准定义了 4 类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。</p><h2 id=一sql-事务隔离级别说明>一、SQL 事务隔离级别说明</h2><h3 id=11-read-uncommitted读取未提交内容>1.1 Read Uncommitted（读取未提交内容）</h3><p>在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。</p></div><div><a class="read-more button" href=/2018/05/31/sql-transaction-isolation/>Read more →</a></div></div><div class="post on-list"><h1 class=post-title><a href=https://lrtg.ml/2016/07/28/Oracle-%E4%B8%8E-MySQL-%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/>Oracle 与 MySQL 知识总结</a></h1><div class=post-meta><span class=post-date>2016-07-28</span>
+<span class=post-moddate>(Modified:
+2020-07-20)</span>
+<span class=post-read-time>— 4 min read</span></div><span class=post-tags><a href=https://lrtg.ml/tags/MySQL/>#MySQL</a>&nbsp;
+<a href=https://lrtg.ml/tags/Oracle/>#Oracle</a>&nbsp;</span><div class=post-content><blockquote><p>对日常工作中使用 Oracle 和 MySQL 数据库知识对比总结。</p></blockquote><h1 id=sqlplus-连接数据库的方式>SQLPlus 连接数据库的方式</h1><h2 id=cmd-中输入sqlplus-用户名密码数据库实例>cmd 中输入：sqlplus 用户名/密码@数据库实例</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>
+sqlplus system/lxr316@oracle
+
+sqlplus sys/admin as sysdba
+
+</code></pre></div><h2 id=打开-sqlplus-直接输入用户名和密码>打开 SQLPlus 直接输入用户名和密码</h2><h2 id=使用命令>使用命令</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>
+connect sys/admin as sysdba
+
+connect system/lxr316
+
+</code></pre></div></div><div><a class="read-more button" href=/2016/07/28/Oracle-%E4%B8%8E-MySQL-%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/>Read more →</a></div></div><div class="post on-list"><h1 class=post-title><a href=https://lrtg.ml/2016/07/20/MySQL%E6%97%A5%E6%9C%9F%E5%87%BD%E6%95%B0/>MySQL日期函数</a></h1><div class=post-meta><span class=post-date>2016-07-20</span>
+<span class=post-moddate>(Modified:
+2020-07-20)</span>
+<span class=post-read-time>— 2 min read</span></div><span class=post-tags><a href=https://lrtg.ml/tags/MySQL/>#MySQL</a>&nbsp;</span><div class=post-content><h4 id=1-取得当天>1. 取得当天</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql>
+mysql<span style=color:#f92672>&gt;</span> <span style=color:#66d9ef>SELECT</span> curdate();
+
+<span style=color:#f92672>+</span><span style=color:#75715e>------------+
+</span><span style=color:#75715e></span>
+<span style=color:#f92672>|</span> curdate()  <span style=color:#f92672>|</span>
+
+<span style=color:#f92672>+</span><span style=color:#75715e>------------+
+</span><span style=color:#75715e></span>
+<span style=color:#f92672>|</span> <span style=color:#ae81ff>2013</span><span style=color:#f92672>-</span><span style=color:#ae81ff>07</span><span style=color:#f92672>-</span><span style=color:#ae81ff>29</span> <span style=color:#f92672>|</span>
+
+<span style=color:#f92672>+</span><span style=color:#75715e>------------+
+</span><span style=color:#75715e></span>
+</code></pre></div><h4 id=2-取得当前日期>2. 取得当前日期</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql>
+mysql<span style=color:#f92672>&gt;</span> <span style=color:#66d9ef>select</span> sysdate();
+
+<span style=color:#f92672>+</span><span style=color:#75715e>---------------------+
+</span><span style=color:#75715e></span>
+<span style=color:#f92672>|</span> sysdate()           <span style=color:#f92672>|</span>
+
+<span style=color:#f92672>+</span><span style=color:#75715e>---------------------+
+</span><span style=color:#75715e></span>
+<span style=color:#f92672>|</span> <span style=color:#ae81ff>2016</span><span style=color:#f92672>-</span><span style=color:#ae81ff>05</span><span style=color:#f92672>-</span><span style=color:#ae81ff>30</span> <span style=color:#ae81ff>13</span>:<span style=color:#ae81ff>58</span>:<span style=color:#ae81ff>17</span> <span style=color:#f92672>|</span>
+
+<span style=color:#f92672>+</span><span style=color:#75715e>---------------------+
+</span><span style=color:#75715e></span>
+<span style=color:#ae81ff>1</span> <span style=color:#66d9ef>row</span> <span style=color:#66d9ef>in</span> <span style=color:#66d9ef>set</span>
+
+mysql<span style=color:#f92672>&gt;</span> <span style=color:#66d9ef>select</span> now();
+
+<span style=color:#f92672>+</span><span style=color:#75715e>---------------------+
+</span><span style=color:#75715e></span>
+<span style=color:#f92672>|</span> now()               <span style=color:#f92672>|</span>
+
+<span style=color:#f92672>+</span><span style=color:#75715e>---------------------+
+</span><span style=color:#75715e></span>
+<span style=color:#f92672>|</span> <span style=color:#ae81ff>2016</span><span style=color:#f92672>-</span><span style=color:#ae81ff>05</span><span style=color:#f92672>-</span><span style=color:#ae81ff>30</span> <span style=color:#ae81ff>13</span>:<span style=color:#ae81ff>58</span>:<span style=color:#ae81ff>29</span> <span style=color:#f92672>|</span>
+
+<span style=color:#f92672>+</span><span style=color:#75715e>---------------------+
+</span><span style=color:#75715e></span>
+<span style=color:#ae81ff>1</span> <span style=color:#66d9ef>row</span> <span style=color:#66d9ef>in</span> <span style=color:#66d9ef>set</span>
+
+</code></pre></div></div><div><a class="read-more button" href=/2016/07/20/MySQL%E6%97%A5%E6%9C%9F%E5%87%BD%E6%95%B0/>Read more →</a></div></div><div class=pagination><div class=pagination__buttons></div></div></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user">© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</div></div></footer><script src=https://lrtg.ml/assets/main.js></script><script src=https://lrtg.ml/assets/prism.js></script></div></body></html>

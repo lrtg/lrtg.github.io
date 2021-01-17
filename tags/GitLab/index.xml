@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GitLab on lrtg</title><link>https://lrtg.ml/tags/GitLab/</link><description>Recent content in GitLab on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Sun, 31 Jul 2016 18:15:47 +0000</lastBuildDate><atom:link href="https://lrtg.ml/tags/GitLab/index.xml" rel="self" type="application/rss+xml"/><item><title>CentOS 系统下 GitLab 搭建与基本配置</title><link>https://lrtg.ml/2016/07/31/CentOS-%E7%B3%BB%E7%BB%9F%E4%B8%8B-GitLab-%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</link><pubDate>Sun, 31 Jul 2016 18:15:47 +0000</pubDate><guid>https://lrtg.ml/2016/07/31/CentOS-%E7%B3%BB%E7%BB%9F%E4%B8%8B-GitLab-%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</guid><description>
+&lt;blockquote>
+&lt;p>&lt;a href="https://about.gitlab.com/">GitLab 是一个开源的版本管理系统，提供了类似于 GitHub 的源代码浏览，管理缺陷和注释等功能，你可以将代码免费托管到 GitLab.com，而且不限项目数量和成员数。最吸引人的一点是，可以在自己的服务器上搭建 GitLab CE （社区免费版）版本，方便内部团队协作开发和代码管理。&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;p>下面介绍如何在 CentOS 服务器上搭建 GitLab CE 版本，以及一些基本的配置。&lt;/p>
+&lt;h1 id="1-安装">1. 安装&lt;/h1>
+&lt;p>GitLab 提供了两种安装方式：源码手动编译安装和软件包管理安装。&lt;/p>
+&lt;p>源码手动编译安装虽然配置灵活，但过程比较麻烦，不容易安装成功，所以我这里选择软件包管理安装的形式。&lt;/p>
+&lt;h2 id="11-使用-gitlab-提供仓库在线安装">1.1 使用 GitLab 提供仓库在线安装&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
+yum install gitlab-ce
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>国外的 GitLab 仓库访问速度较慢，可以使用国内的站点：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -sS http://packages.gitlab.cc/install/gitlab-ce/script.rpm.sh | sudo bash
+yum install gitlab-ce
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="12-下载离线软件包安装">1.2 下载离线软件包安装&lt;/h2>
+&lt;p>如果网络速度不理想，可以使用离线软件包 rpm 的方式进行安装，下面提供了几个站点的下载地址。&lt;/p>
+&lt;ul>
+&lt;li>GitLab 官方：https://packages.gitlab.com/gitlab/gitlab-ce?filter=rpms&lt;/li>
+&lt;li>清华大学TUNA开源镜像站：https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/&lt;/li>
+&lt;li>浙大开源镜像站：http://mirrors.lifetoy.org/gitlab-ce/yum/el7/&lt;/li>
+&lt;/ul>
+&lt;p>下载好 rpm 软件安装包后上传到服务器指定的目录下，通过以下命令进行安装：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rpm -ivh　gitlab-ce-8.9.6-ce.0.el7.x86_64.rpm
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>记录一下 rpm 卸载软件安装包命令：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rpm -e --nodeps gitlab-ce-8.9.6-ce.0.el7.x86_64
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="2-启动-gitlab">2. 启动 GitLab&lt;/h1>
+&lt;p>安装完成之后，打开配置文件 &lt;code>/etc/gitlab/gitlab.rb&lt;/code> 将 &lt;code>external_url = 'http://git.example.com'&lt;/code> 修改为自己的 IP 地址：&lt;code>external_url 'http://ip_address'&lt;/code> ，然后执行下面的命令，对 GitLab 进行编译：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">gitlab-ctl reconfigure
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>完成后，使用浏览器访问：http://ip_address 可进入 GitLab 登录页面，首次访问系统会让你重新设置管理员的密码，默认的管理员账号是 root，如果你想更改默认管理员账号，登录系统后可以修改帐号名。&lt;/p>
+&lt;h1 id="3-gitlab-基本配置">3. GitLab 基本配置&lt;/h1>
+&lt;p>GitLab 的相关参数配置都存在 &lt;code>/etc/gitlab/gitlab.rb&lt;/code> 文件里。自 GitLab 7.6 开始的新安装包, 已经默认将所有的参数写入到 &lt;code>/etc/gitlab/gitlab.rb&lt;/code> 配置文件中。&lt;/p>
+&lt;h2 id="31-配置端口">3.1 配置端口&lt;/h2>
+&lt;p>GitLab 默认使用 80 端口对外提供服务，因为 80 端口被其他服务占用，所以需要更改。打开 &lt;code>/etc/gitlab/gitlab.rb&lt;/code> 配置文件，修改 &lt;code>external_url 'http://ip_address'&lt;/code> 为 &lt;code>external_url 'http://ip_address:new-port'&lt;/code>，&lt;/p>
+&lt;p>重新编译配置：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">gitlab-ctl reconfigure
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>这时候就可以通更改后的 IP + 端口号码进行访问了。&lt;/p>
+&lt;h2 id="32-邮箱配置">3.2 邮箱配置&lt;/h2>
+&lt;p>以下是 163 邮箱的配置参考，打开　&lt;code>/etc/gitlab/gitlab.rb&lt;/code> 配置文件，添加以下内容：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">gitlab_rails&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#39;smtp_enable&amp;#39;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">=&lt;/span> true
+gitlab_rails&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#39;smtp_address&amp;#39;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;smtp.163.com&amp;#34;&lt;/span>
+gitlab_rails&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#39;smtp_port&amp;#39;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">25&lt;/span>
+gitlab_rails&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#39;smtp_user_name&amp;#39;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;test@163.com&amp;#34;&lt;/span>
+gitlab_rails&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#39;smtp_password&amp;#39;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;password&amp;#34;&lt;/span>
+gitlab_rails&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#39;smtp_authentication&amp;#39;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;login&amp;#34;&lt;/span>
+gitlab_rails&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#39;smtp_enable_starttls_auto&amp;#39;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">=&lt;/span> true
+gitlab_rails&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#39;gitlab_email_from&amp;#39;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;test@163.com&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>注意：&lt;/strong> &lt;code>test@163.com&lt;/code> 和 &lt;code>password&lt;/code> 更新为自己邮箱地址和密码；邮箱需要开启 SMTP 协议。&lt;/p>
+&lt;p>重新编译配置即可生效：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">gitlab-ctl reconfigure
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>其它邮箱的配置可参考：https://doc.gitlab.cc/omnibus/settings/smtp.html&lt;/p>
+&lt;h2 id="33-头像配置">3.3 头像配置&lt;/h2>
+&lt;p>GitLab 默认使用的是 Gravatar 头像服务，不过现在貌似 Gravatar 国内好像访问不了，导致 GitLab 默认头像破裂，无法显示，可以替换为多说 Gravatar 服务器。打开 &lt;code>/etc/gitlab/gitlab.rb&lt;/code> 配置文件，增加下面这一行：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">gitlab_rails&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#39;gravatar_plain_url&amp;#39;&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;http://gravatar.duoshuo.com/avatar/%{hash}?s=%{size}&amp;amp;d=identicon&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>再分别执行以下命令即可&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">gitlab-ctl reconfigure
+gitlab-rake cache:clear RAILS_ENV&lt;span style="color:#f92672">=&lt;/span>production
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>也可以关闭 Gravatar 头像显示配置，登录 GitLab 管理员账户，进入设置界面（路径地址：&lt;code>http://ip:port/admin/application_settings&lt;/code> ），取消以下选项即可。&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20160731201717.png" alt="">&lt;/p>
+&lt;h2 id="34-用户注册配置">3.4 用户注册配置&lt;/h2>
+&lt;p>管理员设置界面（路径地址：&lt;code>http://ip:port/admin/application_settings&lt;/code> ）以下选项可以控制用户注册配置，包括是否允许登录、注册和注册邮箱验证等选项。&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20160731202214.png" alt="">&lt;/p>
+&lt;h2 id="35-常用命令">3.5 常用命令&lt;/h2>
+&lt;p>GitLab 服务启动、停止、状态查询、修改配置生效等命令：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">gitlab-ctl start/stop/status/reconfigure &lt;span style="color:#75715e"># 服务启动、停止、状态查询、修改配置生效&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>也可以查看帮助文档获取更多命令信息：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">gitlab-ctl --help
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr></description></item></channel></rss>

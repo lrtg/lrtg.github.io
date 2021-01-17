@@ -1,0 +1,1041 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Go on lrtg</title><link>https://lrtg.ml/tags/Go/</link><description>Recent content in Go on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Fri, 26 Jan 2018 21:27:56 +0000</lastBuildDate><atom:link href="https://lrtg.ml/tags/Go/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang 反射使用总结</title><link>https://lrtg.ml/2018/01/26/golang-reflect/</link><pubDate>Fri, 26 Jan 2018 21:27:56 +0000</pubDate><guid>https://lrtg.ml/2018/01/26/golang-reflect/</guid><description>
+&lt;p>Go 语言中反射的操作主要定义在标准库 &lt;a href="https://golang.org/pkg/reflect/">&lt;code>reflect&lt;/code>&lt;/a> 中，在标准库中定义了两种类型来表现运行时的对象信息，分别是：&lt;a href="https://golang.org/pkg/reflect/#Value">&lt;code>reflect.Value&lt;/code>&lt;/a>（反射对象的类型）和 &lt;a href="https://golang.org/pkg/reflect/#Type">&lt;code>reflect.Type&lt;/code>&lt;/a>（反射对象的值），Go 语言中所有反射操作都是基于这两个类型进行的。&lt;/p>
+&lt;p>{% img &lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/golang-reflect.jpg">https://cdn.jsdelivr.net/gh/0vo/oss/images/golang-reflect.jpg&lt;/a> 350 %}&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>为了方便演示操作（&lt;a href="https://github.com/ehlxr/go-utils/blob/master/common/reflect/main.go">完整代码示例&lt;/a>），首先定义以下结构体以及字段、方法：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-golang" data-lang="golang">&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">User&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {
+&lt;span style="color:#a6e22e">Name&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> &lt;span style="color:#e6db74">`json:&amp;#34;name&amp;#34;`&lt;/span>
+&lt;span style="color:#a6e22e">Age&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> &lt;span style="color:#e6db74">`json:&amp;#34;age&amp;#34; default:&amp;#34;18&amp;#34;`&lt;/span>
+&lt;span style="color:#a6e22e">addr&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> &lt;span style="color:#e6db74">`json:&amp;#34;addr&amp;#34;`&lt;/span>
+}
+&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">u&lt;/span> &lt;span style="color:#a6e22e">User&lt;/span>) &lt;span style="color:#a6e22e">Do&lt;/span>(&lt;span style="color:#a6e22e">in&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>) (&lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#66d9ef">int&lt;/span>) {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Printf&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;%s Name is %s, Age is %d \n&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">in&lt;/span>, &lt;span style="color:#a6e22e">u&lt;/span>.&lt;span style="color:#a6e22e">Name&lt;/span>, &lt;span style="color:#a6e22e">u&lt;/span>.&lt;span style="color:#a6e22e">Age&lt;/span>)
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">u&lt;/span>.&lt;span style="color:#a6e22e">Name&lt;/span>, &lt;span style="color:#a6e22e">u&lt;/span>.&lt;span style="color:#a6e22e">Age&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="一反射对象-value-和-type">一、反射对象 Value 和 Type&lt;/h2>
+&lt;p>既然 Go 语言中所有反射操作都是基于 &lt;code>Value&lt;/code> 和 &lt;code>Type&lt;/code> 进行的，那么想要进行反射操作，首先就要获取到反射对象的这两个类型对象才可以。&lt;/p>
+&lt;p>&lt;code>reflect&lt;/code> 包提供了两个函数：&lt;code>reflect.ValueOf()&lt;/code> 和 &lt;code>reflect.TypeOf()&lt;/code>，通过这两个函数就可以方便的获取到任意类型（用 &lt;code>interface{}&lt;/code> 表示任意类型）的 &lt;code>Value&lt;/code> 对象和 &lt;code>Type&lt;/code> 对象。例如：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-golang" data-lang="golang">&lt;span style="color:#a6e22e">u&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">User&lt;/span>{&lt;span style="color:#e6db74">&amp;#34;tom&amp;#34;&lt;/span>, &lt;span style="color:#ae81ff">27&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;beijing&amp;#34;&lt;/span>}
+&lt;span style="color:#a6e22e">v&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">reflect&lt;/span>.&lt;span style="color:#a6e22e">ValueOf&lt;/span>(&lt;span style="color:#a6e22e">u&lt;/span>)
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">v&lt;/span>)
+&lt;span style="color:#a6e22e">t&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">reflect&lt;/span>.&lt;span style="color:#a6e22e">TypeOf&lt;/span>(&lt;span style="color:#a6e22e">u&lt;/span>)
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">t&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>知道 &lt;code>Value&lt;/code> 对象后，也可以通过 &lt;code>Value.Type()&lt;/code> 方法获取到 &lt;code>Type&lt;/code> 对象。例如：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-golang" data-lang="golang">&lt;span style="color:#a6e22e">t1&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">v&lt;/span>.&lt;span style="color:#a6e22e">Type&lt;/span>()
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">t&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#a6e22e">t1&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>可以看到输出结果为 &lt;code>true&lt;/code>。&lt;/p>
+&lt;p>通过 &lt;code>Type&lt;/code> 类型对象也可以获取到 &lt;code>Value&lt;/code> 类型对象，不过是零值的指针。例如：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-golang" data-lang="golang">&lt;span style="color:#a6e22e">v1&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">reflect&lt;/span>.&lt;span style="color:#a6e22e">New&lt;/span>(&lt;span style="color:#a6e22e">t&lt;/span>)
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">v1&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>结果为：&lt;code>&amp;amp;{ 0}&lt;/code>&lt;/p>
+&lt;h2 id="二反射对象的-kind">二、反射对象的 Kind&lt;/h2>
+&lt;p>&lt;code>Kind&lt;/code> 表示反射对象的类型 &lt;code>Type&lt;/code> 所代表的具体类型，零值表示无效的类型，具体有以下类型值：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-golang" data-lang="golang">&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Kind&lt;/span> &lt;span style="color:#66d9ef">uint&lt;/span>
+&lt;span style="color:#66d9ef">const&lt;/span> (
+&lt;span style="color:#a6e22e">Invalid&lt;/span> &lt;span style="color:#a6e22e">Kind&lt;/span> = &lt;span style="color:#66d9ef">iota&lt;/span>
+&lt;span style="color:#a6e22e">Bool&lt;/span>
+&lt;span style="color:#a6e22e">Int&lt;/span>
+&lt;span style="color:#a6e22e">Int8&lt;/span>
+&lt;span style="color:#a6e22e">Int16&lt;/span>
+&lt;span style="color:#a6e22e">Int32&lt;/span>
+&lt;span style="color:#a6e22e">Int64&lt;/span>
+&lt;span style="color:#a6e22e">Uint&lt;/span>
+&lt;span style="color:#a6e22e">Uint8&lt;/span>
+&lt;span style="color:#a6e22e">Uint16&lt;/span>
+&lt;span style="color:#a6e22e">Uint32&lt;/span>
+&lt;span style="color:#a6e22e">Uint64&lt;/span>
+&lt;span style="color:#a6e22e">Uintptr&lt;/span>
+&lt;span style="color:#a6e22e">Float32&lt;/span>
+&lt;span style="color:#a6e22e">Float64&lt;/span>
+&lt;span style="color:#a6e22e">Complex64&lt;/span>
+&lt;span style="color:#a6e22e">Complex128&lt;/span>
+&lt;span style="color:#a6e22e">Array&lt;/span>
+&lt;span style="color:#a6e22e">Chan&lt;/span>
+&lt;span style="color:#a6e22e">Func&lt;/span>
+&lt;span style="color:#a6e22e">Interface&lt;/span>
+&lt;span style="color:#a6e22e">Map&lt;/span>
+&lt;span style="color:#a6e22e">Ptr&lt;/span>
+&lt;span style="color:#a6e22e">Slice&lt;/span>
+&lt;span style="color:#a6e22e">String&lt;/span>
+&lt;span style="color:#a6e22e">Struct&lt;/span>
+&lt;span style="color:#a6e22e">UnsafePointer&lt;/span>
+)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>可以通过 &lt;code>Value.Kind()&lt;/code> 或者 &lt;code>Type.Kind()&lt;/code> 函数获得。例如：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-golang" data-lang="golang">&lt;span style="color:#75715e">// 获取 Kind 类型
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">k&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">t&lt;/span>.&lt;span style="color:#a6e22e">Kind&lt;/span>()
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">k&lt;/span>)
+&lt;span style="color:#a6e22e">k1&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">v&lt;/span>.&lt;span style="color:#a6e22e">Kind&lt;/span>()
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">k1&lt;/span>)
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">k&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#a6e22e">k1&lt;/span>)
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>()
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>可以看到两种方式获取的结果是一样的，都是 &lt;code>struct&lt;/code>。&lt;/p>
+&lt;h2 id="三反射对象的字段">三、反射对象的字段&lt;/h2>
+&lt;p>反射能够操作的字段和方法必须是可导出（首字母大写）的。&lt;/p>
+&lt;p>反射对象的字段值修改要通过调用 &lt;code>Value&lt;/code> 类型的方法 &lt;code>Elem()&lt;/code> 后返回的 &lt;code>Value&lt;/code> 对象值来操作。&lt;/p>
+&lt;p>&lt;code>Elem()&lt;/code> 方法定义：&lt;code>func (v Value) Elem() Value&lt;/code>，返回 &lt;code>v&lt;/code> 包含的值或指针 &lt;code>v&lt;/code> 指向的值，&lt;code>v&lt;/code> 的 &lt;code>Kind&lt;/code> 如果不是 &lt;code>Interface&lt;/code> 或 &lt;code>Ptr&lt;/code>，则会 panic。&lt;/p>
+&lt;p>&lt;code>reflect.Indirect()&lt;/code> 函数的如果参数是指针的 &lt;code>Value&lt;/code>，则相当于调用了 &lt;code>Elem()&lt;/code> 方法返回的值，否则返回 &lt;code>Value&lt;/code> 自身值。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-golang" data-lang="golang">&lt;span style="color:#75715e">// 修改反射对象的值
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">20&lt;/span>
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;before i =&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">i&lt;/span>)
+&lt;span style="color:#a6e22e">e&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">reflect&lt;/span>.&lt;span style="color:#a6e22e">Indirect&lt;/span>(&lt;span style="color:#a6e22e">reflect&lt;/span>.&lt;span style="color:#a6e22e">ValueOf&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">i&lt;/span>))
+&lt;span style="color:#75715e">// e := reflect.ValueOf(&amp;amp;i).Elem()
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">e&lt;/span>.&lt;span style="color:#a6e22e">CanSet&lt;/span>() {
+&lt;span style="color:#a6e22e">e&lt;/span>.&lt;span style="color:#a6e22e">SetInt&lt;/span>(&lt;span style="color:#ae81ff">22&lt;/span>)
+}
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;after i =&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">i&lt;/span>)
+&lt;span style="color:#75715e">// 反射字段操作
+&lt;/span>&lt;span style="color:#75715e">// elem := reflect.Indirect(reflect.ValueOf(&amp;amp;u))
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">elem&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">reflect&lt;/span>.&lt;span style="color:#a6e22e">ValueOf&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">u&lt;/span>).&lt;span style="color:#a6e22e">Elem&lt;/span>()
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>; &lt;span style="color:#a6e22e">i&lt;/span> &amp;lt; &lt;span style="color:#a6e22e">t&lt;/span>.&lt;span style="color:#a6e22e">NumField&lt;/span>(); &lt;span style="color:#a6e22e">i&lt;/span>&lt;span style="color:#f92672">++&lt;/span> {
+&lt;span style="color:#75715e">// 反射获取字段的元信息，例如：名称、Tag 等
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">ft&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">t&lt;/span>.&lt;span style="color:#a6e22e">Field&lt;/span>(&lt;span style="color:#a6e22e">i&lt;/span>)
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;field name:&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">ft&lt;/span>.&lt;span style="color:#a6e22e">Name&lt;/span>)
+&lt;span style="color:#a6e22e">tag&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">ft&lt;/span>.&lt;span style="color:#a6e22e">Tag&lt;/span>
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Tag:&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">tag&lt;/span>)
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Tag json:&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">tag&lt;/span>.&lt;span style="color:#a6e22e">Get&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;json&amp;#34;&lt;/span>))
+&lt;span style="color:#75715e">// 反射修改字段的值
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">fv&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">elem&lt;/span>.&lt;span style="color:#a6e22e">Field&lt;/span>(&lt;span style="color:#a6e22e">i&lt;/span>)
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">fv&lt;/span>.&lt;span style="color:#a6e22e">CanSet&lt;/span>() {
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">fv&lt;/span>.&lt;span style="color:#a6e22e">Kind&lt;/span>() &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#a6e22e">reflect&lt;/span>.&lt;span style="color:#a6e22e">Int&lt;/span> {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;change age to 30&amp;#34;&lt;/span>)
+&lt;span style="color:#a6e22e">fv&lt;/span>.&lt;span style="color:#a6e22e">SetInt&lt;/span>(&lt;span style="color:#ae81ff">30&lt;/span>)
+}
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">fv&lt;/span>.&lt;span style="color:#a6e22e">Kind&lt;/span>() &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#a6e22e">reflect&lt;/span>.&lt;span style="color:#a6e22e">String&lt;/span> {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;change name to jerry&amp;#34;&lt;/span>)
+&lt;span style="color:#a6e22e">fv&lt;/span>.&lt;span style="color:#a6e22e">SetString&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;jerry&amp;#34;&lt;/span>)
+}
+}
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>()
+}
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;after user:&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">u&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="四反射对象的方法">四、反射对象的方法&lt;/h2>
+&lt;p>可以通过 &lt;code>Value&lt;/code> 的 &lt;code>Method()&lt;/code> 方法或 &lt;code>Type&lt;/code> 的 &lt;code>Method()&lt;/code> 方法，两种形式获取对象方法信息进行反射调用，略有不同，示例如下：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-golang" data-lang="golang">&lt;span style="color:#75715e">// 反射方法操作
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>; &lt;span style="color:#a6e22e">i&lt;/span> &amp;lt; &lt;span style="color:#a6e22e">v&lt;/span>.&lt;span style="color:#a6e22e">NumMethod&lt;/span>(); &lt;span style="color:#a6e22e">i&lt;/span>&lt;span style="color:#f92672">++&lt;/span> {
+&lt;span style="color:#a6e22e">method&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">t&lt;/span>.&lt;span style="color:#a6e22e">Method&lt;/span>(&lt;span style="color:#a6e22e">i&lt;/span>) &lt;span style="color:#75715e">// 获取方法信息对象，方法 1
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">mt&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">method&lt;/span>.&lt;span style="color:#a6e22e">Type&lt;/span> &lt;span style="color:#75715e">// 获取方法信息 Type 对象，方法 1
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// m := v.Method(i) // 获取方法信息对象，方法 2
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// mt := m.Type() // 获取方法信息 Type 对象，方法 2
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;method name:&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">method&lt;/span>.&lt;span style="color:#a6e22e">Name&lt;/span>)
+&lt;span style="color:#a6e22e">in&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> []&lt;span style="color:#a6e22e">reflect&lt;/span>.&lt;span style="color:#a6e22e">Value&lt;/span>{}
+&lt;span style="color:#75715e">// 获取方法入参类型
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">j&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>; &lt;span style="color:#a6e22e">j&lt;/span> &amp;lt; &lt;span style="color:#a6e22e">mt&lt;/span>.&lt;span style="color:#a6e22e">NumIn&lt;/span>(); &lt;span style="color:#a6e22e">j&lt;/span>&lt;span style="color:#f92672">++&lt;/span> {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;method in type:&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">mt&lt;/span>.&lt;span style="color:#a6e22e">In&lt;/span>(&lt;span style="color:#a6e22e">j&lt;/span>))
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">mt&lt;/span>.&lt;span style="color:#a6e22e">In&lt;/span>(&lt;span style="color:#a6e22e">j&lt;/span>).&lt;span style="color:#a6e22e">Kind&lt;/span>() &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#a6e22e">reflect&lt;/span>.&lt;span style="color:#a6e22e">String&lt;/span> {
+&lt;span style="color:#a6e22e">in&lt;/span> = append(&lt;span style="color:#a6e22e">in&lt;/span>, &lt;span style="color:#a6e22e">reflect&lt;/span>.&lt;span style="color:#a6e22e">ValueOf&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;welcome&amp;#34;&lt;/span>))
+}
+&lt;span style="color:#75715e">// 方法 1 获取的方法信息对象会把方法的接受者也当着入参之一
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">mt&lt;/span>.&lt;span style="color:#a6e22e">In&lt;/span>(&lt;span style="color:#a6e22e">j&lt;/span>).&lt;span style="color:#a6e22e">Name&lt;/span>() &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#a6e22e">t&lt;/span>.&lt;span style="color:#a6e22e">Name&lt;/span>() {
+&lt;span style="color:#a6e22e">in&lt;/span> = append(&lt;span style="color:#a6e22e">in&lt;/span>, &lt;span style="color:#a6e22e">v&lt;/span>)
+}
+}
+&lt;span style="color:#75715e">// 获取方法返回类型
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">j&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>; &lt;span style="color:#a6e22e">j&lt;/span> &amp;lt; &lt;span style="color:#a6e22e">mt&lt;/span>.&lt;span style="color:#a6e22e">NumOut&lt;/span>(); &lt;span style="color:#a6e22e">j&lt;/span>&lt;span style="color:#f92672">++&lt;/span> {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;method out type:&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">mt&lt;/span>.&lt;span style="color:#a6e22e">Out&lt;/span>(&lt;span style="color:#a6e22e">j&lt;/span>))
+}
+&lt;span style="color:#75715e">// 反射方法调用
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// out := m.Call(in) // 方法 1 获取的 Method 对象反射调用方式
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">out&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">method&lt;/span>.&lt;span style="color:#a6e22e">Func&lt;/span>.&lt;span style="color:#a6e22e">Call&lt;/span>(&lt;span style="color:#a6e22e">in&lt;/span>) &lt;span style="color:#75715e">// 方法 1 获取的 Method 对象反射调用方式
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">o&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">out&lt;/span> {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;out:&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">o&lt;/span>)
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="五反射对象-value-还原">五、反射对象 Value 还原&lt;/h2>
+&lt;p>通过 &lt;code>reflect.ValueOf()&lt;/code> 可以把任意类型对象转换为 &lt;code>Value&lt;/code> 类型对象，也可以通过 &lt;code>Value&lt;/code> 类型的方法 &lt;code>Interface()&lt;/code> 把 &lt;code>Value&lt;/code> 类型对象还原为原始数据类型对象。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-golang" data-lang="golang">&lt;span style="color:#75715e">// Value 转原始类型
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">u1&lt;/span>, &lt;span style="color:#a6e22e">ok&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">v&lt;/span>.&lt;span style="color:#a6e22e">Interface&lt;/span>().(&lt;span style="color:#a6e22e">User&lt;/span>); &lt;span style="color:#a6e22e">ok&lt;/span> {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;after:&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">u1&lt;/span>.&lt;span style="color:#a6e22e">Name&lt;/span>, &lt;span style="color:#a6e22e">u1&lt;/span>.&lt;span style="color:#a6e22e">Age&lt;/span>)
+}
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Go 常用代码块</title><link>https://lrtg.ml/2017/12/06/go-commons-code-snippets/</link><pubDate>Wed, 06 Dec 2017 10:07:54 +0000</pubDate><guid>https://lrtg.ml/2017/12/06/go-commons-code-snippets/</guid><description>
+&lt;blockquote>
+&lt;p>总结备忘一下常用的的 Go 代码片段&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="遍历目录下的文件">遍历目录下的文件&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">getFilelist&lt;/span>(&lt;span style="color:#a6e22e">r&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>) {
+&lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">filepath&lt;/span>.&lt;span style="color:#a6e22e">Walk&lt;/span>(&lt;span style="color:#a6e22e">r&lt;/span>, &lt;span style="color:#66d9ef">func&lt;/span>(&lt;span style="color:#a6e22e">p&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#a6e22e">f&lt;/span> &lt;span style="color:#a6e22e">os&lt;/span>.&lt;span style="color:#a6e22e">FileInfo&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#66d9ef">error&lt;/span>) &lt;span style="color:#66d9ef">error&lt;/span> {
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">f&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span>
+}
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">p&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#a6e22e">r&lt;/span> &lt;span style="color:#f92672">||&lt;/span> &lt;span style="color:#a6e22e">f&lt;/span>.&lt;span style="color:#a6e22e">IsDir&lt;/span>() {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span>
+}
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">p&lt;/span>)
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span>
+})
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Printf&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;filepath.Walk() returned %v\n&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span>)
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="定时器">定时器&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">duration&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span> &lt;span style="color:#f92672">*&lt;/span> &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Second&lt;/span>
+&lt;span style="color:#a6e22e">timer&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">NewTimer&lt;/span>(&lt;span style="color:#a6e22e">duration&lt;/span>)
+&lt;span style="color:#66d9ef">go&lt;/span> &lt;span style="color:#66d9ef">func&lt;/span>() {
+&lt;span style="color:#66d9ef">for&lt;/span> {
+&lt;span style="color:#66d9ef">select&lt;/span> {
+&lt;span style="color:#66d9ef">case&lt;/span> &lt;span style="color:#f92672">&amp;lt;-&lt;/span>&lt;span style="color:#a6e22e">timer&lt;/span>.&lt;span style="color:#a6e22e">C&lt;/span>:
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;here&amp;#34;&lt;/span>)
+&lt;span style="color:#a6e22e">timer&lt;/span>.&lt;span style="color:#a6e22e">Reset&lt;/span>(&lt;span style="color:#a6e22e">duration&lt;/span>)
+}
+}
+}()
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="定时执行任务">定时执行任务&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#f92672">package&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> (
+&lt;span style="color:#e6db74">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;time&amp;#34;&lt;/span>
+)
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">INTERVAL_PERIOD&lt;/span> &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Duration&lt;/span> = &lt;span style="color:#ae81ff">24&lt;/span> &lt;span style="color:#f92672">*&lt;/span> &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Hour&lt;/span>
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">HOUR_TO_TICK&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> = &lt;span style="color:#ae81ff">23&lt;/span>
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">MINUTE_TO_TICK&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> = &lt;span style="color:#ae81ff">00&lt;/span>
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">SECOND_TO_TICK&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> = &lt;span style="color:#ae81ff">03&lt;/span>
+&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#a6e22e">ticker&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">updateTicker&lt;/span>()
+&lt;span style="color:#66d9ef">for&lt;/span> {
+&lt;span style="color:#f92672">&amp;lt;-&lt;/span>&lt;span style="color:#a6e22e">ticker&lt;/span>.&lt;span style="color:#a6e22e">C&lt;/span>
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Now&lt;/span>(), &lt;span style="color:#e6db74">&amp;#34;- just ticked&amp;#34;&lt;/span>)
+&lt;span style="color:#a6e22e">ticker&lt;/span> = &lt;span style="color:#a6e22e">updateTicker&lt;/span>()
+}
+}
+&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">updateTicker&lt;/span>() &lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Ticker&lt;/span> {
+&lt;span style="color:#a6e22e">n&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Date&lt;/span>(&lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Now&lt;/span>().&lt;span style="color:#a6e22e">Year&lt;/span>(), &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Now&lt;/span>().&lt;span style="color:#a6e22e">Month&lt;/span>(), &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Now&lt;/span>().&lt;span style="color:#a6e22e">Day&lt;/span>(),
+&lt;span style="color:#a6e22e">HOUR_TO_TICK&lt;/span>, &lt;span style="color:#a6e22e">MINUTE_TO_TICK&lt;/span>, &lt;span style="color:#a6e22e">SECOND_TO_TICK&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Local&lt;/span>)
+&lt;span style="color:#66d9ef">if&lt;/span> !&lt;span style="color:#a6e22e">n&lt;/span>.&lt;span style="color:#a6e22e">After&lt;/span>(&lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Now&lt;/span>()) {
+&lt;span style="color:#a6e22e">n&lt;/span> = &lt;span style="color:#a6e22e">n&lt;/span>.&lt;span style="color:#a6e22e">Add&lt;/span>(&lt;span style="color:#a6e22e">INTERVAL_PERIOD&lt;/span>)
+}
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">n&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;- next tick&amp;#34;&lt;/span>)
+&lt;span style="color:#a6e22e">diff&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">n&lt;/span>.&lt;span style="color:#a6e22e">Sub&lt;/span>(&lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Now&lt;/span>())
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">NewTicker&lt;/span>(&lt;span style="color:#a6e22e">diff&lt;/span>)
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="读取文件">读取文件&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">f&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">os&lt;/span>.&lt;span style="color:#a6e22e">Open&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;/test.txt&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+panic(&lt;span style="color:#a6e22e">err&lt;/span>)
+}
+&lt;span style="color:#66d9ef">defer&lt;/span> &lt;span style="color:#a6e22e">f&lt;/span>.&lt;span style="color:#a6e22e">Close&lt;/span>()
+&lt;span style="color:#a6e22e">fd&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">ioutil&lt;/span>.&lt;span style="color:#a6e22e">ReadAll&lt;/span>(&lt;span style="color:#a6e22e">f&lt;/span>)
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+panic(&lt;span style="color:#a6e22e">err&lt;/span>)
+}
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(string(&lt;span style="color:#a6e22e">fd&lt;/span>))
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="map-转-json">map 转 json&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">m&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> make(&lt;span style="color:#66d9ef">map&lt;/span>[&lt;span style="color:#66d9ef">string&lt;/span>]&lt;span style="color:#66d9ef">interface&lt;/span>{})
+&lt;span style="color:#a6e22e">m&lt;/span>[&lt;span style="color:#e6db74">&amp;#34;show&amp;#34;&lt;/span>] = &lt;span style="color:#e6db74">&amp;#34;1&amp;#34;&lt;/span>
+&lt;span style="color:#a6e22e">m&lt;/span>[&lt;span style="color:#e6db74">&amp;#34;content&amp;#34;&lt;/span>] = &lt;span style="color:#e6db74">&amp;#34;test&amp;#34;&lt;/span>
+&lt;span style="color:#a6e22e">j&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">json&lt;/span>.&lt;span style="color:#a6e22e">Marshal&lt;/span>(&lt;span style="color:#a6e22e">m&lt;/span>)
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+panic(&lt;span style="color:#a6e22e">err&lt;/span>)
+}
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(string(&lt;span style="color:#a6e22e">j&lt;/span>))
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="json-转-map">json 转 map&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">result&lt;/span> = []byte(&lt;span style="color:#e6db74">`
+&lt;/span>&lt;span style="color:#e6db74">{
+&lt;/span>&lt;span style="color:#e6db74"> &amp;#34;show&amp;#34;: 1,
+&lt;/span>&lt;span style="color:#e6db74"> &amp;#34;content&amp;#34;: &amp;#34;test&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">}`&lt;/span>)
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">r&lt;/span> &lt;span style="color:#66d9ef">map&lt;/span>[&lt;span style="color:#66d9ef">string&lt;/span>]&lt;span style="color:#66d9ef">interface&lt;/span>{}
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">json&lt;/span>.&lt;span style="color:#a6e22e">Unmarshal&lt;/span>(&lt;span style="color:#a6e22e">result&lt;/span>, &lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">r&lt;/span>); &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+panic(&lt;span style="color:#a6e22e">err&lt;/span>)
+}
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">r&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="写文件">写文件&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">writeFile&lt;/span>(&lt;span style="color:#a6e22e">path&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#a6e22e">b&lt;/span> []&lt;span style="color:#66d9ef">byte&lt;/span>) {
+&lt;span style="color:#a6e22e">file&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">os&lt;/span>.&lt;span style="color:#a6e22e">OpenFile&lt;/span>(&lt;span style="color:#a6e22e">path&lt;/span>, &lt;span style="color:#a6e22e">os&lt;/span>.&lt;span style="color:#a6e22e">O_WRONLY&lt;/span>|&lt;span style="color:#a6e22e">os&lt;/span>.&lt;span style="color:#a6e22e">O_TRUNC&lt;/span>|&lt;span style="color:#a6e22e">os&lt;/span>.&lt;span style="color:#a6e22e">O_CREATE&lt;/span>, &lt;span style="color:#ae81ff">0777&lt;/span>)
+&lt;span style="color:#66d9ef">defer&lt;/span> &lt;span style="color:#a6e22e">file&lt;/span>.&lt;span style="color:#a6e22e">Close&lt;/span>()
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+panic(&lt;span style="color:#a6e22e">err&lt;/span>)
+}
+&lt;span style="color:#a6e22e">file&lt;/span>.&lt;span style="color:#a6e22e">Write&lt;/span>(&lt;span style="color:#a6e22e">b&lt;/span>)
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="简单的获取-ip">简单的获取 IP&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">GetPulicIP&lt;/span>() &lt;span style="color:#66d9ef">string&lt;/span> {
+&lt;span style="color:#a6e22e">conn&lt;/span>, &lt;span style="color:#a6e22e">_&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">net&lt;/span>.&lt;span style="color:#a6e22e">Dial&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;udp&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;8.8.8.8:80&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">defer&lt;/span> &lt;span style="color:#a6e22e">conn&lt;/span>.&lt;span style="color:#a6e22e">Close&lt;/span>()
+&lt;span style="color:#a6e22e">localAddr&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">conn&lt;/span>.&lt;span style="color:#a6e22e">LocalAddr&lt;/span>().&lt;span style="color:#a6e22e">String&lt;/span>()
+&lt;span style="color:#a6e22e">idx&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">strings&lt;/span>.&lt;span style="color:#a6e22e">LastIndex&lt;/span>(&lt;span style="color:#a6e22e">localAddr&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;:&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">localAddr&lt;/span>[&lt;span style="color:#ae81ff">0&lt;/span>:&lt;span style="color:#a6e22e">idx&lt;/span>]
+}
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>[转] Go Cheat Sheet</title><link>https://lrtg.ml/2017/08/24/golang-cheat-sheet/</link><pubDate>Thu, 24 Aug 2017 14:18:53 +0000</pubDate><guid>https://lrtg.ml/2017/08/24/golang-cheat-sheet/</guid><description>
+&lt;h1 id="go-cheat-sheet">Go Cheat Sheet&lt;/h1>
+&lt;h2 id="credits">Credits&lt;/h2>
+&lt;p>Most example code taken from &lt;a href="http://tour.golang.org/">A Tour of Go&lt;/a>, which is an excellent introduction to Go.
+If you&amp;rsquo;re new to Go, do that tour. Seriously.&lt;/p>
+&lt;h2 id="go-in-a-nutshell">Go in a Nutshell&lt;/h2>
+&lt;ul>
+&lt;li>Imperative language&lt;/li>
+&lt;li>Statically typed&lt;/li>
+&lt;li>Syntax tokens similar to C (but less parentheses and no semicolons) and the structure to Oberon-2&lt;/li>
+&lt;li>Compiles to native code (no JVM)&lt;/li>
+&lt;li>No classes, but structs with methods&lt;/li>
+&lt;li>Interfaces&lt;/li>
+&lt;li>No implementation inheritance. There&amp;rsquo;s &lt;a href="http://golang.org/doc/effective%5Fgo.html#embedding">type embedding&lt;/a>, though.&lt;/li>
+&lt;li>Functions are first class citizens&lt;/li>
+&lt;li>Functions can return multiple values&lt;/li>
+&lt;li>Has closures&lt;/li>
+&lt;li>Pointers, but not pointer arithmetic&lt;/li>
+&lt;li>Built-in concurrency primitives: Goroutines and Channels&lt;/li>
+&lt;/ul>
+&lt;h1 id="basic-syntax">Basic Syntax&lt;/h1>
+&lt;h2 id="hello-world">Hello World&lt;/h2>
+&lt;p>File &lt;code>hello.go&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#f92672">package&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Hello Go&amp;#34;&lt;/span>)
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>$ go run hello.go&lt;/code>&lt;/p>
+&lt;h2 id="operators">Operators&lt;/h2>
+&lt;h3 id="arithmetic">Arithmetic&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Operator&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>+&lt;/code>&lt;/td>
+&lt;td>addition&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>-&lt;/code>&lt;/td>
+&lt;td>subtraction&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>*&lt;/code>&lt;/td>
+&lt;td>multiplication&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>/&lt;/code>&lt;/td>
+&lt;td>quotient&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>%&lt;/code>&lt;/td>
+&lt;td>remainder&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>&amp;amp;&lt;/code>&lt;/td>
+&lt;td>bitwise and&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>?&lt;/code>&lt;/td>
+&lt;td>bitwise or&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>^&lt;/code>&lt;/td>
+&lt;td>bitwise xor&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>&amp;amp;^&lt;/code>&lt;/td>
+&lt;td>bit clear (and not)&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>&amp;lt;&amp;lt;&lt;/code>&lt;/td>
+&lt;td>left shift&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>&amp;gt;&amp;gt;&lt;/code>&lt;/td>
+&lt;td>right shift&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;blockquote>
+&lt;p>&lt;code>?&lt;/code> -&amp;gt; &lt;code>|&lt;/code>&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="comparison">Comparison&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Operator&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>==&lt;/code>&lt;/td>
+&lt;td>equal&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>!=&lt;/code>&lt;/td>
+&lt;td>not equal&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>&amp;lt;&lt;/code>&lt;/td>
+&lt;td>less than&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>&amp;lt;=&lt;/code>&lt;/td>
+&lt;td>less than or equal&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>&amp;gt;&lt;/code>&lt;/td>
+&lt;td>greater than&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>&amp;gt;=&lt;/code>&lt;/td>
+&lt;td>greater than or equal&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="logical">Logical&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Operator&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>&amp;amp;&amp;amp;&lt;/code>&lt;/td>
+&lt;td>logical and&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>??&lt;/code>&lt;/td>
+&lt;td>logical or&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>!&lt;/code>&lt;/td>
+&lt;td>logical not&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;blockquote>
+&lt;p>&lt;code>??&lt;/code> -&amp;gt; &lt;code>||&lt;/code>&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="other">Other&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Operator&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>&amp;amp;&lt;/code>&lt;/td>
+&lt;td>address of / create pointer&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>*&lt;/code>&lt;/td>
+&lt;td>dereference pointer&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>&amp;lt;-&lt;/code>&lt;/td>
+&lt;td>send / receive operator (see &amp;lsquo;Channels&amp;rsquo; below)&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="declarations">Declarations&lt;/h2>
+&lt;p>Type goes after identifier!&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">foo&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> &lt;span style="color:#75715e">// declaration without initialization
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">foo&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> = &lt;span style="color:#ae81ff">42&lt;/span> &lt;span style="color:#75715e">// declaration with initialization
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">foo&lt;/span>, &lt;span style="color:#a6e22e">bar&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> = &lt;span style="color:#ae81ff">42&lt;/span>, &lt;span style="color:#ae81ff">1302&lt;/span> &lt;span style="color:#75715e">// declare and init multiple vars at once
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">foo&lt;/span> = &lt;span style="color:#ae81ff">42&lt;/span> &lt;span style="color:#75715e">// type omitted, will be inferred
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">foo&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span> &lt;span style="color:#75715e">// shorthand, only in func bodies, omit var keyword, type is always implicit
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">constant&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;This is a constant&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="functions">Functions&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#75715e">// a simple function
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">functionName&lt;/span>() {}
+&lt;span style="color:#75715e">// function with parameters (again, types go after identifiers)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">functionName&lt;/span>(&lt;span style="color:#a6e22e">param1&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#a6e22e">param2&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>) {}
+&lt;span style="color:#75715e">// multiple parameters of the same type
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">functionName&lt;/span>(&lt;span style="color:#a6e22e">param1&lt;/span>, &lt;span style="color:#a6e22e">param2&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>) {}
+&lt;span style="color:#75715e">// return type declaration
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">functionName&lt;/span>() &lt;span style="color:#66d9ef">int&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span>
+}
+&lt;span style="color:#75715e">// Can return multiple values at once
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">returnMulti&lt;/span>() (&lt;span style="color:#66d9ef">int&lt;/span>, &lt;span style="color:#66d9ef">string&lt;/span>) {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;foobar&amp;#34;&lt;/span>
+}
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">x&lt;/span>, &lt;span style="color:#a6e22e">str&lt;/span> = &lt;span style="color:#a6e22e">returnMulti&lt;/span>()
+&lt;span style="color:#75715e">// Return multiple named results simply by return
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">returnMulti2&lt;/span>() (&lt;span style="color:#a6e22e">n&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>, &lt;span style="color:#a6e22e">s&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>) {
+&lt;span style="color:#a6e22e">n&lt;/span> = &lt;span style="color:#ae81ff">42&lt;/span>
+&lt;span style="color:#a6e22e">s&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;foobar&amp;#34;&lt;/span>
+&lt;span style="color:#75715e">// n and s will be returned
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span>
+}
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">x&lt;/span>, &lt;span style="color:#a6e22e">str&lt;/span> = &lt;span style="color:#a6e22e">returnMulti2&lt;/span>()
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="functions-as-values-and-closures">Functions As Values And Closures&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#75715e">// assign a function to a name
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">add&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">func&lt;/span>(&lt;span style="color:#a6e22e">a&lt;/span>, &lt;span style="color:#a6e22e">b&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>) &lt;span style="color:#66d9ef">int&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span>
+}
+&lt;span style="color:#75715e">// use the name to call the function
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">add&lt;/span>(&lt;span style="color:#ae81ff">3&lt;/span>, &lt;span style="color:#ae81ff">4&lt;/span>))
+}
+&lt;span style="color:#75715e">// Closures, lexically scoped: Functions can access values that were
+&lt;/span>&lt;span style="color:#75715e">// in scope when defining the function
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">scope&lt;/span>() &lt;span style="color:#66d9ef">func&lt;/span>() &lt;span style="color:#66d9ef">int&lt;/span>{
+&lt;span style="color:#a6e22e">outer_var&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>
+&lt;span style="color:#a6e22e">foo&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">func&lt;/span>() &lt;span style="color:#66d9ef">int&lt;/span> { &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">outer_var&lt;/span>}
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">foo&lt;/span>
+}
+&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">another_scope&lt;/span>() &lt;span style="color:#66d9ef">func&lt;/span>() &lt;span style="color:#66d9ef">int&lt;/span>{
+&lt;span style="color:#75715e">// won&amp;#39;t compile because outer_var and foo not defined in this scope
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">outer_var&lt;/span> = &lt;span style="color:#ae81ff">444&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">foo&lt;/span>
+}
+&lt;span style="color:#75715e">// Closures: don&amp;#39;t mutate outer vars, instead redefine them!
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">outer&lt;/span>() (&lt;span style="color:#66d9ef">func&lt;/span>() &lt;span style="color:#66d9ef">int&lt;/span>, &lt;span style="color:#66d9ef">int&lt;/span>) {
+&lt;span style="color:#a6e22e">outer_var&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>
+&lt;span style="color:#a6e22e">inner&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">func&lt;/span>() &lt;span style="color:#66d9ef">int&lt;/span> {
+&lt;span style="color:#a6e22e">outer_var&lt;/span> &lt;span style="color:#f92672">+=&lt;/span> &lt;span style="color:#ae81ff">99&lt;/span> &lt;span style="color:#75715e">// attempt to mutate outer_var from outer scope
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">outer_var&lt;/span> &lt;span style="color:#75715e">// =&amp;gt; 101 (but outer_var is a newly redefined
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// variable visible only inside inner)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> }
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">inner&lt;/span>, &lt;span style="color:#a6e22e">outer_var&lt;/span> &lt;span style="color:#75715e">// =&amp;gt; 101, 2 (outer_var is still 2, not mutated by foo!)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="variadic-functions">Variadic Functions&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">adder&lt;/span>(&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>, &lt;span style="color:#ae81ff">3&lt;/span>)) &lt;span style="color:#75715e">// 6
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">adder&lt;/span>(&lt;span style="color:#ae81ff">9&lt;/span>, &lt;span style="color:#ae81ff">9&lt;/span>)) &lt;span style="color:#75715e">// 18
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#a6e22e">nums&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> []&lt;span style="color:#66d9ef">int&lt;/span>{&lt;span style="color:#ae81ff">10&lt;/span>, &lt;span style="color:#ae81ff">20&lt;/span>, &lt;span style="color:#ae81ff">30&lt;/span>}
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">adder&lt;/span>(&lt;span style="color:#a6e22e">nums&lt;/span>&lt;span style="color:#f92672">...&lt;/span>)) &lt;span style="color:#75715e">// 60
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>}
+&lt;span style="color:#75715e">// By using ... before the type name of the last parameter you can indicate that it takes zero or more of those parameters.
+&lt;/span>&lt;span style="color:#75715e">// The function is invoked like any other function except we can pass as many arguments as we want.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">adder&lt;/span>(&lt;span style="color:#a6e22e">args&lt;/span> &lt;span style="color:#f92672">...&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span>) &lt;span style="color:#66d9ef">int&lt;/span> {
+&lt;span style="color:#a6e22e">total&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">v&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">args&lt;/span> { &lt;span style="color:#75715e">// Iterates over the arguments whatever the number.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">total&lt;/span> &lt;span style="color:#f92672">+=&lt;/span> &lt;span style="color:#a6e22e">v&lt;/span>
+}
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">total&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="built-in-types">Built-in Types&lt;/h2>
+&lt;pre>&lt;code>bool
+string
+int int8 int16 int32 int64
+uint uint8 uint16 uint32 uint64 uintptr
+byte // alias for uint8
+rune // alias for int32 ~= a character (Unicode code point) - very Viking
+float32 float64
+complex64 complex128
+&lt;/code>&lt;/pre>&lt;h2 id="type-conversions">Type Conversions&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> = &lt;span style="color:#ae81ff">42&lt;/span>
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">f&lt;/span> &lt;span style="color:#66d9ef">float64&lt;/span> = float64(&lt;span style="color:#a6e22e">i&lt;/span>)
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">u&lt;/span> &lt;span style="color:#66d9ef">uint&lt;/span> = uint(&lt;span style="color:#a6e22e">f&lt;/span>)
+&lt;span style="color:#75715e">// alternative syntax
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span>
+&lt;span style="color:#a6e22e">f&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> float64(&lt;span style="color:#a6e22e">i&lt;/span>)
+&lt;span style="color:#a6e22e">u&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> uint(&lt;span style="color:#a6e22e">f&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="packages">Packages&lt;/h2>
+&lt;ul>
+&lt;li>Package declaration at top of every source file&lt;/li>
+&lt;li>Executables are in package &lt;code>main&lt;/code>&lt;/li>
+&lt;li>Convention: package name == last name of import path (import path &lt;code>math/rand&lt;/code> =&amp;gt; package &lt;code>rand&lt;/code>)&lt;/li>
+&lt;li>Upper case identifier: exported (visible from other packages)&lt;/li>
+&lt;li>Lower case identifier: private (not visible from other packages)&lt;/li>
+&lt;/ul>
+&lt;h2 id="control-structures">Control structures&lt;/h2>
+&lt;h3 id="if">If&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#75715e">// Basic one
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">x&lt;/span> &amp;gt; &lt;span style="color:#ae81ff">0&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">x&lt;/span>
+} &lt;span style="color:#66d9ef">else&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#a6e22e">x&lt;/span>
+}
+&lt;span style="color:#75715e">// You can put one statement before the condition
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#a6e22e">c&lt;/span>; &lt;span style="color:#a6e22e">a&lt;/span> &amp;lt; &lt;span style="color:#ae81ff">42&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span>
+} &lt;span style="color:#66d9ef">else&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span> &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span>
+}
+&lt;span style="color:#75715e">// Type assertion inside if
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">val&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span>{}
+&lt;span style="color:#a6e22e">val&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;foo&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">str&lt;/span>, &lt;span style="color:#a6e22e">ok&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">val&lt;/span>.(&lt;span style="color:#66d9ef">string&lt;/span>); &lt;span style="color:#a6e22e">ok&lt;/span> {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">str&lt;/span>)
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="loops">Loops&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go"> &lt;span style="color:#75715e">// There&amp;#39;s only `for`, no `while`, no `until`
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>; &lt;span style="color:#a6e22e">i&lt;/span> &amp;lt; &lt;span style="color:#ae81ff">10&lt;/span>; &lt;span style="color:#a6e22e">i&lt;/span>&lt;span style="color:#f92672">++&lt;/span> {
+}
+&lt;span style="color:#66d9ef">for&lt;/span> ; &lt;span style="color:#a6e22e">i&lt;/span> &amp;lt; &lt;span style="color:#ae81ff">10&lt;/span>; { &lt;span style="color:#75715e">// while - loop
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> }
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &amp;lt; &lt;span style="color:#ae81ff">10&lt;/span> { &lt;span style="color:#75715e">// you can omit semicolons if there is only a condition
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> }
+&lt;span style="color:#66d9ef">for&lt;/span> { &lt;span style="color:#75715e">// you can omit the condition ~ while (true)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> }
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="switch">Switch&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go"> &lt;span style="color:#75715e">// switch statement
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">switch&lt;/span> &lt;span style="color:#a6e22e">operatingSystem&lt;/span> {
+&lt;span style="color:#66d9ef">case&lt;/span> &lt;span style="color:#e6db74">&amp;#34;darwin&amp;#34;&lt;/span>:
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Mac OS Hipster&amp;#34;&lt;/span>)
+&lt;span style="color:#75715e">// cases break automatically, no fallthrough by default
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">case&lt;/span> &lt;span style="color:#e6db74">&amp;#34;linux&amp;#34;&lt;/span>:
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Linux Geek&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">default&lt;/span>:
+&lt;span style="color:#75715e">// Windows, BSD, ...
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Other&amp;#34;&lt;/span>)
+}
+&lt;span style="color:#75715e">// as with for and if, you can have an assignment statement before the switch value
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">switch&lt;/span> &lt;span style="color:#a6e22e">os&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">runtime&lt;/span>.&lt;span style="color:#a6e22e">GOOS&lt;/span>; &lt;span style="color:#a6e22e">os&lt;/span> {
+&lt;span style="color:#66d9ef">case&lt;/span> &lt;span style="color:#e6db74">&amp;#34;darwin&amp;#34;&lt;/span>: &lt;span style="color:#f92672">...&lt;/span>
+}
+&lt;span style="color:#75715e">// you can also make comparisons in switch cases
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">number&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span>
+&lt;span style="color:#66d9ef">switch&lt;/span> {
+&lt;span style="color:#66d9ef">case&lt;/span> &lt;span style="color:#a6e22e">number&lt;/span> &amp;lt; &lt;span style="color:#ae81ff">42&lt;/span>:
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Smaller&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">case&lt;/span> &lt;span style="color:#a6e22e">number&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span>:
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Equal&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">case&lt;/span> &lt;span style="color:#a6e22e">number&lt;/span> &amp;gt; &lt;span style="color:#ae81ff">42&lt;/span>:
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Greater&amp;#34;&lt;/span>)
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="arrays-slices-ranges">Arrays, Slices, Ranges&lt;/h2>
+&lt;h3 id="arrays">Arrays&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span> [&lt;span style="color:#ae81ff">10&lt;/span>]&lt;span style="color:#66d9ef">int&lt;/span> &lt;span style="color:#75715e">// declare an int array with length 10. Array length is part of the type!
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">a&lt;/span>[&lt;span style="color:#ae81ff">3&lt;/span>] = &lt;span style="color:#ae81ff">42&lt;/span> &lt;span style="color:#75715e">// set elements
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span>[&lt;span style="color:#ae81ff">3&lt;/span>] &lt;span style="color:#75715e">// read elements
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// declare and initialize
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span> = [&lt;span style="color:#ae81ff">2&lt;/span>]&lt;span style="color:#66d9ef">int&lt;/span>{&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>}
+&lt;span style="color:#a6e22e">a&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> [&lt;span style="color:#ae81ff">2&lt;/span>]&lt;span style="color:#66d9ef">int&lt;/span>{&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>} &lt;span style="color:#75715e">//shorthand
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">a&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> [&lt;span style="color:#f92672">...&lt;/span>]&lt;span style="color:#66d9ef">int&lt;/span>{&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>} &lt;span style="color:#75715e">// elipsis -&amp;gt; Compiler figures out array length
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="slices">Slices&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span> []&lt;span style="color:#66d9ef">int&lt;/span> &lt;span style="color:#75715e">// declare a slice - similar to an array, but length is unspecified
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span> = []&lt;span style="color:#66d9ef">int&lt;/span> {&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>, &lt;span style="color:#ae81ff">3&lt;/span>, &lt;span style="color:#ae81ff">4&lt;/span>} &lt;span style="color:#75715e">// declare and initialize a slice (backed by the array given implicitly)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">a&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> []&lt;span style="color:#66d9ef">int&lt;/span>{&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>, &lt;span style="color:#ae81ff">3&lt;/span>, &lt;span style="color:#ae81ff">4&lt;/span>} &lt;span style="color:#75715e">// shorthand
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">chars&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> []&lt;span style="color:#66d9ef">string&lt;/span>{&lt;span style="color:#ae81ff">0&lt;/span>:&lt;span style="color:#e6db74">&amp;#34;a&amp;#34;&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>:&lt;span style="color:#e6db74">&amp;#34;c&amp;#34;&lt;/span>, &lt;span style="color:#ae81ff">1&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;b&amp;#34;&lt;/span>} &lt;span style="color:#75715e">// [&amp;#34;a&amp;#34;, &amp;#34;b&amp;#34;, &amp;#34;c&amp;#34;]
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span> = &lt;span style="color:#a6e22e">a&lt;/span>[&lt;span style="color:#a6e22e">lo&lt;/span>:&lt;span style="color:#a6e22e">hi&lt;/span>] &lt;span style="color:#75715e">// creates a slice (view of the array) from index lo to hi-1
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span> = &lt;span style="color:#a6e22e">a&lt;/span>[&lt;span style="color:#ae81ff">1&lt;/span>:&lt;span style="color:#ae81ff">4&lt;/span>] &lt;span style="color:#75715e">// slice from index 1 to 3
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span> = &lt;span style="color:#a6e22e">a&lt;/span>[:&lt;span style="color:#ae81ff">3&lt;/span>] &lt;span style="color:#75715e">// missing low index implies 0
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span> = &lt;span style="color:#a6e22e">a&lt;/span>[&lt;span style="color:#ae81ff">3&lt;/span>:] &lt;span style="color:#75715e">// missing high index implies len(a)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">a&lt;/span> = append(&lt;span style="color:#a6e22e">a&lt;/span>,&lt;span style="color:#ae81ff">17&lt;/span>,&lt;span style="color:#ae81ff">3&lt;/span>) &lt;span style="color:#75715e">// append items to slice a
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">c&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> append(&lt;span style="color:#a6e22e">a&lt;/span>,&lt;span style="color:#a6e22e">b&lt;/span>&lt;span style="color:#f92672">...&lt;/span>) &lt;span style="color:#75715e">// concatenate slices a and b
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// create a slice with make
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">a&lt;/span> = make([]&lt;span style="color:#66d9ef">byte&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>) &lt;span style="color:#75715e">// first arg length, second capacity
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">a&lt;/span> = make([]&lt;span style="color:#66d9ef">byte&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>) &lt;span style="color:#75715e">// capacity is optional
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// create a slice from an array
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">x&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> [&lt;span style="color:#ae81ff">3&lt;/span>]&lt;span style="color:#66d9ef">string&lt;/span>{&lt;span style="color:#e6db74">&amp;#34;Лайка&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Белка&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Стрелка&amp;#34;&lt;/span>}
+&lt;span style="color:#a6e22e">s&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">x&lt;/span>[:] &lt;span style="color:#75715e">// a slice referencing the storage of x
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="operations-on-arrays-and-slices">Operations on Arrays and Slices&lt;/h3>
+&lt;p>&lt;code>len(a)&lt;/code> gives you the length of an array/a slice. It&amp;rsquo;s a built-in function, not a attribute/method on the array.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#75715e">// loop over an array/a slice
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span>, &lt;span style="color:#a6e22e">e&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span> {
+&lt;span style="color:#75715e">// i is the index, e the element
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>}
+&lt;span style="color:#75715e">// if you only need e:
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">e&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span> {
+&lt;span style="color:#75715e">// e is the element
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>}
+&lt;span style="color:#75715e">// ...and if you only need the index
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span> {
+}
+&lt;span style="color:#75715e">// In Go pre-1.4, you&amp;#39;ll get a compiler error if you&amp;#39;re not using i and e.
+&lt;/span>&lt;span style="color:#75715e">// Go 1.4 introduced a variable-free form, so that you can do this
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Tick&lt;/span>(&lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Second&lt;/span>) {
+&lt;span style="color:#75715e">// do it once a sec
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="maps">Maps&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">m&lt;/span> &lt;span style="color:#66d9ef">map&lt;/span>[&lt;span style="color:#66d9ef">string&lt;/span>]&lt;span style="color:#66d9ef">int&lt;/span>
+&lt;span style="color:#a6e22e">m&lt;/span> = make(&lt;span style="color:#66d9ef">map&lt;/span>[&lt;span style="color:#66d9ef">string&lt;/span>]&lt;span style="color:#66d9ef">int&lt;/span>)
+&lt;span style="color:#a6e22e">m&lt;/span>[&lt;span style="color:#e6db74">&amp;#34;key&amp;#34;&lt;/span>] = &lt;span style="color:#ae81ff">42&lt;/span>
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">m&lt;/span>[&lt;span style="color:#e6db74">&amp;#34;key&amp;#34;&lt;/span>])
+delete(&lt;span style="color:#a6e22e">m&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;key&amp;#34;&lt;/span>)
+&lt;span style="color:#a6e22e">elem&lt;/span>, &lt;span style="color:#a6e22e">ok&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">m&lt;/span>[&lt;span style="color:#e6db74">&amp;#34;key&amp;#34;&lt;/span>] &lt;span style="color:#75715e">// test if key &amp;#34;key&amp;#34; is present and retrieve it, if so
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// map literal
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">m&lt;/span> = &lt;span style="color:#66d9ef">map&lt;/span>[&lt;span style="color:#66d9ef">string&lt;/span>]&lt;span style="color:#a6e22e">Vertex&lt;/span>{
+&lt;span style="color:#e6db74">&amp;#34;Bell Labs&amp;#34;&lt;/span>: {&lt;span style="color:#ae81ff">40.68433&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">74.39967&lt;/span>},
+&lt;span style="color:#e6db74">&amp;#34;Google&amp;#34;&lt;/span>: {&lt;span style="color:#ae81ff">37.42202&lt;/span>, &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">122.08408&lt;/span>},
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="structs">Structs&lt;/h2>
+&lt;p>There are no classes, only structs. Structs can have methods.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#75715e">// A struct is a type. It&amp;#39;s also a collection of fields
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// Declaration
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Vertex&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {
+&lt;span style="color:#a6e22e">X&lt;/span>, &lt;span style="color:#a6e22e">Y&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>
+}
+&lt;span style="color:#75715e">// Creating
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">v&lt;/span> = &lt;span style="color:#a6e22e">Vertex&lt;/span>{&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>}
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">v&lt;/span> = &lt;span style="color:#a6e22e">Vertex&lt;/span>{&lt;span style="color:#a6e22e">X&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#a6e22e">Y&lt;/span>: &lt;span style="color:#ae81ff">2&lt;/span>} &lt;span style="color:#75715e">// Creates a struct by defining values with keys
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">v&lt;/span> = []&lt;span style="color:#a6e22e">Vertex&lt;/span>{{&lt;span style="color:#ae81ff">1&lt;/span>,&lt;span style="color:#ae81ff">2&lt;/span>},{&lt;span style="color:#ae81ff">5&lt;/span>,&lt;span style="color:#ae81ff">2&lt;/span>},{&lt;span style="color:#ae81ff">5&lt;/span>,&lt;span style="color:#ae81ff">5&lt;/span>}} &lt;span style="color:#75715e">// Initialize a slice of structs
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// Accessing members
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">v&lt;/span>.&lt;span style="color:#a6e22e">X&lt;/span> = &lt;span style="color:#ae81ff">4&lt;/span>
+&lt;span style="color:#75715e">// You can declare methods on structs. The struct you want to declare the
+&lt;/span>&lt;span style="color:#75715e">// method on (the receiving type) comes between the the func keyword and
+&lt;/span>&lt;span style="color:#75715e">// the method name. The struct is copied on each method call(!)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">v&lt;/span> &lt;span style="color:#a6e22e">Vertex&lt;/span>) &lt;span style="color:#a6e22e">Abs&lt;/span>() &lt;span style="color:#66d9ef">float64&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">math&lt;/span>.&lt;span style="color:#a6e22e">Sqrt&lt;/span>(&lt;span style="color:#a6e22e">v&lt;/span>.&lt;span style="color:#a6e22e">X&lt;/span>&lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">v&lt;/span>.&lt;span style="color:#a6e22e">X&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#a6e22e">v&lt;/span>.&lt;span style="color:#a6e22e">Y&lt;/span>&lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">v&lt;/span>.&lt;span style="color:#a6e22e">Y&lt;/span>)
+}
+&lt;span style="color:#75715e">// Call method
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">v&lt;/span>.&lt;span style="color:#a6e22e">Abs&lt;/span>()
+&lt;span style="color:#75715e">// For mutating methods, you need to use a pointer (see below) to the Struct
+&lt;/span>&lt;span style="color:#75715e">// as the type. With this, the struct value is not copied for the method call.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">v&lt;/span> &lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">Vertex&lt;/span>) &lt;span style="color:#a6e22e">add&lt;/span>(&lt;span style="color:#a6e22e">n&lt;/span> &lt;span style="color:#66d9ef">float64&lt;/span>) {
+&lt;span style="color:#a6e22e">v&lt;/span>.&lt;span style="color:#a6e22e">X&lt;/span> &lt;span style="color:#f92672">+=&lt;/span> &lt;span style="color:#a6e22e">n&lt;/span>
+&lt;span style="color:#a6e22e">v&lt;/span>.&lt;span style="color:#a6e22e">Y&lt;/span> &lt;span style="color:#f92672">+=&lt;/span> &lt;span style="color:#a6e22e">n&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Anonymous structs:&lt;/strong>
+Cheaper and safer than using &lt;code>map[string]interface{}&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">point&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {
+&lt;span style="color:#a6e22e">X&lt;/span>, &lt;span style="color:#a6e22e">Y&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>
+}{&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="pointers">Pointers&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">p&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">Vertex&lt;/span>{&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>} &lt;span style="color:#75715e">// p is a Vertex
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">q&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">p&lt;/span> &lt;span style="color:#75715e">// q is a pointer to a Vertex
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">r&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">Vertex&lt;/span>{&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>} &lt;span style="color:#75715e">// r is also a pointer to a Vertex
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// The type of a pointer to a Vertex is *Vertex
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">s&lt;/span> &lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">Vertex&lt;/span> = new(&lt;span style="color:#a6e22e">Vertex&lt;/span>) &lt;span style="color:#75715e">// new creates a pointer to a new struct instance
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="interfaces">Interfaces&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#75715e">// interface declaration
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Awesomizer&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> {
+&lt;span style="color:#a6e22e">Awesomize&lt;/span>() &lt;span style="color:#66d9ef">string&lt;/span>
+}
+&lt;span style="color:#75715e">// types do *not* declare to implement interfaces
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Foo&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {}
+&lt;span style="color:#75715e">// instead, types implicitly satisfy an interface if they implement all required methods
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">foo&lt;/span> &lt;span style="color:#a6e22e">Foo&lt;/span>) &lt;span style="color:#a6e22e">Awesomize&lt;/span>() &lt;span style="color:#66d9ef">string&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Awesome!&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="embedding">Embedding&lt;/h2>
+&lt;p>There is no subclassing in Go. Instead, there is interface and struct embedding.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#75715e">// ReadWriter implementations must satisfy both Reader and Writer
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">ReadWriter&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> {
+&lt;span style="color:#a6e22e">Reader&lt;/span>
+&lt;span style="color:#a6e22e">Writer&lt;/span>
+}
+&lt;span style="color:#75715e">// Server exposes all the methods that Logger has
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Server&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {
+&lt;span style="color:#a6e22e">Host&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>
+&lt;span style="color:#a6e22e">Port&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>
+&lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">log&lt;/span>.&lt;span style="color:#a6e22e">Logger&lt;/span>
+}
+&lt;span style="color:#75715e">// initialize the embedded type the usual way
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">server&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">Server&lt;/span>{&lt;span style="color:#e6db74">&amp;#34;localhost&amp;#34;&lt;/span>, &lt;span style="color:#ae81ff">80&lt;/span>, &lt;span style="color:#a6e22e">log&lt;/span>.&lt;span style="color:#a6e22e">New&lt;/span>(&lt;span style="color:#f92672">...&lt;/span>)}
+&lt;span style="color:#75715e">// methods implemented on the embedded struct are passed through
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">server&lt;/span>.&lt;span style="color:#a6e22e">Log&lt;/span>(&lt;span style="color:#f92672">...&lt;/span>) &lt;span style="color:#75715e">// calls server.Logger.Log(...)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// the field name of the embedded type is its type name (in this case Logger)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">logger&lt;/span> &lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">log&lt;/span>.&lt;span style="color:#a6e22e">Logger&lt;/span> = &lt;span style="color:#a6e22e">server&lt;/span>.&lt;span style="color:#a6e22e">Logger&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="errors">Errors&lt;/h2>
+&lt;p>There is no exception handling. Functions that might produce an error just declare an additional return value of type &lt;code>Error&lt;/code>. This is the &lt;code>Error&lt;/code> interface:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#66d9ef">error&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> {
+&lt;span style="color:#a6e22e">Error&lt;/span>() &lt;span style="color:#66d9ef">string&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>A function that might return an error:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">doStuff&lt;/span>() (&lt;span style="color:#66d9ef">int&lt;/span>, &lt;span style="color:#66d9ef">error&lt;/span>) {
+}
+&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#a6e22e">result&lt;/span>, &lt;span style="color:#66d9ef">error&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">doStuff&lt;/span>()
+&lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#66d9ef">error&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span>) {
+&lt;span style="color:#75715e">// handle error
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> } &lt;span style="color:#66d9ef">else&lt;/span> {
+&lt;span style="color:#75715e">// all is good, use result
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> }
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="concurrency">Concurrency&lt;/h1>
+&lt;h2 id="goroutines">Goroutines&lt;/h2>
+&lt;p>Goroutines are lightweight threads (managed by Go, not OS threads). &lt;code>go f(a, b)&lt;/code> starts a new goroutine which runs &lt;code>f&lt;/code> (given &lt;code>f&lt;/code> is a function).&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#75715e">// just a function (which can be later started as a goroutine)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">doStuff&lt;/span>(&lt;span style="color:#a6e22e">s&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>) {
+}
+&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#75715e">// using a named function in a goroutine
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">go&lt;/span> &lt;span style="color:#a6e22e">doStuff&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;foobar&amp;#34;&lt;/span>)
+&lt;span style="color:#75715e">// using an anonymous inner function in a goroutine
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">go&lt;/span> &lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">x&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>) {
+&lt;span style="color:#75715e">// function body goes here
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> }(&lt;span style="color:#ae81ff">42&lt;/span>)
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="channels">Channels&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">ch&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> make(&lt;span style="color:#66d9ef">chan&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>) &lt;span style="color:#75715e">// create a channel of type int
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">ch&lt;/span> &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span> &lt;span style="color:#75715e">// Send a value to the channel ch.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">v&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#f92672">&amp;lt;-&lt;/span>&lt;span style="color:#a6e22e">ch&lt;/span> &lt;span style="color:#75715e">// Receive a value from ch
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// Non-buffered channels block. Read blocks when no value is available, write blocks if a value already has been written but not read.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// Create a buffered channel. Writing to a buffered channels does not block if less than &amp;lt;buffer size&amp;gt; unread values have been written.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">ch&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> make(&lt;span style="color:#66d9ef">chan&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>, &lt;span style="color:#ae81ff">100&lt;/span>)
+close(&lt;span style="color:#a6e22e">ch&lt;/span>) &lt;span style="color:#75715e">// closes the channel (only sender should close)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// read from channel and test if it has been closed
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">v&lt;/span>, &lt;span style="color:#a6e22e">ok&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#f92672">&amp;lt;-&lt;/span>&lt;span style="color:#a6e22e">ch&lt;/span>
+&lt;span style="color:#75715e">// if ok is false, channel has been closed
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// Read from channel until it is closed
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">ch&lt;/span> {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">i&lt;/span>)
+}
+&lt;span style="color:#75715e">// select blocks on multiple channel operations, if one unblocks, the corresponding case is executed
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">doStuff&lt;/span>(&lt;span style="color:#a6e22e">channelOut&lt;/span>, &lt;span style="color:#a6e22e">channelIn&lt;/span> &lt;span style="color:#66d9ef">chan&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>) {
+&lt;span style="color:#66d9ef">select&lt;/span> {
+&lt;span style="color:#66d9ef">case&lt;/span> &lt;span style="color:#a6e22e">channelOut&lt;/span> &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#ae81ff">42&lt;/span>:
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;We could write to channelOut!&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">case&lt;/span> &lt;span style="color:#a6e22e">x&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#a6e22e">channelIn&lt;/span>:
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;We could read from channelIn&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">case&lt;/span> &lt;span style="color:#f92672">&amp;lt;-&lt;/span>&lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">After&lt;/span>(&lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Second&lt;/span> &lt;span style="color:#f92672">*&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>):
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;timeout&amp;#34;&lt;/span>)
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="channel-axioms">Channel Axioms&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>A send to a nil channel blocks forever&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">c&lt;/span> &lt;span style="color:#66d9ef">chan&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>
+&lt;span style="color:#a6e22e">c&lt;/span> &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Hello, World!&amp;#34;&lt;/span>
+&lt;span style="color:#75715e">// fatal error: all goroutines are asleep - deadlock!
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>A receive from a nil channel blocks forever&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">c&lt;/span> &lt;span style="color:#66d9ef">chan&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#f92672">&amp;lt;-&lt;/span>&lt;span style="color:#a6e22e">c&lt;/span>)
+&lt;span style="color:#75715e">// fatal error: all goroutines are asleep - deadlock!
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>A send to a closed channel panics&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">c&lt;/span> = make(&lt;span style="color:#66d9ef">chan&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#ae81ff">1&lt;/span>)
+&lt;span style="color:#a6e22e">c&lt;/span> &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Hello, World!&amp;#34;&lt;/span>
+close(&lt;span style="color:#a6e22e">c&lt;/span>)
+&lt;span style="color:#a6e22e">c&lt;/span> &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Hello, Panic!&amp;#34;&lt;/span>
+&lt;span style="color:#75715e">// panic: send on closed channel
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>A receive from a closed channel returns the zero value immediately&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">c&lt;/span> = make(&lt;span style="color:#66d9ef">chan&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>)
+&lt;span style="color:#a6e22e">c&lt;/span> &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#a6e22e">c&lt;/span> &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>
+close(&lt;span style="color:#a6e22e">c&lt;/span>)
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>; &lt;span style="color:#a6e22e">i&lt;/span> &amp;lt; &lt;span style="color:#ae81ff">3&lt;/span>; &lt;span style="color:#a6e22e">i&lt;/span>&lt;span style="color:#f92672">++&lt;/span> {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Printf&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;%d &amp;#34;&lt;/span>, &lt;span style="color:#f92672">&amp;lt;-&lt;/span>&lt;span style="color:#a6e22e">c&lt;/span>)
+}
+&lt;span style="color:#75715e">// 1 2 0
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;h2 id="printing">Printing&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Hello, 你好, नमस्ते, Привет, ᎣᏏᏲ&amp;#34;&lt;/span>) &lt;span style="color:#75715e">// basic print, plus newline
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">p&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> { &lt;span style="color:#a6e22e">X&lt;/span>, &lt;span style="color:#a6e22e">Y&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> }{ &lt;span style="color:#ae81ff">17&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span> }
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>( &lt;span style="color:#e6db74">&amp;#34;My point:&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">p&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;x coord=&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">p&lt;/span>.&lt;span style="color:#a6e22e">X&lt;/span> ) &lt;span style="color:#75715e">// print structs, ints, etc
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">s&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Sprintln&lt;/span>( &lt;span style="color:#e6db74">&amp;#34;My point:&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">p&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;x coord=&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">p&lt;/span>.&lt;span style="color:#a6e22e">X&lt;/span> ) &lt;span style="color:#75715e">// print to string variable
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Printf&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;%d hex:%x bin:%b fp:%f sci:%e&amp;#34;&lt;/span>,&lt;span style="color:#ae81ff">17&lt;/span>,&lt;span style="color:#ae81ff">17&lt;/span>,&lt;span style="color:#ae81ff">17&lt;/span>,&lt;span style="color:#ae81ff">17.0&lt;/span>,&lt;span style="color:#ae81ff">17.0&lt;/span>) &lt;span style="color:#75715e">// c-ish format
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">s2&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Sprintf&lt;/span>( &lt;span style="color:#e6db74">&amp;#34;%d %f&amp;#34;&lt;/span>, &lt;span style="color:#ae81ff">17&lt;/span>, &lt;span style="color:#ae81ff">17.0&lt;/span> ) &lt;span style="color:#75715e">// formatted print to string variable
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#a6e22e">hellomsg&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#e6db74">`
+&lt;/span>&lt;span style="color:#e6db74"> &amp;#34;Hello&amp;#34; in Chinese is 你好 (&amp;#39;Ni Hao&amp;#39;)
+&lt;/span>&lt;span style="color:#e6db74"> &amp;#34;Hello&amp;#34; in Hindi is नमस्ते (&amp;#39;Namaste&amp;#39;)
+&lt;/span>&lt;span style="color:#e6db74">`&lt;/span> &lt;span style="color:#75715e">// multi-line string literal, using back-tick at beginning and end
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="snippets">Snippets&lt;/h1>
+&lt;h2 id="http-server">HTTP Server&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#f92672">package&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> (
+&lt;span style="color:#e6db74">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;net/http&amp;#34;&lt;/span>
+)
+&lt;span style="color:#75715e">// define a type for the response
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Hello&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span>{}
+&lt;span style="color:#75715e">// let that type implement the ServeHTTP method (defined in interface http.Handler)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">h&lt;/span> &lt;span style="color:#a6e22e">Hello&lt;/span>) &lt;span style="color:#a6e22e">ServeHTTP&lt;/span>(&lt;span style="color:#a6e22e">w&lt;/span> &lt;span style="color:#a6e22e">http&lt;/span>.&lt;span style="color:#a6e22e">ResponseWriter&lt;/span>, &lt;span style="color:#a6e22e">r&lt;/span> &lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">http&lt;/span>.&lt;span style="color:#a6e22e">Request&lt;/span>) {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Fprint&lt;/span>(&lt;span style="color:#a6e22e">w&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Hello!&amp;#34;&lt;/span>)
+}
+&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">h&lt;/span> &lt;span style="color:#a6e22e">Hello&lt;/span>
+&lt;span style="color:#a6e22e">http&lt;/span>.&lt;span style="color:#a6e22e">ListenAndServe&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;localhost:4000&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">h&lt;/span>)
+}
+&lt;span style="color:#75715e">// Here&amp;#39;s the method signature of http.ServeHTTP:
+&lt;/span>&lt;span style="color:#75715e">// type Handler interface {
+&lt;/span>&lt;span style="color:#75715e">// ServeHTTP(w http.ResponseWriter, r *http.Request)
+&lt;/span>&lt;span style="color:#75715e">// }
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;p>&lt;a href="https://github.com/a8m/go-lang-cheat-sheet">原文出处&lt;/a>&lt;/p></description></item><item><title>[转] Java 程序员的 Golang 入门笔记</title><link>https://lrtg.ml/2017/07/22/from-java-to-golang/</link><pubDate>Sat, 22 Jul 2017 11:23:10 +0000</pubDate><guid>https://lrtg.ml/2017/07/22/from-java-to-golang/</guid><description>
+&lt;blockquote>
+&lt;p>最近抽空学习了一下 &lt;code>Go&lt;/code> 语言，好多特性感觉非常棒，由于高效的开发效率以及性能，现在好多优秀的开源项目都是基于 &lt;code>Go&lt;/code> 开发，比如 &lt;code>Docker&lt;/code>、&lt;code>etcd&lt;/code>、&lt;code>consul&lt;/code>、&lt;code>Kubernetes&lt;/code> 等。&lt;code>Go&lt;/code> 势必会在互联网技术的服务化，容器化的将来大展拳脚。正好网上看到一篇关于 &lt;code>Java&lt;/code> 程序员入门 &lt;code>Golang&lt;/code> 的文章，写的挺好的，所以特此转载过来，再加上自己的一些学习经验，供大家参考。&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>Golang&lt;/code> 从 &lt;code>09&lt;/code> 年发布，中间经历了多个版本的演进，已经渐渐趋于成熟，其媲美于 &lt;code>C&lt;/code> 语言的性能、&lt;code>Python&lt;/code> 的开发效率，又被称为 21 世纪的 &lt;code>C&lt;/code> 语言，尤其适合开发后台服务。这篇文章主要是介绍 &lt;code>Golang&lt;/code> 的一些主要特性，和 &lt;code>Java&lt;/code> 做一个对比，以便更好的理解 &lt;code>Golang&lt;/code> 这门语言。&lt;/p>
+&lt;p>关于 &lt;code>Golang&lt;/code> 环境的搭建就不讲了，可以参考 &lt;a href="https://golang.org/doc/install">官方文档&lt;/a> 或者大神 &lt;a href="https://github.com/astaxie">astaxie&lt;/a> 的开源书籍 &lt;a href="https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/01.0.md">build-web-application-with-golang&lt;/a> 的相关篇章。下面我没让你就从 &lt;code>Go&lt;/code> 版本的&lt;code> Hello World&lt;/code> 开始。&lt;/p>
+&lt;h2 id="hello-world">Hello World&lt;/h2>
+&lt;p>每种语言都有自己的&lt;code> Hello World&lt;/code>，&lt;code>Go&lt;/code> 也不例外，&lt;code>Go&lt;/code> 版本的如下：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#f92672">package&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> (
+&lt;span style="color:#e6db74">&amp;#34;fmt&amp;#34;&lt;/span>
+)
+&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Hello World!你好，世界！&amp;#34;&lt;/span>)
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>我们使用 &lt;code>go run&lt;/code> 运行后，会在控制台终端看到 &lt;code>Hello World!你好，世界！&lt;/code> 的输出。我们来看下这段代码：&lt;/p>
+&lt;ol>
+&lt;li>&lt;code>package&lt;/code> 是一个关键字，定义一个包，和 &lt;code>Java&lt;/code> 里的 &lt;code>package&lt;/code> 一样，也是模块化的关键。&lt;/li>
+&lt;li>&lt;code>main&lt;/code> 包是一个特殊的包名，它表示当前是一个可执行程序，而不是一个库。&lt;/li>
+&lt;li>&lt;code>import&lt;/code> 也是一个关键字，表示要引入的包，和 &lt;code>Java&lt;/code> 的 &lt;code>import&lt;/code> 关键字一样，引入后才可以使用它。&lt;/li>
+&lt;li>&lt;code>fmt&lt;/code> 是一个包名，这里表示要引入 &lt;code>fmt&lt;/code> 这个包，这样我们就可以使用它的函数了。&lt;/li>
+&lt;li>&lt;code>main&lt;/code> 函数是主函数，表示程序执行的入口，&lt;code>Java&lt;/code> 也有同名函数，但是多了一个&lt;code>String[]&lt;/code> 类型的参数。&lt;/li>
+&lt;li>&lt;code>Println&lt;/code> 是 &lt;code>fmt&lt;/code> 包里的函数，和 &lt;code>Java&lt;/code> 里的 &lt;code>System.out.println&lt;/code> 作用类似，这里输出一段文字。&lt;/li>
+&lt;/ol>
+&lt;p>整段代码非常简洁，关键字、函数、包等和 &lt;code>Java&lt;/code> 非常相似，不过注意，&lt;code>go&lt;/code> 是不需要以 &lt;code>;&lt;/code> (分号)结尾的。&lt;/p>
+&lt;h2 id="变量">变量&lt;/h2>
+&lt;p>&lt;code>go&lt;/code> 语言变量的声明和 &lt;code>java&lt;/code> 的略有不同，以声明一个 &lt;code>int&lt;/code> 类型，变量名为 &lt;code>age&lt;/code> 为例，&lt;code>go&lt;/code> 语言变量生成如下：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">age&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> =&lt;span style="color:#ae81ff">10&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>同样的变量，在 &lt;code>java&lt;/code> 中的声明是：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">int&lt;/span> age &lt;span style="color:#f92672">=&lt;/span> 10&lt;span style="color:#f92672">;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>可以看到 &lt;code>go&lt;/code> 的变量声明，修饰变量的类型在变量的后面，而且是以 &lt;code>var&lt;/code> 关键字开头。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">变量名&lt;/span> &lt;span style="color:#a6e22e">类型&lt;/span> = &lt;span style="color:#a6e22e">表达式&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>最后面的赋值可以在声明的时候忽略，这样变量就有一个默认的值，称之为 &lt;code>零值&lt;/code>。&lt;code>零值&lt;/code> 是一个统称，以类型而定，比如 &lt;code>int&lt;/code> 类型的零值为 &lt;code>0&lt;/code>，&lt;code>string&lt;/code> 类型的零值是 &lt;code>””&lt;/code> 空字符串。&lt;/p>
+&lt;p>在 &lt;code>go&lt;/code> 中除了以 &lt;code>var&lt;/code> 声明变量之外，还有一种简短的变量声明方式 &lt;code>:=&lt;/code>,比如上面例子，可以如下简单声明：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">age&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>这种方式和上面的例子等价，但是少了 &lt;code>var&lt;/code> 和变量类型，所以简短方便，用的多。使用这种方式，变量的类型由 &lt;code>go&lt;/code> 根据值推导出来，比如这里默认是 &lt;code>int&lt;/code>。&lt;/p>
+&lt;p>不过它有一个限制，那就是它只能用在函数内部；在函数外部使用则会无法编译通过，所以一般用 &lt;code>var&lt;/code> 方式来定义全局变量。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">a1&lt;/span>, &lt;span style="color:#a6e22e">a2&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;1&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;d&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>Go&lt;/code> 对于已声明但未使用的变量（局部变量）会在编译阶段报错&lt;/p>
+&lt;h2 id="常量">常量&lt;/h2>
+&lt;p>有了变量，就少不了常量，和 &lt;code>var&lt;/code> 关键字不一样，&lt;code>go&lt;/code> 的常量使用 &lt;code>const&lt;/code> 声明，这个和 &lt;code>C&lt;/code> 里的常量一样。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go"> &lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">age&lt;/span> = &lt;span style="color:#ae81ff">10&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>这样就声明了一个常量 &lt;code>age&lt;/code>，其值是 &lt;code>10&lt;/code>，因为我们这里没有指定常量的类型，所以常量的类型是根据值推导出来的。所以等价的我们也可以指定常量类型，如下：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">age&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> = &lt;span style="color:#ae81ff">10&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>相比来说，&lt;code>java&lt;/code> 下的常量定义就要复杂一些，要有 &lt;code>static final&lt;/code> 修饰符，才是常量：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> AGE &lt;span style="color:#f92672">=&lt;/span> 10&lt;span style="color:#f92672">;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>这个和 &lt;code>go&lt;/code> 的实现等价，但是它的定义修饰符比 &lt;code>go&lt;/code> 多多了，而且常量类型不能省略。&lt;/p>
+&lt;h2 id="大小写标记访问权限">大小写标记访问权限&lt;/h2>
+&lt;p>我们上面的 &lt;code>go&lt;/code> 例子中我特意用了小些的变量名 &lt;code>age&lt;/code>，甚至常量我也没有写成 &lt;code>AGE&lt;/code>，但是在 &lt;code>java&lt;/code> 中，对于常量我们的习惯是全部大些。&lt;/p>
+&lt;p>在 &lt;code>go&lt;/code> 中不能随便使用大小写的问题，是因为大小写具有特殊意义，在 &lt;code>go&lt;/code> 中，大些字母开头的变量或者函数等是 &lt;code>public&lt;/code> 的，可以被其他包访问；小些的则是&lt;code>private&lt;/code>的，不能被其他包访问到。这样就省去了 &lt;code>public&lt;/code> 和 &lt;code>private&lt;/code> 声明的烦恼，使代码变的更简洁。&lt;/p>
+&lt;p>特别说明，这些导出规则只适用于包级别名字定义，不能使函数内部的定义。&lt;/p>
+&lt;h2 id="包">包&lt;/h2>
+&lt;p>包的规则和&lt;code>java&lt;/code>很像，每个包都有自己独立的空间，所以可以用来做模块化，封装，组织代码等。
+和&lt;code>java&lt;/code>不同的是， &lt;code>go&lt;/code> 的包里可以有函数，比如我们常用的&lt;code>fmt.Println()&lt;/code>,但是在在&lt;code>java&lt;/code>中没有这种用法，&lt;code>java&lt;/code>的方法必须是属于一个类或者类的实例的。&lt;/p>
+&lt;p>要使用一个包，就需要先导入，使用&lt;code>import&lt;/code>关键字，和&lt;code>java&lt;/code>也一样，可以参见前面的&lt;code>hello world&lt;/code>示例。&lt;/p>
+&lt;p>如果我们需要导入多个包的时候，可以像&lt;code>java&lt;/code>一样，一行行导入，也可以使用快捷方式一次导入，这个是&lt;code>java&lt;/code>所没有的。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#f92672">import&lt;/span> (
+&lt;span style="color:#e6db74">&amp;#34;io&amp;#34;&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;log&amp;#34;&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;net&amp;#34;&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;strconv&amp;#34;&lt;/span>
+)
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="类型转换">类型转换&lt;/h2>
+&lt;p>&lt;code>go&lt;/code> 对于变量的类型有严格的限制，不同类型之间的变量不能进行赋值、表达式等操作，必须要要转换成同一类型才可以，比如&lt;code>int32&lt;/code>和&lt;code>int64&lt;/code>两种&lt;code>int&lt;/code>类型的变量不能直接相加，要转换成一样才可以。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">a&lt;/span> &lt;span style="color:#66d9ef">int32&lt;/span> = &lt;span style="color:#ae81ff">13&lt;/span>
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span> &lt;span style="color:#66d9ef">int64&lt;/span> = &lt;span style="color:#ae81ff">20&lt;/span>
+&lt;span style="color:#a6e22e">c&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> int64(&lt;span style="color:#a6e22e">a&lt;/span>) &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>这种限制主要是防止我们误操作，导致一些莫名其妙的问题。在&lt;code>java&lt;/code>中因为有自动转型的概念，所以可以不同类型的可以进行操作，比如&lt;code>int&lt;/code>可以和&lt;code>double&lt;/code>相加，&lt;code>int&lt;/code>类型可以通过&lt;code>+&lt;/code>和字符串拼接起来，这些在&lt;code>go&lt;/code>中都是不可行的。&lt;/p>
+&lt;h2 id="map">map&lt;/h2>
+&lt;p>&lt;code>map&lt;/code>类型，&lt;code>Java&lt;/code>里是&lt;code>Map&lt;/code>接口， &lt;code>go&lt;/code> 里叫做字典，因为其常用，在 &lt;code>go&lt;/code> 中，被优化为一个语言上支持的结构，原生支持，就像一个关键字一样，而不是&lt;code>java&lt;/code>里的要使用内置的&lt;code>sdk&lt;/code>集合库，比如&lt;code>HashMap&lt;/code>等。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">ages&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> make(&lt;span style="color:#66d9ef">map&lt;/span>[&lt;span style="color:#66d9ef">string&lt;/span>]&lt;span style="color:#66d9ef">int&lt;/span>)
+&lt;span style="color:#a6e22e">ages&lt;/span>[&lt;span style="color:#e6db74">&amp;#34;linday&amp;#34;&lt;/span>] = &lt;span style="color:#ae81ff">20&lt;/span>
+&lt;span style="color:#a6e22e">ages&lt;/span>[&lt;span style="color:#e6db74">&amp;#34;michael&amp;#34;&lt;/span>] = &lt;span style="color:#ae81ff">30&lt;/span>
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Print&lt;/span>(&lt;span style="color:#a6e22e">ages&lt;/span>[&lt;span style="color:#e6db74">&amp;#34;michael&amp;#34;&lt;/span>])
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>go&lt;/code> 里要创建一个&lt;code>map&lt;/code>对应，需要使用关键字&lt;code>make&lt;/code>，然后就可以对这个&lt;code>map&lt;/code>进行操作。&lt;/p>
+&lt;p>&lt;code>map&lt;/code>的结构也非常简单，符合KV模型，定义为&lt;code>map[key]value&lt;/code>, 方括号里是&lt;code>key&lt;/code>的类型，方括号外紧跟着对应的&lt;code>value&lt;/code>的类型，这些明显和&lt;code>Java&lt;/code>的&lt;code>Map&lt;/code>接口不同。如果在 &lt;code>go&lt;/code> 中我们要删除&lt;code>map&lt;/code>中的一个元素怎么办？使用内置的&lt;code>delete&lt;/code>函数就可以,如下代码删除&lt;code>ages&lt;/code>这个&lt;code>map&lt;/code>中，&lt;code>key&lt;/code>为&lt;code>michael&lt;/code>的元素。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">delete(&lt;span style="color:#a6e22e">ages&lt;/span>,&lt;span style="color:#e6db74">&amp;#34;michael&amp;#34;&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果我们想遍历&lt;code>map&lt;/code>中的&lt;code>K、V&lt;/code>值怎么办？答案是使用&lt;code>range&lt;/code>风格的&lt;code>for&lt;/code>循环，可比&lt;code>Java Map&lt;/code>的遍历简洁多了。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">name&lt;/span>,&lt;span style="color:#a6e22e">age&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">ages&lt;/span> {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;name:&amp;#34;&lt;/span>,&lt;span style="color:#a6e22e">name&lt;/span>,&lt;span style="color:#e6db74">&amp;#34;,age:&amp;#34;&lt;/span>,&lt;span style="color:#a6e22e">age&lt;/span>)
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>range&lt;/code>一个&lt;code>map&lt;/code>，会返回两个值，第一个是&lt;code>key&lt;/code>，第二个是&lt;code>value&lt;/code>，这个也是&lt;code>go&lt;/code>多值返回的优势，下面会讲。&lt;/p>
+&lt;h2 id="函数方法">函数方法&lt;/h2>
+&lt;p>在 &lt;code>go&lt;/code> 中，函数和方法是不一样的，我们一般称包级别的(直接可以通过包调用的)称之为函数，比如&lt;code>fmt.Println()；&lt;/code>把和一个类型关联起来的函数称之为方法，如下示例：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#f92672">package&lt;/span> &lt;span style="color:#a6e22e">lib&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;time&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Person&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {
+&lt;span style="color:#a6e22e">age&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>
+&lt;span style="color:#a6e22e">name&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>
+}
+&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">p&lt;/span> &lt;span style="color:#a6e22e">Person&lt;/span>) &lt;span style="color:#a6e22e">GetName&lt;/span>() &lt;span style="color:#66d9ef">string&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">p&lt;/span>.&lt;span style="color:#a6e22e">name&lt;/span>
+}
+&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">GetTime&lt;/span>() &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Time&lt;/span>{
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Now&lt;/span>()
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>其中&lt;code>GetTime()&lt;/code>可以通过&lt;code>lib.GetTime()&lt;/code>直接调用，称之为函数；而&lt;code>GetName()&lt;/code>则属于&lt;code>Person&lt;/code>这个结构体的函数，只能声明了&lt;code>Person&lt;/code>类型的实例后才可以调用，称之为方法。&lt;/p>
+&lt;p>不管是函数还是方法，定义是一摸一样的。而在这里，最可以讲的就是多值返回，也就是可以同时返回多个值，这就大大为我们带来了方便，比如上个遍历&lt;code>map&lt;/code>的例子，直接可以获取&lt;code>K、V&lt;/code>，如果只能返回一个值，我们就需要调用两次方法才可以。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">GetTime&lt;/span>() (&lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Time&lt;/span>,&lt;span style="color:#66d9ef">error&lt;/span>){
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">time&lt;/span>.&lt;span style="color:#a6e22e">Now&lt;/span>(),&lt;span style="color:#66d9ef">nil&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>多值返回也很简单，返回的值使用逗号隔开即可。如果要接受多值的返回，也需要以逗号分隔的变量，有几个返回值，就需要几个变量，比如这里：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">now&lt;/span>,&lt;span style="color:#a6e22e">err&lt;/span>&lt;span style="color:#f92672">:=&lt;/span>&lt;span style="color:#a6e22e">GetTime&lt;/span>()
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果有个返回值，我们用不到，不想浪费一个变量接收怎么办？这时候可以使用空标志符&lt;code>_&lt;/code>,这是&lt;code>java&lt;/code>没有的。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">now&lt;/span>,&lt;span style="color:#a6e22e">_&lt;/span>&lt;span style="color:#f92672">:=&lt;/span>&lt;span style="color:#a6e22e">GetTime&lt;/span>()
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="指针">指针&lt;/h2>
+&lt;p>&lt;code>go&lt;/code> 的指针和&lt;code>C&lt;/code>中的声明定义是一样的，其作用类似于&lt;code>Java&lt;/code>引用变量效果。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">age&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> = &lt;span style="color:#ae81ff">10&lt;/span>
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">p&lt;/span> &lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> = &lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">age&lt;/span>
+&lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">p&lt;/span> = &lt;span style="color:#ae81ff">11&lt;/span>
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">age&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>其中&lt;code>指针p&lt;/code>指向&lt;code>变量age&lt;/code>的内存地址，如果修改&lt;code>*p&lt;/code>的值，那么变量&lt;code>age&lt;/code>的值也同时会被修改，例子中打印出来的值为&lt;code>11&lt;/code>，而不是&lt;code>10&lt;/code>.&lt;/p>
+&lt;p>相对应&lt;code>java&lt;/code>引用类型的变量，可以理解为一个&lt;code>HashMap&lt;/code>类型的变量，这个变量传递给一个方法，在该方法里对&lt;code>HashMap&lt;/code>修改，删除，就会影响原来的&lt;code>HashMap&lt;/code>。引用变量集合类最容易理解，自己的类也可以，不过基本类型不行，基本类型不是引用类型的，他们在方法传参的时候，是拷贝的值。&lt;/p>
+&lt;h2 id="结构体替代类">结构体替代类&lt;/h2>
+&lt;p>&lt;code>go&lt;/code> 中没有类型的概念，只有结构体，这个和&lt;code>C&lt;/code>是一样的。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Person&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {
+&lt;span style="color:#a6e22e">age&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>
+&lt;span style="color:#a6e22e">name&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>go&lt;/code> 中的结构体是不能定义方法的，只能是变量，这点和&lt;code>Java&lt;/code>不一样的,如果要访问结构体内的成员变量，通过&lt;code>.&lt;/code>操作符即可。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">p&lt;/span> &lt;span style="color:#a6e22e">Person&lt;/span>) &lt;span style="color:#a6e22e">GetName&lt;/span>() &lt;span style="color:#66d9ef">string&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">p&lt;/span>.&lt;span style="color:#a6e22e">name&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>这就是通过&lt;code>.&lt;/code>操作符访问变量的方式，同时它也是一个为结构体定义方法的例子，和函数不一样的是，在&lt;code>func&lt;/code>关键字后要执行该方法的接收者，这个方法就是属于这个接收者，例子中是&lt;code>Person&lt;/code>这个结构体。&lt;/p>
+&lt;p>在 &lt;code>go&lt;/code> 中如果想像&lt;code>Java&lt;/code>一样，让一个结构体继承另外一个结构体怎么办？也有办法，不过在 &lt;code>go&lt;/code> 中称之为组合或者嵌入。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Person&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {
+&lt;span style="color:#a6e22e">age&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>
+&lt;span style="color:#a6e22e">name&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>
+&lt;span style="color:#a6e22e">Address&lt;/span>
+}
+&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Address&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {
+&lt;span style="color:#a6e22e">city&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>结构体&lt;code>Address&lt;/code>被嵌入了&lt;code>Person&lt;/code>中，这样&lt;code>Person&lt;/code>就拥有了&lt;code>Address&lt;/code>的变量和方法，就想自己的一样，这就是组合的威力。通过这种方式，我们可以把简单的对象组合成复杂的对象，并且他们之间没有强约束关系， &lt;code>go&lt;/code> 倡导的是组合，而不是继承、多态。&lt;/p>
+&lt;h2 id="接口">接口&lt;/h2>
+&lt;p>&lt;code>go&lt;/code> 的接口和&lt;code>Java&lt;/code>类型，不过它不需要强制实现，在 &lt;code>go&lt;/code> 中，如果你这个类型（基本类型，结构体等都可以）拥有了接口的所有方法，那么就默认为这个类型实现了这个接口，是隐式的，不需要和&lt;code>java&lt;/code>一样，强制使用&lt;code>implement&lt;/code>强制实现。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Stringer&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> {
+&lt;span style="color:#a6e22e">String&lt;/span>() &lt;span style="color:#66d9ef">string&lt;/span>
+}
+&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">p&lt;/span> &lt;span style="color:#a6e22e">Person&lt;/span>) &lt;span style="color:#a6e22e">String&lt;/span>() &lt;span style="color:#66d9ef">string&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#e6db74">&amp;#34;name is &amp;#34;&lt;/span>&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#a6e22e">p&lt;/span>.&lt;span style="color:#a6e22e">name&lt;/span>&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#e6db74">&amp;#34;,age is &amp;#34;&lt;/span>&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#a6e22e">strconv&lt;/span>.&lt;span style="color:#a6e22e">Itoa&lt;/span>(&lt;span style="color:#a6e22e">p&lt;/span>.&lt;span style="color:#a6e22e">age&lt;/span>)
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>以上实例中可以看到，&lt;code>Person&lt;/code>这个结构体拥有了&lt;code>fmt.Stringer&lt;/code>接口的方法，那么就说明&lt;code>Person&lt;/code>实现了&lt;code>fmt.Stringer&lt;/code>接口。&lt;/p>
+&lt;p>接口也可以像结构体一样组合嵌套，这里不再赘述。&lt;/p>
+&lt;h2 id="并发">并发&lt;/h2>
+&lt;p>&lt;code>go&lt;/code> 并发主要靠&lt;code>goroutine&lt;/code>支持，也称之为&lt;code>go协程&lt;/code>或者&lt;code>go程&lt;/code>，他是语言层面支持的，非常轻量级的多任务支持，也可以把他简单的理解为&lt;code>java&lt;/code>语言的线程，不过是不一样的。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">go&lt;/span> &lt;span style="color:#a6e22e">run&lt;/span>()
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>这就启动一个&lt;code>goroutine&lt;/code>来执行&lt;code>run&lt;/code>函数，代码非常简洁，如果在&lt;code>java&lt;/code>中，需要先&lt;code>New&lt;/code>一个&lt;code>Thread&lt;/code>，然后在重写他的&lt;code>run&lt;/code>方法，然后在&lt;code>start&lt;/code>才可以开始。&lt;/p>
+&lt;p>两个&lt;code>goroutine&lt;/code>可以通过&lt;code>channel&lt;/code>来通信，&lt;code>channel&lt;/code>是一个特殊的类型，也是 &lt;code>go&lt;/code> 语言级别上的支持，他类似于一个管道，可以存储信息，也可以从中读取信息。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#f92672">package&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;span style="color:#a6e22e">result&lt;/span>&lt;span style="color:#f92672">:=&lt;/span>make(&lt;span style="color:#66d9ef">chan&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>)
+&lt;span style="color:#66d9ef">go&lt;/span> &lt;span style="color:#66d9ef">func&lt;/span>() {
+&lt;span style="color:#a6e22e">sum&lt;/span>&lt;span style="color:#f92672">:=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span>&lt;span style="color:#f92672">:=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span>;&lt;span style="color:#a6e22e">i&lt;/span>&amp;lt;&lt;span style="color:#ae81ff">10&lt;/span>;&lt;span style="color:#a6e22e">i&lt;/span>&lt;span style="color:#f92672">++&lt;/span>{
+&lt;span style="color:#a6e22e">sum&lt;/span>=&lt;span style="color:#a6e22e">sum&lt;/span>&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#a6e22e">i&lt;/span>
+}
+&lt;span style="color:#a6e22e">result&lt;/span>&lt;span style="color:#f92672">&amp;lt;-&lt;/span>&lt;span style="color:#a6e22e">sum&lt;/span>
+}()
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Print&lt;/span>(&lt;span style="color:#f92672">&amp;lt;-&lt;/span>&lt;span style="color:#a6e22e">result&lt;/span>)
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>以上示例使用一个单独的&lt;code>goroutine&lt;/code>求和，当得到结果时，存放在&lt;code>result&lt;/code>这个&lt;code>chan&lt;/code>里，然后供 &lt;code>main&lt;/code> &lt;code>goroutine&lt;/code> 读取出来。当&lt;code>result&lt;/code>没有被存储值的时候，读取&lt;code>result&lt;/code>是阻塞的，所以会等到结果返回，协同工作，通过&lt;code>chan&lt;/code>通信。&lt;/p>
+&lt;p>对于并发， &lt;code>go&lt;/code> 还提供了一套同步机制，都在&lt;code>sync&lt;/code>包里，有锁，有一些常用的工具函数等，和&lt;code>java&lt;/code>的&lt;code>concurrent&lt;/code>框架差不多。&lt;/p>
+&lt;h2 id="异常机制">异常机制&lt;/h2>
+&lt;p>相比&lt;code>java&lt;/code>的&lt;code>Exception&lt;/code>来说， &lt;code>go&lt;/code> 有两种机制，不过最常用的还是&lt;code>error&lt;/code>错误类型，&lt;code>panic&lt;/code>只用于严重的错误。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#66d9ef">error&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> {
+&lt;span style="color:#a6e22e">Error&lt;/span>() &lt;span style="color:#66d9ef">string&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>go&lt;/code> 内置的&lt;code>error&lt;/code>类型非常简洁，只用实现&lt;code>Error&lt;/code>方法即可，可以打印一些详细的错误信息，比如常见的函数多值返回，最后一个返回值经常是&lt;code>error&lt;/code>，用于传递一些错误问题，这种方式要比&lt;code>java&lt;/code> &lt;code>throw Exception&lt;/code>的方法更优雅。&lt;/p>
+&lt;h2 id="defer代替finally">Defer代替finally&lt;/h2>
+&lt;p>&lt;code>go&lt;/code> 中没有&lt;code>java&lt;/code>的&lt;code>finally&lt;/code>了，那么如果我们要关闭一些一些连接，文件流等怎么办呢，为此&lt;code>go&lt;/code>为我们提供了&lt;code>defer&lt;/code>关键字，这样就可以保证永远被执行到，也就不怕关闭不了连接了。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">f&lt;/span>,&lt;span style="color:#a6e22e">err&lt;/span>&lt;span style="color:#f92672">:=&lt;/span>&lt;span style="color:#a6e22e">os&lt;/span>.&lt;span style="color:#a6e22e">Open&lt;/span>(&lt;span style="color:#a6e22e">filename&lt;/span>)
+&lt;span style="color:#66d9ef">defer&lt;/span> &lt;span style="color:#a6e22e">f&lt;/span>.&lt;span style="color:#a6e22e">Close&lt;/span>()
+&lt;span style="color:#a6e22e">readAll&lt;/span>(&lt;span style="color:#a6e22e">f&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="统一编码风格">统一编码风格&lt;/h2>
+&lt;p>在编码中，我们有时为了是否空行，大括号是否独占一行等编码风格问题争论不休，到了 &lt;code>go&lt;/code> 这里就终止了，因为 &lt;code>go&lt;/code> 是强制的，比如花括号不能独占一行，比如定义的变量必须使用，否则就不能编译通过。&lt;/p>
+&lt;p>第二种就是&lt;code>go fmt&lt;/code>这个工具提供的非强制性规范，虽然不是强制的，不过也建议使用，这样整个团队的代码看着就像一个人写的。很多 &lt;code>go&lt;/code> 代码编辑器都提供保存时自动&lt;code>gofmt&lt;/code>格式的话，所以效率也非常高。&lt;/p>
+&lt;h2 id="便捷的部署">便捷的部署&lt;/h2>
+&lt;p>&lt;code>go&lt;/code> 最终生成的是一个可执行文件，不管你的程序依赖多少库，都会被打包进行，生成一个可执行文件，所以相比&lt;code>java&lt;/code>庞大的&lt;code>jar&lt;/code>库来说，他的部署非常方便，执行运行这个可执行文件就好了。&lt;/p>
+&lt;p>对于&lt;code>Web&lt;/code>开发，更方便，不用安装&lt;code>jdk&lt;/code>，&lt;code>tomcat&lt;/code>容器等等这些环境，直接一个可执行文件，就启动了。对于 &lt;code>go&lt;/code> 这种便捷的部署方式，我觉得他更能推进&lt;code>docker&lt;/code>的服务化，因为&lt;code>docker&lt;/code>就是倡导一个实例一个服务，而且不用各种依赖，&lt;code>layer&lt;/code>层级又没那么多，&lt;code>docker image&lt;/code>也会小很多。&lt;/p>
+&lt;p>最后， &lt;code>go&lt;/code> 目前已经在&lt;code>TIOBE&lt;/code>语言排行榜上名列&lt;code>13&lt;/code>名了，上升速度还是非常快的，而且随着服务化，容器化，他的优势会越来越多的显现出来，得到更广泛的应用。&lt;/p>
+&lt;p>如果你感兴趣，那么开始吧，提前准备，机会来的时候，就不会错过了。&lt;/p>
+&lt;hr>
+&lt;p>&lt;a href="http://www.flysnow.org/2016/12/28/from-java-to-golang.html">原文出处&lt;/a>&lt;/p></description></item></channel></rss>

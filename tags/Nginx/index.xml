@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nginx on lrtg</title><link>https://lrtg.ml/tags/Nginx/</link><description>Recent content in Nginx on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Fri, 23 Dec 2016 11:20:44 +0000</lastBuildDate><atom:link href="https://lrtg.ml/tags/Nginx/index.xml" rel="self" type="application/rss+xml"/><item><title>CentOS 安装 Nginx</title><link>https://lrtg.ml/2016/12/23/CentOS-%E5%AE%89%E8%A3%85-Nginx/</link><pubDate>Fri, 23 Dec 2016 11:20:44 +0000</pubDate><guid>https://lrtg.ml/2016/12/23/CentOS-%E5%AE%89%E8%A3%85-Nginx/</guid><description>
+&lt;h1 id="一安装准备">一、安装准备&lt;/h1>
+&lt;p>首先由于 Nginx 的一些模块依赖一些 lib 库，所以在安装 Nginx 之前，必须先安装这些 lib 库，这些依赖库主要有 g++、gcc、openssl-devel、pcre-devel 和 zlib-devel，执行如下命令安装：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ yum install gcc-c++
+$ yum install pcre pcre-devel
+$ yum install zlib zlib-devel
+$ yum install openssl openssl--devel
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="二安装-nginx">二、安装 Nginx&lt;/h1>
+&lt;p>安装之前，最好检查一下是否已经安装有 Nginx&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ find -name nginx
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果系统已经安装了 Nginx，那么就先卸载&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ yum remove nginx
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>首先进入 /usr/local 目录&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ cd /usr/local
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>从官网下载最新版的 Nginx&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ wget http://nginx.org/download/nginx-1.9.6.tar.gz
+$ tar -zxvf nginx-1.9.6.tar.gz
+$ cd nginx-1.9.6
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>接下来安装，使用 &lt;code>--prefix&lt;/code> 参数指定 Nginx 安装的目录&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ ./configure --prefix&lt;span style="color:#f92672">=&lt;/span>/usr/local/nginx &lt;span style="color:#75715e"># 指定 Nginx 安装的目录 /usr/local/nginx&lt;/span>
+$ make prefix&lt;span style="color:#f92672">=&lt;/span>/usr/local/nginx
+$ make install prefix&lt;span style="color:#f92672">=&lt;/span>/usr/local/nginx
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果没有报错，顺利完成后，最好看一下 nginx 的安装目录&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ whereis nginx
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>安装完毕后，进入安装后目录（/usr/local/nginx）便可以启动或停止它了。&lt;/p>
+&lt;h1 id="二基本操作命令">二、基本操作命令&lt;/h1>
+&lt;h2 id="21-启动命令">2.1 启动命令&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="22-重启命令">2.2 重启命令&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf -s reload
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="23-停止命令">2.3 停止命令&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf -s stop
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>-c&lt;/code> 制定配置文件的路径，如果不加 Nginx 会自动加载默认路径的配置文件。&lt;/p></description></item></channel></rss>

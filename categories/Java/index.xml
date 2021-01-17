@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Java on lrtg</title><link>https://lrtg.ml/categories/Java/</link><description>Recent content in Java on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Sun, 06 Dec 2020 22:48:28 +0800</lastBuildDate><atom:link href="https://lrtg.ml/categories/Java/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 Lambda 优雅的处理 Java 异常</title><link>https://lrtg.ml/2020/12/06/replace-java-try-catch-with-lambda/</link><pubDate>Sun, 06 Dec 2020 22:48:28 +0800</pubDate><guid>https://lrtg.ml/2020/12/06/replace-java-try-catch-with-lambda/</guid><description>
+&lt;img src="https://cdn.ehlxr.top/images/typecho/luca-bravo-2.jpg"/>
+&lt;p>使用过 &lt;code>Java&lt;/code> 的函数接口，就会被简介的语法深深的吸引，苦于代码中大量的 &lt;code>try...catch&lt;/code> 繁琐代码，最近借鉴 &lt;code>java.util.Optional&lt;/code> 的实现写了个简化的小工具。&lt;/p>
+&lt;p>以 &lt;code>Long.valueOf()&lt;/code> 为例，假如需要把一个字符串转换为&lt;code>long&lt;/code>，如果转换失败则设置默认值为 &lt;code>-1&lt;/code>，一般会作如下处理：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">String param &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;10s&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> result&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+result &lt;span style="color:#f92672">=&lt;/span> Long&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">parseLong&lt;/span>&lt;span style="color:#f92672">(&lt;/span>param&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>Exception e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e">// 捕获异常处理
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+result &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&lt;/span>1L&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果使用简化工具：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">Long result &lt;span style="color:#f92672">=&lt;/span> Try&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">of&lt;/span>&lt;span style="color:#f92672">(()&lt;/span> &lt;span style="color:#f92672">-&amp;gt;&lt;/span> Long&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">valueOf&lt;/span>&lt;span style="color:#f92672">(&lt;/span>param&lt;span style="color:#f92672">)).&lt;/span>&lt;span style="color:#a6e22e">trap&lt;/span>&lt;span style="color:#f92672">(&lt;/span>e &lt;span style="color:#f92672">-&amp;gt;&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e">// 自行异常处理
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#f92672">}).&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">(-&lt;/span>1L&lt;span style="color:#f92672">);&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>或者：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">Long result &lt;span style="color:#f92672">=&lt;/span> Try&lt;span style="color:#f92672">.&amp;lt;&lt;/span>String&lt;span style="color:#f92672">,&lt;/span> Long&lt;span style="color:#f92672">&amp;gt;&lt;/span>of&lt;span style="color:#f92672">(&lt;/span>Long&lt;span style="color:#f92672">::&lt;/span>valueOf&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">trap&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Throwable&lt;span style="color:#f92672">::&lt;/span>printStackTrace&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">apply&lt;/span>&lt;span style="color:#f92672">(&lt;/span>param&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">(-&lt;/span>1L&lt;span style="color:#f92672">);&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果不需要异常处理：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">Long result &lt;span style="color:#f92672">=&lt;/span> Try&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">of&lt;/span>&lt;span style="color:#f92672">(()&lt;/span> &lt;span style="color:#f92672">-&amp;gt;&lt;/span> Long&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">valueOf&lt;/span>&lt;span style="color:#f92672">(&lt;/span>param&lt;span style="color:#f92672">)).&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">(-&lt;/span>1L&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#75715e">// Long result = Try.&amp;lt;String, Long&amp;gt;of(Long::valueOf).apply(param).get(-1L);
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果处理没有返回值的代码，如下：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">ArrayList&lt;span style="color:#f92672">&amp;lt;&lt;/span>String&lt;span style="color:#f92672">&amp;gt;&lt;/span> list &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ArrayList&lt;span style="color:#f92672">&amp;lt;&amp;gt;();&lt;/span>
+Try&lt;span style="color:#f92672">.&amp;lt;&lt;/span>String&lt;span style="color:#f92672">&amp;gt;&lt;/span>of&lt;span style="color:#f92672">(&lt;/span>v &lt;span style="color:#f92672">-&amp;gt;&lt;/span> list&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">add&lt;/span>&lt;span style="color:#f92672">(&lt;/span>10&lt;span style="color:#f92672">,&lt;/span> v&lt;span style="color:#f92672">))&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">trap&lt;/span>&lt;span style="color:#f92672">(&lt;/span>e &lt;span style="color:#f92672">-&amp;gt;&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>e&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getMessage&lt;/span>&lt;span style="color:#f92672">()))&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">accept&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;test&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>其它情况的简单使用示例：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String&lt;span style="color:#f92672">[]&lt;/span> args&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#75715e">// 有返回值，无入参
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> String param &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;s&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+Long result &lt;span style="color:#f92672">=&lt;/span> Try&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">of&lt;/span>&lt;span style="color:#f92672">(()&lt;/span> &lt;span style="color:#f92672">-&amp;gt;&lt;/span> Long&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">valueOf&lt;/span>&lt;span style="color:#f92672">(&lt;/span>param&lt;span style="color:#f92672">)).&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">(&lt;/span>0L&lt;span style="color:#f92672">);&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Long.valueOf 1: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> result&lt;span style="color:#f92672">);&lt;/span>
+result &lt;span style="color:#f92672">=&lt;/span> Try&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">of&lt;/span>&lt;span style="color:#f92672">(()&lt;/span> &lt;span style="color:#f92672">-&amp;gt;&lt;/span> Long&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">valueOf&lt;/span>&lt;span style="color:#f92672">(&lt;/span>param&lt;span style="color:#f92672">)).&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Long.valueOf 2: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> result&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#75715e">// 有返回值，有入参
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> result &lt;span style="color:#f92672">=&lt;/span> Try&lt;span style="color:#f92672">.&amp;lt;&lt;/span>String&lt;span style="color:#f92672">,&lt;/span> Long&lt;span style="color:#f92672">&amp;gt;&lt;/span>of&lt;span style="color:#f92672">(&lt;/span>s &lt;span style="color:#f92672">-&amp;gt;&lt;/span> Long&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">valueOf&lt;/span>&lt;span style="color:#f92672">(&lt;/span>s&lt;span style="color:#f92672">))&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">apply&lt;/span>&lt;span style="color:#f92672">(&lt;/span>param&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">trap&lt;/span>&lt;span style="color:#f92672">((&lt;/span>e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">-&amp;gt;&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Long.valueOf exception: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> e&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getMessage&lt;/span>&lt;span style="color:#f92672">()))&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">andFinally&lt;/span>&lt;span style="color:#f92672">(()&lt;/span> &lt;span style="color:#f92672">-&amp;gt;&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Long.valueOf finally run code.&amp;#34;&lt;/span>&lt;span style="color:#f92672">))&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">finallyTrap&lt;/span>&lt;span style="color:#f92672">((&lt;/span>e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">-&amp;gt;&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Long.valueOf finally exception: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> e&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getMessage&lt;/span>&lt;span style="color:#f92672">()))&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Long.valueOf 3: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> result&lt;span style="color:#f92672">);&lt;/span>
+ArrayList&lt;span style="color:#f92672">&amp;lt;&lt;/span>String&lt;span style="color:#f92672">&amp;gt;&lt;/span> list &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#75715e">// 无返回值，无入参
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Try&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">of&lt;/span>&lt;span style="color:#f92672">(()&lt;/span> &lt;span style="color:#f92672">-&amp;gt;&lt;/span> Thread&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">sleep&lt;/span>&lt;span style="color:#f92672">(-&lt;/span>1L&lt;span style="color:#f92672">))&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">andFinally&lt;/span>&lt;span style="color:#f92672">(()&lt;/span> &lt;span style="color:#f92672">-&amp;gt;&lt;/span> list&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">clear&lt;/span>&lt;span style="color:#f92672">())&lt;/span>
+&lt;span style="color:#75715e">// .andFinally(list::clear) //https://stackoverflow.com/questions/37413106/java-lang-nullpointerexception-is-thrown-using-a-method-reference-but-not-a-lamb
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">run&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#75715e">// 无返回值，有入参
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Try&lt;span style="color:#f92672">.&amp;lt;&lt;/span>String&lt;span style="color:#f92672">&amp;gt;&lt;/span>of&lt;span style="color:#f92672">(&lt;/span>v &lt;span style="color:#f92672">-&amp;gt;&lt;/span> list&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">add&lt;/span>&lt;span style="color:#f92672">(&lt;/span>0&lt;span style="color:#f92672">,&lt;/span> v&lt;span style="color:#f92672">)).&lt;/span>&lt;span style="color:#a6e22e">accept&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;test&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;a href="https://github.com/ehlxr/budd/blob/master/src/main/java/io/github/ehlxr/utils/Try.java">&lt;strong>小工具的实现链接&lt;/strong>&lt;/a>&lt;/p></description></item><item><title>HTTPS 笔记</title><link>https://lrtg.ml/2020/03/11/https-note/</link><pubDate>Wed, 11 Mar 2020 17:57:16 +0800</pubDate><guid>https://lrtg.ml/2020/03/11/https-note/</guid><description>
+&lt;p>随着互联网的迅速发展，网络安全问题日益凸显，现在 Chrome 浏览器已经开始阻止非 https 网站的访问了。对于 https 的流程一直不是十分清晰，借着还没有完全复工有时间，大概画了个图总结一下。&lt;/p>
+&lt;p>想要了解 https 流程，CA 的相关知识，加密方式（对称加密、非对称加密），以及哈希计算（例如：MD5、sha256）等技术必须得掌握，这里先不做介绍，后续有时间再进行归纳总结。&lt;/p>
+&lt;p>https 是在 http 的基础上加入了 SSL 协议，SSL 依靠证书来验证服务器的身份，并为浏览器和服务器之间的通信进行加密。&lt;/p>
+&lt;h2 id="https-的验证流程">HTTPS 的验证流程&lt;/h2>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/https.jpg" alt="https">&lt;/p>
+&lt;ol>
+&lt;li>客户端发起 https 请求&lt;/li>
+&lt;li>服务端返回数字证书文件（X.509 格式）&lt;/li>
+&lt;li>客户端验证数字证书，并且提取服务端公钥&lt;/li>
+&lt;li>如果客户端验证数字证书通过，则随机生成一个对称加密的 key，并使用服务器公钥对 key 加密&lt;/li>
+&lt;li>客户端发送加密后的 key 到服务端&lt;/li>
+&lt;li>服务端使用私钥解密拿到 key&lt;/li>
+&lt;li>客户端与服务端使用该 key 对称加解密通讯信息&lt;/li>
+&lt;/ol>
+&lt;h2 id="客户端验证数字证书">客户端验证数字证书&lt;/h2>
+&lt;ol>
+&lt;li>浏览器安装后会自带一些权威 CA 公钥&lt;/li>
+&lt;li>使用相匹配的 CA 公钥对数字证书中的数字签名解密，如果能够解密则得到数字证书的摘要，由此证明数字证书是可信的&lt;/li>
+&lt;li>根据数字证书中的散列算法对网站信息进行哈希运算，将得到的结果与上一步得到的摘要对比，如果两者一致，就证明证书未被修改过&lt;/li>
+&lt;/ol>
+&lt;h2 id="数字证书的签发过程">数字证书的签发过程&lt;/h2>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/digital_signature.jpg" alt="digital signature">&lt;/p>
+&lt;hr></description></item><item><title>Maven 配置文件 settings.xml 详解</title><link>https://lrtg.ml/2020/03/02/maven-setting-config/</link><pubDate>Mon, 02 Mar 2020 14:50:48 +0800</pubDate><guid>https://lrtg.ml/2020/03/02/maven-setting-config/</guid><description>
+&lt;p>&lt;code>settings.xml&lt;/code> 是 &lt;code>maven&lt;/code> 的配置文件，用户配置文件存放于 &lt;code>${user.home}/.m2/&lt;/code> 目录下，系统全局配置文件放置于 &lt;code>${maven.home}/conf/&lt;/code> 目录下，&lt;code>pom.xml&lt;/code> 是 &lt;code>maven&lt;/code> 的项目的配置文件。&lt;/p>
+&lt;p>配置文件的优先级从&lt;code>高到低&lt;/code>为：&lt;code>pom.xml&lt;/code>、用户配置 &lt;code>settings.xml&lt;/code>、全局系统 &lt;code>settings.xml&lt;/code>。如果这些文件同时存在，在应用配置时，会合并它们的内容，如果有重复的配置，优先级高的配置会覆盖优先级低的。&lt;/p>
+&lt;p>现抽空把 &lt;code>settings.xml&lt;/code> 相关配置属性总结一下。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#75715e">&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;UTF-8&amp;#34;?&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;settings&lt;/span> &lt;span style="color:#a6e22e">xmlns=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;http://maven.apache.org/SETTINGS/1.0.0&amp;#34;&lt;/span>
+&lt;span style="color:#a6e22e">xmlns:xsi=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;http://www.w3.org/2001/XMLSchema-instance&amp;#34;&lt;/span>
+&lt;span style="color:#a6e22e">xsi:schemaLocation=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 构建系统本地仓库的路径。其默认值：~/.m2/repository --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;localRepository&amp;gt;${user.home}/.m2/repository&amp;lt;/localRepository&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 是否需要和用户交互以获得输入。默认为 true --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;interactiveMode&amp;gt;true&amp;lt;/interactiveMode&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 是否需要使用 ~/.m2/plugin-registry.xml 文件来管理插件版本。默认为 false --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;usePluginRegistry&amp;gt;false&amp;lt;/usePluginRegistry&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 是否需要在离线模式下运行，默认为 false。当由于网络设置原因或者安全因素，构建服务器不能连接远程仓库的时候，该配置就十分有用 --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;offline&amp;gt;false&amp;lt;/offline&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 当插件的 groupId 没有显式提供时，供搜寻插件 groupId 的列表。使用某个插件，如果没有指定 groupId 的时候，maven 就会使用该列表。
+&lt;/span>&lt;span style="color:#75715e"> 默认情况下该列表包含了 org.apache.maven.plugins 和 org.codehaus.mojo --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;pluginGroups&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- plugin 的 groupId --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;pluginGroup&amp;gt;org.codehaus.mojo&amp;lt;/pluginGroup&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;/pluginGroups&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 配置服务端的一些设置。如安全证书之类的信息应该配置在 settings.xml 文件中，避免配置在 pom.xml 中 --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;servers&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;server&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 这是 server 的 id（注意不是用户登陆的 id），该 id 与 distributionManagement 中 repository 元素的 id 相匹配 --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;id&amp;gt;server001&amp;lt;/id&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 鉴权用户名 --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;username&amp;gt;my_login&amp;lt;/username&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 鉴权密码 --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;password&amp;gt;my_password&amp;lt;/password&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 鉴权时使用的私钥位置。默认是 ${user.home}/.ssh/id_dsa --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;privateKey&amp;gt;${usr.home}/.ssh/id_dsa&amp;lt;/privateKey&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 鉴权时使用的私钥密码 --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;passphrase&amp;gt;some_passphrase&amp;lt;/passphrase&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 文件被创建时的权限。如果在部署的时候会创建一个仓库文件或者目录，这时候就可以使用该权限。其对应了 unix 文件系统的权限，如：664、775 --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;filePermissions&amp;gt;664&amp;lt;/filePermissions&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 目录被创建时的权限 --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;directoryPermissions&amp;gt;775&amp;lt;/directoryPermissions&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;/server&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;/servers&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 下载镜像列表 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;mirrors&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 设置多个镜像只会识别第一个镜像下载 jar 包--&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;mirror&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 该镜像的唯一标识符。id 用来区分不同的 mirror 元素 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;id&amp;gt;&lt;/span>aliyunmaven&lt;span style="color:#f92672">&amp;lt;/id&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 被镜像的服务器的 id。如果我们要设置了一个 maven 中央仓库（http://repo.maven.apache.org/maven2/）的镜像，就需要将该元素设置成 central。
+&lt;/span>&lt;span style="color:#75715e"> 可以使用 * 表示任意远程库。例如：external:* 表示任何不在 localhost 和文件系统中的远程库，r1,r2 表示 r1 库或者 r2 库，*,!r1 表示除了 r1 库之外的任何远程库 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;mirrorOf&amp;gt;&lt;/span>*&lt;span style="color:#f92672">&amp;lt;/mirrorOf&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 镜像名称 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;name&amp;gt;&lt;/span>阿里云公共仓库&lt;span style="color:#f92672">&amp;lt;/name&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 镜像的 URL --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;url&amp;gt;&lt;/span>https://maven.aliyun.com/repository/public&lt;span style="color:#f92672">&amp;lt;/url&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/mirror&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/mirrors&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 用来配置不同的代理 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;proxies&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;proxy&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 代理的唯一定义符，用来区分不同的代理元素 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;id&amp;gt;&lt;/span>myproxy&lt;span style="color:#f92672">&amp;lt;/id&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 是否激活。当我们声明了一组代理，而某个时候只需要激活一个代理的时候 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;active&amp;gt;&lt;/span>false&lt;span style="color:#f92672">&amp;lt;/active&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 代理的协议 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;protocol&amp;gt;&lt;/span>http&lt;span style="color:#f92672">&amp;lt;/protocol&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 代理的主机名 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;host&amp;gt;&lt;/span>proxy.somewhere.com&lt;span style="color:#f92672">&amp;lt;/host&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 代理的端口 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;port&amp;gt;&lt;/span>8080&lt;span style="color:#f92672">&amp;lt;/port&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 代理的用户名，用户名和密码表示代理服务器认证的登录名和密码 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;username&amp;gt;&lt;/span>proxyuser&lt;span style="color:#f92672">&amp;lt;/username&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 代理的密码 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;password&amp;gt;&lt;/span>somepassword&lt;span style="color:#f92672">&amp;lt;/password&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 不该被代理的主机名列表。该列表的分隔符由代理服务器指定；例子中使用了竖线分隔符，逗号分隔也很常见 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;nonProxyHosts&amp;gt;&lt;/span>*.google.com|ibiblio.org&lt;span style="color:#f92672">&amp;lt;/nonProxyHosts&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/proxy&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/proxies&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 根据环境参数来调整构建配置的列表。对应 pom.xml 中 profile 元素（只包含 id、activation、repositories、pluginRepositories 和 properties 元素）
+&lt;/span>&lt;span style="color:#75715e"> 如果一个 settings.xml 中的 profile 被激活，它的值会覆盖任何定义在 pom.xml 中带有相同 id 的 profile --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;profiles&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;profile&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- profile 的唯一标识 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;id&amp;gt;&lt;/span>test&lt;span style="color:#f92672">&amp;lt;/id&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 自动触发 profile 的条件逻辑。也可通过 activeProfile 元素以及使用 -P 标记激活（如：mvn clean install -P test）
+&lt;/span>&lt;span style="color:#75715e"> 在 maven 工程的 pom.xml 所在目录下执行 mvn help:active-profiles 命令可以查看生效的 profile --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;activation&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 默认是否激活 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;activeByDefault&amp;gt;&lt;/span>false&lt;span style="color:#f92672">&amp;lt;/activeByDefault&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 当匹配的 jdk 被检测到，profile 被激活。例如：1.4 激活 JDK1.4、1.4.0_2，而 !1.4 激活所有版本不是以 1.4 开头的 JDK --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;jdk&amp;gt;&lt;/span>1.8&lt;span style="color:#f92672">&amp;lt;/jdk&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 当匹配的操作系统属性被检测到，profile 被激活。os 元素可以定义一些操作系统相关的属性 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;os&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 激活 profile的 操作系统的名字 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;name&amp;gt;&lt;/span>Windows XP&lt;span style="color:#f92672">&amp;lt;/name&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!--激活 profile 的操作系统所属家族。如：windows --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;family&amp;gt;&lt;/span>Windows&lt;span style="color:#f92672">&amp;lt;/family&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!--激活 profile 的操作系统体系结构 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;arch&amp;gt;&lt;/span>x86&lt;span style="color:#f92672">&amp;lt;/arch&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!--激活p rofile 的操作系统版本 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;version&amp;gt;&lt;/span>5.1.2600&lt;span style="color:#f92672">&amp;lt;/version&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/os&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 如果 maven 检测到某一个属性（其值可以在 pom.xml 中通过 ${name} 引用），其拥有对应的 name=值，Profile 就会被激活。如果值字段是空的，
+&lt;/span>&lt;span style="color:#75715e"> 那么存在属性名称字段就会激活 profile，否则按区分大小写方式匹配属性值字段 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;property&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 激活 profile 的属性的名称 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;name&amp;gt;&lt;/span>mavenVersion&lt;span style="color:#f92672">&amp;lt;/name&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 激活 profile 的属性的值 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;value&amp;gt;&lt;/span>2.0.3&lt;span style="color:#f92672">&amp;lt;/value&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/property&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 通过检测该文件的存在或不存在来激活 profile--&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;file&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 如果指定的文件存在，则激活 profile --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;exists&amp;gt;&lt;/span>${basedir}/file2.properties&lt;span style="color:#f92672">&amp;lt;/exists&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 如果指定的文件不存在，则激活 profile --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;missing&amp;gt;&lt;/span>${basedir}/file1.properties&lt;span style="color:#f92672">&amp;lt;/missing&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/file&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/activation&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 对应 profile 的扩展属性列表。maven 属性和 ant 中的属性一样，可以用来存放一些值。这些值可以在 pom.xml 中的任何地方使用标记 ${X} 来使用，这里 X 是指属性的名称。
+&lt;/span>&lt;span style="color:#75715e"> 属性有五种不同的形式，并且都能在 settings.xml 文件中访问：
+&lt;/span>&lt;span style="color:#75715e"> 1. env.X：在一个变量前加上 &amp;#34;env.&amp;#34; 的前缀，会返回一个 shell 环境变量。例如：&amp;#34;env.PATH&amp;#34; 指代了 $path 环境变量（在 Windows 上是 %PATH%）
+&lt;/span>&lt;span style="color:#75715e"> 2. project.x：指代了 pom.xml 中对应的元素值。例如：&amp;lt;project&amp;gt;&amp;lt;version&amp;gt;1.0&amp;lt;/version&amp;gt;&amp;lt;/project&amp;gt; 通过 ${project.version} 获得 version 的值
+&lt;/span>&lt;span style="color:#75715e"> 3. settings.x：指代了 settings.xml 中对应元素的值。例如：&amp;lt;settings&amp;gt;&amp;lt;offline&amp;gt;false&amp;lt;/offline&amp;gt;&amp;lt;/settings&amp;gt; 通过 ${settings.offline} 获得 offline 的值
+&lt;/span>&lt;span style="color:#75715e"> 4. Java System Properties：所有可通过 java.lang.System.getProperties() 访问的属性都能在 pom.xml 中使用该形式访问，例如：${java.home}
+&lt;/span>&lt;span style="color:#75715e"> 5. x：在 &amp;lt;properties/&amp;gt; 元素中，或者外部文件中设置，以 ${someVar} 的形式使用
+&lt;/span>&lt;span style="color:#75715e"> --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;properties&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 如果该 profile 被激活，则可以在 pom.xml 中使用 ${user.install} --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;user.install&amp;gt;&lt;/span>${user.home}/our-project&lt;span style="color:#f92672">&amp;lt;/user.install&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/properties&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 远程仓库列表。它是 maven 用来填充构建系统本地仓库所使用的一组远程仓库 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;repositories&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!--包含需要连接到远程仓库的信息 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;repository&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 远程仓库唯一标识 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;id&amp;gt;&lt;/span>codehausSnapshots&lt;span style="color:#f92672">&amp;lt;/id&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 远程仓库名称 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;name&amp;gt;&lt;/span>Codehaus Snapshots&lt;span style="color:#f92672">&amp;lt;/name&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 如何处理远程仓库里 releases 的下载 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;releases&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 是否开启 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;enabled&amp;gt;&lt;/span>false&lt;span style="color:#f92672">&amp;lt;/enabled&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 该元素指定更新发生的频率。maven 会比较本地 pom.xml 和远程 pom.xml 的时间戳。
+&lt;/span>&lt;span style="color:#75715e"> 这里的选项是：always（一直），daily（默认，每日），interval：X（这里 X 是以分钟为单位的时间间隔），或者 never（从不）。 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;updatePolicy&amp;gt;&lt;/span>always&lt;span style="color:#f92672">&amp;lt;/updatePolicy&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 当 maven 验证构件校验文件失败时该怎么做：ignore（忽略），fail（失败），或者 warn（警告）--&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;checksumPolicy&amp;gt;&lt;/span>warn&lt;span style="color:#f92672">&amp;lt;/checksumPolicy&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/releases&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 如何处理远程仓库里快照版本的下载。有了 releases 和 snapshots 这两组配置，pom.xml 就可以在每个单独的仓库中，为每种类型的构件采取不同的策略。
+&lt;/span>&lt;span style="color:#75715e"> 例如：可能有人会决定只为开发目的开启对快照版本下载的支持 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;snapshots&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;enabled/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;updatePolicy/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;checksumPolicy/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/snapshots&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 远程仓库 URL --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;url&amp;gt;&lt;/span>http://snapshots.maven.codehaus.org/maven2&lt;span style="color:#f92672">&amp;lt;/url&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 用于定位和排序构件的仓库布局类型。可以是 default（默认）或者 legacy（遗留）--&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;layout&amp;gt;&lt;/span>default&lt;span style="color:#f92672">&amp;lt;/layout&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/repository&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/repositories&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 插件的远程仓库列表。和 repositories 类似，repositories 管理 jar 包依赖的仓库，pluginRepositories 则是管理插件的仓库 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;pluginRepositories&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 每个 pluginRepository 元素指定一个 maven 可以用来寻找新插件的远程地址 --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;pluginRepository&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;id/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;name/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;releases&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;enabled/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;updatePolicy/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;checksumPolicy/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/releases&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;snapshots&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;enabled/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;updatePolicy/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;checksumPolicy/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/snapshots&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;url/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;layout/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/pluginRepository&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/pluginRepositories&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/profile&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/profiles&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 手动激活 profiles 的列表 --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;activeProfiles&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- 要激活的 profile id。例如：env-test，则在 pom.xml 或 settings.xml 中对应 id 的 profile 会被激活。如果运行过程中找不到对应的 profile 则忽略配置 --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;activeProfile&amp;gt;env-test&amp;lt;/activeProfile&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#75715e">&amp;lt;!-- &amp;lt;/activeProfiles&amp;gt; --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/settings&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;p>参考资料&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://maven.apache.org/settings.html">maven 官方文档之 settings&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>[转]理解 Java 动态代理</title><link>https://lrtg.ml/2020/01/02/java-dynamic-proxy/</link><pubDate>Thu, 02 Jan 2020 15:28:26 +0800</pubDate><guid>https://lrtg.ml/2020/01/02/java-dynamic-proxy/</guid><description>
+&lt;p>&lt;a href="https://juejin.im/post/5a99048a6fb9a028d5668e62">原文地址&lt;/a>&lt;/p>
+&lt;p>动态代理是 &lt;code>Java&lt;/code> 语言中非常经典的一种设计模式，也是所有设计模式中最难理解的一种。本文将通过一个简单的例子模拟 &lt;code>JDK&lt;/code> 动态代理实现，让你彻底明白动态代理设计模式的本质。&lt;/p>
+&lt;h2 id="什么是代理">什么是代理&lt;/h2>
+&lt;p>从字面意思来看，代理比较好理解，无非就是代为处理的意思。举个例子，你在上大学的时候，总是喜欢逃课。因此，你拜托你的同学帮你答到，而自己却窝在宿舍玩游戏&amp;hellip; 你的这个同学恰好就充当了代理的作用，代替你去上课。&lt;/p>
+&lt;p>是的，你没有看错，代理就是这么简单！&lt;/p>
+&lt;p>理解了代理的意思，你脑海中恐怕还有两个巨大的疑问：&lt;/p>
+&lt;ul>
+&lt;li>怎么实现代理模式&lt;/li>
+&lt;li>代理模式有什么实际用途&lt;/li>
+&lt;/ul>
+&lt;p>要理解这两个问题，看一个简单的例子：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> &lt;span style="color:#a6e22e">Flyable&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Bird&lt;/span> &lt;span style="color:#66d9ef">implements&lt;/span> Flyable &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Bird is flying...&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+Thread&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">sleep&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> Random&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">nextInt&lt;/span>&lt;span style="color:#f92672">(&lt;/span>1000&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>InterruptedException e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+e&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>很简单的一个例子，用一个随机睡眠时间模拟小鸟在空中的飞行时间。接下来问题来了，如果我要知道小鸟在天空中飞行了多久，怎么办？&lt;/p>
+&lt;p>有人说，很简单，在 &lt;code>Bird-&amp;gt;fly()&lt;/code> 方法的开头记录起始时间，在方法结束记录完成时间，两个时间相减就得到了飞行时间。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> start &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Bird is flying...&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+Thread&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">sleep&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> Random&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">nextInt&lt;/span>&lt;span style="color:#f92672">(&lt;/span>1000&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>InterruptedException e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+e&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> end &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Fly time = &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#f92672">(&lt;/span>end &lt;span style="color:#f92672">-&lt;/span> start&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>的确，这个方法没有任何问题，接下来加大问题的难度。如果 &lt;code>Bird&lt;/code> 这个类来自于某个 &lt;code>SDK&lt;/code>（或者说 &lt;code>Jar&lt;/code> 包）提供，你无法改动源码，怎么办？&lt;/p>
+&lt;p>一定会有人说，我可以在调用的地方这样写：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String&lt;span style="color:#f92672">[]&lt;/span> args&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+Bird bird &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> Bird&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> start &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+bird&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> end &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Fly time = &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#f92672">(&lt;/span>end &lt;span style="color:#f92672">-&lt;/span> start&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>这个方案看起来似乎没有问题，但其实你忽略了准备这些方法所需要的时间，执行一个方法，需要开辟栈内存、压栈、出栈等操作，这部分时间也是不可以忽略的。因此，这个解决方案不可行。那么，还有什么方法可以做到呢？&lt;/p>
+&lt;p>使用继承，继承是最直观的解决方案，相信你已经想到了，至少我最开始想到的解决方案就是继承。 为此，我们重新创建一个类 &lt;code>Bird2&lt;/code>，在 &lt;code>Bird2&lt;/code> 中我们只做一件事情，就是调用父类的 &lt;code>fly&lt;/code> 方法，在前后记录时间，并打印时间差：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Bird2&lt;/span> &lt;span style="color:#66d9ef">extends&lt;/span> Bird &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> start &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">super&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> end &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Fly time = &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#f92672">(&lt;/span>end &lt;span style="color:#f92672">-&lt;/span> start&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>这是一种解决方案，还有一种解决方案叫做：&lt;strong>聚合&lt;/strong>，其实也是比较容易想到的。 我们再次创建新类 &lt;code>Bird3&lt;/code>，在 &lt;code>Bird3&lt;/code> 的构造方法中传入 &lt;code>Bird&lt;/code> 实例。同时，让 &lt;code>Bird3&lt;/code> 也实现 &lt;code>Flyable&lt;/code> 接口，并在 &lt;code>fly &lt;/code>方法中调用传入的 &lt;code>Bird&lt;/code> 实例的 &lt;code>fly&lt;/code> 方法：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Bird3&lt;/span> &lt;span style="color:#66d9ef">implements&lt;/span> Flyable &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">private&lt;/span> Bird bird&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#a6e22e">Bird3&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Bird bird&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">this&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">bird&lt;/span> &lt;span style="color:#f92672">=&lt;/span> bird&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> start &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+bird&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> end &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Fly time = &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#f92672">(&lt;/span>end &lt;span style="color:#f92672">-&lt;/span> start&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>为了记录 &lt;code>Bird-&amp;gt;fly ()&lt;/code> 方法的执行时间，我们在前后添加了记录时间的代码。同样地，通过这种方法我们也可以获得小鸟的飞行时间。那么，这两种方法孰优孰劣呢？咋一看，不好评判！&lt;/p>
+&lt;p>继续深入思考，用问题推导来解答这个问题：&lt;/p>
+&lt;p>&lt;strong>问题一&lt;/strong>：如果我还需要在 &lt;code>fly&lt;/code> 方法前后打印日志，记录飞行开始和飞行结束，怎么办？ 有人说，很简单！继承 &lt;code>Bird2&lt;/code> 并在在前后添加打印语句即可。那么，问题来了，请看问题二。&lt;/p>
+&lt;p>&lt;strong>问题二&lt;/strong>：如果我需要调换执行顺序，先打印日志，再获取飞行时间，怎么办？ 有人说，再新建一个类 &lt;code>Bird4&lt;/code> 继承 &lt;code>Bird&lt;/code>，打印日志。再新建一个类 &lt;code>Bird5&lt;/code> 继承 &lt;code>Bird4&lt;/code>，获取方法执行时间。&lt;/p>
+&lt;p>问题显而易见：使用继承将导致类无限制扩展，同时灵活性也无法获得保障。那么，使用聚合是否可以避免这个问题呢？ 答案是：可以！但我们的类需要稍微改造一下。修改 &lt;code>Bird3&lt;/code> 类，将聚合对象 &lt;code>Bird&lt;/code> 类型修改为 &lt;code>Flyable&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Bird3&lt;/span> &lt;span style="color:#66d9ef">implements&lt;/span> Flyable &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">private&lt;/span> Flyable flyable&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#a6e22e">Bird3&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Flyable flyable&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">this&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">flyable&lt;/span> &lt;span style="color:#f92672">=&lt;/span> flyable&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> start &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+flyable&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> end &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Fly time = &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#f92672">(&lt;/span>end &lt;span style="color:#f92672">-&lt;/span> start&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>为了让你看的更清楚，我将 &lt;code>Bird3&lt;/code> 更名为 &lt;code>BirdTimeProxy&lt;/code>，即用于获取方法执行时间的代理的意思。同时我们新建 &lt;code>BirdLogProxy&lt;/code> 代理类用于打印日志：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">BirdLogProxy&lt;/span> &lt;span style="color:#66d9ef">implements&lt;/span> Flyable &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">private&lt;/span> Flyable flyable&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#a6e22e">BirdLogProxy&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Flyable flyable&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">this&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">flyable&lt;/span> &lt;span style="color:#f92672">=&lt;/span> flyable&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Bird fly start...&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+flyable&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Bird fly end...&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>接下来神奇的事情发生了，如果我们需要先记录日志，再获取飞行时间，可以在调用的地方这么做：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String&lt;span style="color:#f92672">[]&lt;/span> args&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+Bird bird &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> Bird&lt;span style="color:#f92672">();&lt;/span>
+BirdLogProxy p1 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> BirdLogProxy&lt;span style="color:#f92672">(&lt;/span>bird&lt;span style="color:#f92672">);&lt;/span>
+BirdTimeProxy p2 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> BirdTimeProxy&lt;span style="color:#f92672">(&lt;/span>p1&lt;span style="color:#f92672">);&lt;/span>
+p2&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>反过来，可以这么做：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String&lt;span style="color:#f92672">[]&lt;/span> args&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+Bird bird &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> Bird&lt;span style="color:#f92672">();&lt;/span>
+BirdTimeProxy p2 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> BirdTimeProxy&lt;span style="color:#f92672">(&lt;/span>bird&lt;span style="color:#f92672">);&lt;/span>
+BirdLogProxy p1 &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> BirdLogProxy&lt;span style="color:#f92672">(&lt;/span>p2&lt;span style="color:#f92672">);&lt;/span>
+p1&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>看到这里，有同学可能会有疑问了。虽然现象看起来，聚合可以灵活调换执行顺序。可是，为什么聚合可以做到，而继承不行呢。我们用一张图来解释一下：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/161e5ba292275e28.png" alt="">&lt;/p>
+&lt;h2 id="静态代理">静态代理&lt;/h2>
+&lt;p>接下来，观察上面的类 &lt;code>BirdTimeProxy&lt;/code>，在它的 &lt;code>fly&lt;/code> 方法中我们直接调用了 &lt;code>flyable-&amp;gt;fly ()&lt;/code> 方法。换而言之，&lt;code>BirdTimeProxy&lt;/code> 其实代理了传入的 &lt;code>Flyable&lt;/code> 对象，这就是典型的静态代理实现。&lt;/p>
+&lt;p>从表面上看，静态代理已经完美解决了我们的问题。可是，试想一下，如果我们需要计算 &lt;code>SDK&lt;/code> 中 100 个方法的运行时间，同样的代码至少需要重复 100 次，并且创建至少 100 个代理类。往小了说，如果 &lt;code>Bird&lt;/code> 类有多个方法，我们需要知道其他方法的运行时间，同样的代码也至少需要重复多次。因此，静态代理至少有以下两个局限性问题：&lt;/p>
+&lt;ul>
+&lt;li>如果同时代理多个类，依然会导致类无限制扩展&lt;/li>
+&lt;li>如果类中有多个方法，同样的逻辑需要反复实现&lt;/li>
+&lt;/ul>
+&lt;p>那么，我们是否可以使用同一个代理类来代理任意对象呢？我们以获取方法运行时间为例，是否可以使用同一个类（例如：&lt;code>TimeProxy&lt;/code>）来计算任意对象的任一方法的执行时间呢？甚至再大胆一点，代理的逻辑也可以自己指定。比如，获取方法的执行时间，打印日志，这类逻辑都可以自己指定。这就是本文重点探讨的问题，也是最难理解的部分：&lt;strong>动态代理&lt;/strong>。&lt;/p>
+&lt;h2 id="动态代理">动态代理&lt;/h2>
+&lt;p>继续回到上面这个问题：是否可以使用同一个类（例如：&lt;code>TimeProxy&lt;/code>）来计算任意对象的任一方法的执行时间呢。&lt;/p>
+&lt;p>这个部分需要一定的抽象思维，我想，你脑海中的第一个解决方案应该是使用反射。反射是用于获取已创建实例的方法或者属性，并对其进行调用或者赋值。很明显，在这里，反射解决不了问题。但是，再大胆一点，如果我们可以动态生成 &lt;code>TimeProxy&lt;/code> 这个类，并且动态编译。然后，再通过反射创建对象并加载到内存中，不就实现了对任意对象进行代理了吗？为了防止你依然一头雾水，我们用一张图来描述接下来要做什么：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/161e5ba2923a81ba.png" alt="">&lt;/p>
+&lt;p>动态生成 &lt;code>Java&lt;/code> 源文件并且排版是一个非常繁琐的工作，为了简化操作，我们使用 &lt;a href="https://github.com/square/javapoet">&lt;code>JavaPoet&lt;/code>&lt;/a> 这个第三方库帮我们生成 &lt;code>TimeProxy&lt;/code> 的源码。希望 &lt;code>JavaPoet&lt;/code> 不要成为你的负担，不理解 &lt;code>JavaPoet&lt;/code> 没有关系，你只要把它当成一个 &lt;code>Java&lt;/code> 源码生成工具使用即可。&lt;/p>
+&lt;p>**PS：**你记住，任何工具库的使用都不会太难，它是为了简化某些操作而出现的，目标是简化而不是繁琐。因此，只要你适应它的规则就轻车熟路了。&lt;/p>
+&lt;h3 id="第一步生成-timeproxy-源码">第一步：生成 TimeProxy 源码&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Proxy&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> Object &lt;span style="color:#a6e22e">newProxyInstance&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> IOException &lt;span style="color:#f92672">{&lt;/span>
+TypeSpec&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">Builder&lt;/span> typeSpecBuilder &lt;span style="color:#f92672">=&lt;/span> TypeSpec&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">classBuilder&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;TimeProxy&amp;#34;&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">addSuperinterface&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Flyable&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+FieldSpec fieldSpec &lt;span style="color:#f92672">=&lt;/span> FieldSpec&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">builder&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Flyable&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#e6db74">&amp;#34;flyable&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> Modifier&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">PRIVATE&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">build&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+typeSpecBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addField&lt;/span>&lt;span style="color:#f92672">(&lt;/span>fieldSpec&lt;span style="color:#f92672">);&lt;/span>
+MethodSpec constructorMethodSpec &lt;span style="color:#f92672">=&lt;/span> MethodSpec&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">constructorBuilder&lt;/span>&lt;span style="color:#f92672">()&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addModifiers&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Modifier&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">PUBLIC&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addParameter&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Flyable&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#e6db74">&amp;#34;flyable&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addStatement&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;this.flyable = flyable&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">build&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+typeSpecBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>constructorMethodSpec&lt;span style="color:#f92672">);&lt;/span>
+Method&lt;span style="color:#f92672">[]&lt;/span> methods &lt;span style="color:#f92672">=&lt;/span> Flyable&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getDeclaredMethods&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>Method method &lt;span style="color:#f92672">:&lt;/span> methods&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+MethodSpec methodSpec &lt;span style="color:#f92672">=&lt;/span> MethodSpec&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">methodBuilder&lt;/span>&lt;span style="color:#f92672">(&lt;/span>method&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getName&lt;/span>&lt;span style="color:#f92672">())&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addModifiers&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Modifier&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">PUBLIC&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addAnnotation&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Override&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">returns&lt;/span>&lt;span style="color:#f92672">(&lt;/span>method&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getReturnType&lt;/span>&lt;span style="color:#f92672">())&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addStatement&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;long start = $T.currentTimeMillis()&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addCode&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addStatement&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;this.flyable.&amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> method&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getName&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#e6db74">&amp;#34;()&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addCode&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addStatement&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;long end = $T.currentTimeMillis()&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addStatement&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;$T.out.println(\&amp;#34;Fly Time =\&amp;#34; + (end - start))&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">build&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+typeSpecBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>methodSpec&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+JavaFile javaFile &lt;span style="color:#f92672">=&lt;/span> JavaFile&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">builder&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;com.youngfeng.proxy&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> typeSpecBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">build&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">build&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#75715e">// 为了看的更清楚，我将源码文件生成到桌面
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> javaFile&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">writeTo&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> File&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/Users/ouyangfeng/Desktop/&amp;#34;&lt;/span>&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>在 &lt;code>main&lt;/code> 方法中调用 &lt;code>Proxy.newProxyInstance ()&lt;/code>，你将看到桌面已经生成了 &lt;code>TimeProxy.java&lt;/code> 文件，生成的内容如下：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">package&lt;/span> com.youngfeng.proxy&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> java.lang.Override&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> java.lang.System&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TimeProxy&lt;/span> &lt;span style="color:#66d9ef">implements&lt;/span> Flyable &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">private&lt;/span> Flyable flyable&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#a6e22e">TimeProxy&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Flyable flyable&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">this&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">flyable&lt;/span> &lt;span style="color:#f92672">=&lt;/span> flyable&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> start &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">this&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">flyable&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> end &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Fly Time =&amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#f92672">(&lt;/span>end &lt;span style="color:#f92672">-&lt;/span> start&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="第二步编译-timeproxy-源码">第二步：编译 TimeProxy 源码&lt;/h3>
+&lt;p>编译 &lt;code>TimeProxy&lt;/code> 源码我们直接使用 &lt;code>JDK&lt;/code> 提供的编译工具即可，为了使你看起来更清晰，我使用一个新的辅助类来完成编译操作：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">JavaCompiler&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">compile&lt;/span>&lt;span style="color:#f92672">(&lt;/span>File javaFile&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> IOException &lt;span style="color:#f92672">{&lt;/span>
+javax&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">tools&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">JavaCompiler&lt;/span> javaCompiler &lt;span style="color:#f92672">=&lt;/span> ToolProvider&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getSystemJavaCompiler&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+StandardJavaFileManager fileManager &lt;span style="color:#f92672">=&lt;/span> javaCompiler&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getStandardFileManager&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Iterable iterable &lt;span style="color:#f92672">=&lt;/span> fileManager&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getJavaFileObjects&lt;/span>&lt;span style="color:#f92672">(&lt;/span>javaFile&lt;span style="color:#f92672">);&lt;/span>
+javax&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">tools&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">JavaCompiler&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">CompilationTask&lt;/span> task &lt;span style="color:#f92672">=&lt;/span> javaCompiler&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getTask&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">,&lt;/span> fileManager&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">,&lt;/span> iterable&lt;span style="color:#f92672">);&lt;/span>
+task&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">call&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+fileManager&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">close&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>在 &lt;code>Proxy-&amp;gt;newProxyInstance ()&lt;/code> 方法中调用该方法，编译顺利完成：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#75715e">// 为了看的更清楚，我将源码文件生成到桌面
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>String sourcePath &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/Users/ouyangfeng/Desktop/&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+javaFile&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">writeTo&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> File&lt;span style="color:#f92672">(&lt;/span>sourcePath&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#75715e">// 编译
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>JavaCompiler&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">compile&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> File&lt;span style="color:#f92672">(&lt;/span>sourcePath &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/com/youngfeng/proxy/TimeProxy.java&amp;#34;&lt;/span>&lt;span style="color:#f92672">));&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/161e5ba2923ae39e.png" alt="">&lt;/p>
+&lt;h3 id="第三步加载到内存中并创建对象">第三步：加载到内存中并创建对象&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">URL&lt;span style="color:#f92672">[]&lt;/span> urls &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> URL&lt;span style="color:#f92672">[]&lt;/span> &lt;span style="color:#f92672">{&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> URL&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;file:/&amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> sourcePath&lt;span style="color:#f92672">)};&lt;/span>
+URLClassLoader classLoader &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> URLClassLoader&lt;span style="color:#f92672">(&lt;/span>urls&lt;span style="color:#f92672">);&lt;/span>
+Class clazz &lt;span style="color:#f92672">=&lt;/span> classLoader&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">loadClass&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;com.youngfeng.proxy.TimeProxy&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Constructor constructor &lt;span style="color:#f92672">=&lt;/span> clazz&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getConstructor&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Flyable&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Flyable flyable &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">(&lt;/span>Flyable&lt;span style="color:#f92672">)&lt;/span> constructor&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">newInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> Bird&lt;span style="color:#f92672">());&lt;/span>
+flyable&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>通过以上三个步骤，我们至少解决了下面两个问题：&lt;/p>
+&lt;ul>
+&lt;li>不再需要手动创建 &lt;code>TimeProxy&lt;/code>&lt;/li>
+&lt;li>可以代理任意实现了 &lt;code>Flyable&lt;/code> 接口的类对象，并获取接口方法的执行时间&lt;/li>
+&lt;/ul>
+&lt;p>可是，说好的任意对象呢？&lt;/p>
+&lt;h3 id="第四步增加-invocationhandler-接口">第四步：增加 InvocationHandler 接口&lt;/h3>
+&lt;p>查看 &lt;code>Proxy-&amp;gt;newProxyInstance ()&lt;/code> 的源码，代理类继承的接口我们是写死的，为了增加灵活性，我们将接口类型作为参数传入：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/161e5ba293f2e59e.png" alt="">&lt;/p>
+&lt;p>接口的灵活性问题解决了，&lt;code>TimeProxy&lt;/code> 的局限性依然存在，它只能用于获取方法的执行时间，而如果要在方法执行前后打印日志则需要重新创建一个代理类，显然这是不妥的！&lt;/p>
+&lt;p>为了增加控制的灵活性，我们考虑针将代理的处理逻辑也抽离出来（这里的处理就是打印方法的执行时间）。新增 &lt;code>InvocationHandler&lt;/code> 接口，用于处理自定义逻辑：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> &lt;span style="color:#a6e22e">InvocationHandler&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">invoke&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Object proxy&lt;span style="color:#f92672">,&lt;/span> Method method&lt;span style="color:#f92672">,&lt;/span> Object&lt;span style="color:#f92672">[]&lt;/span> args&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>想象一下，如果客户程序员需要对代理类进行自定义的处理，只要实现该接口，并在 &lt;code>invoke&lt;/code> 方法中进行相应的处理即可。这里我们在接口中设置了三个参数（其实也是为了和 JDK 源码保持一致）：&lt;/p>
+&lt;ul>
+&lt;li>**proxy：**这个参数指定动态生成的代理类，这里是 &lt;code>TimeProxy&lt;/code>&lt;/li>
+&lt;li>**method：**这个参数表示传入接口中的所有 &lt;code>Method&lt;/code> 对象&lt;/li>
+&lt;li>**args：**这个参数对应当前 &lt;code>method&lt;/code> 方法中的参数&lt;/li>
+&lt;/ul>
+&lt;p>引入了 &lt;code>InvocationHandler&lt;/code> 接口之后，我们的调用顺序应该变成了这样：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">MyInvocationHandler handler &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> MyInvocationHandler&lt;span style="color:#f92672">();&lt;/span>
+Flyable proxy &lt;span style="color:#f92672">=&lt;/span> Proxy&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">newProxyInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Flyable&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">,&lt;/span> handler&lt;span style="color:#f92672">);&lt;/span>
+proxy&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>方法执行流：&lt;code>proxy.fly() =&amp;gt; handler.invoke()&lt;/code>&lt;/p>
+&lt;p>为此，我们需要在 &lt;code>Proxy.newProxyInstance ()&lt;/code> 方法中做如下改动：&lt;/p>
+&lt;ul>
+&lt;li>在 &lt;code>newProxyInstance&lt;/code> 方法中传入 &lt;code>InvocationHandler&lt;/code>&lt;/li>
+&lt;li>在生成的代理类中增加成员变量 &lt;code>handler&lt;/code>&lt;/li>
+&lt;li>在生成的代理类方法中，调用 &lt;code>invoke&lt;/code> 方法&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> Object &lt;span style="color:#a6e22e">newProxyInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Class inf&lt;span style="color:#f92672">,&lt;/span> InvocationHandler handler&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception &lt;span style="color:#f92672">{&lt;/span>
+TypeSpec&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">Builder&lt;/span> typeSpecBuilder &lt;span style="color:#f92672">=&lt;/span> TypeSpec&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">classBuilder&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;TimeProxy&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addModifiers&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Modifier&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">PUBLIC&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addSuperinterface&lt;/span>&lt;span style="color:#f92672">(&lt;/span>inf&lt;span style="color:#f92672">);&lt;/span>
+FieldSpec fieldSpec &lt;span style="color:#f92672">=&lt;/span> FieldSpec&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">builder&lt;/span>&lt;span style="color:#f92672">(&lt;/span>InvocationHandler&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#e6db74">&amp;#34;handler&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> Modifier&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">PRIVATE&lt;/span>&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">build&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+typeSpecBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addField&lt;/span>&lt;span style="color:#f92672">(&lt;/span>fieldSpec&lt;span style="color:#f92672">);&lt;/span>
+MethodSpec constructorMethodSpec &lt;span style="color:#f92672">=&lt;/span> MethodSpec&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">constructorBuilder&lt;/span>&lt;span style="color:#f92672">()&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addModifiers&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Modifier&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">PUBLIC&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addParameter&lt;/span>&lt;span style="color:#f92672">(&lt;/span>InvocationHandler&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#e6db74">&amp;#34;handler&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addStatement&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;this.handler = handler&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">build&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+typeSpecBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>constructorMethodSpec&lt;span style="color:#f92672">);&lt;/span>
+Method&lt;span style="color:#f92672">[]&lt;/span> methods &lt;span style="color:#f92672">=&lt;/span> inf&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getDeclaredMethods&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>Method method &lt;span style="color:#f92672">:&lt;/span> methods&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+MethodSpec methodSpec &lt;span style="color:#f92672">=&lt;/span> MethodSpec&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">methodBuilder&lt;/span>&lt;span style="color:#f92672">(&lt;/span>method&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getName&lt;/span>&lt;span style="color:#f92672">())&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addModifiers&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Modifier&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">PUBLIC&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addAnnotation&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Override&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">returns&lt;/span>&lt;span style="color:#f92672">(&lt;/span>method&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getReturnType&lt;/span>&lt;span style="color:#f92672">())&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addCode&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;try {\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addStatement&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;\t$T method = &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> inf&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getName&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#e6db74">&amp;#34;.class.getMethod(\&amp;#34;&amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> method&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getName&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#e6db74">&amp;#34;\&amp;#34;)&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> Method&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#75715e">// 为了简单起见，这里参数直接写死为空
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addStatement&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;\tthis.handler.invoke(this, method, null)&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addCode&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;} catch(Exception e) {\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addCode&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;\te.printStackTrace();\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addCode&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;}\n&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">build&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+typeSpecBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">addMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>methodSpec&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+JavaFile javaFile &lt;span style="color:#f92672">=&lt;/span> JavaFile&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">builder&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;com.youngfeng.proxy&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> typeSpecBuilder&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">build&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">build&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#75715e">// 为了看的更清楚，我将源码文件生成到桌面
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> String sourcePath &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/Users/ouyangfeng/Desktop/&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+javaFile&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">writeTo&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> File&lt;span style="color:#f92672">(&lt;/span>sourcePath&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#75715e">// 编译
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> JavaCompiler&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">compile&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> File&lt;span style="color:#f92672">(&lt;/span>sourcePath &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/com/youngfeng/proxy/TimeProxy.java&amp;#34;&lt;/span>&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#75715e">// 使用反射load到内存
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> URL&lt;span style="color:#f92672">[]&lt;/span> urls &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> URL&lt;span style="color:#f92672">[]&lt;/span> &lt;span style="color:#f92672">{&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> URL&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;file:&amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> sourcePath&lt;span style="color:#f92672">)};&lt;/span>
+URLClassLoader classLoader &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> URLClassLoader&lt;span style="color:#f92672">(&lt;/span>urls&lt;span style="color:#f92672">);&lt;/span>
+Class clazz &lt;span style="color:#f92672">=&lt;/span> classLoader&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">loadClass&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;com.youngfeng.proxy.TimeProxy&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Constructor constructor &lt;span style="color:#f92672">=&lt;/span> clazz&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getConstructor&lt;/span>&lt;span style="color:#f92672">(&lt;/span>InvocationHandler&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+Object obj &lt;span style="color:#f92672">=&lt;/span> constructor&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">newInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>handler&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> obj&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>上面的代码你可能看起来比较吃力，我们直接调用该方法，查看最后生成的源码。在 &lt;code>main&lt;/code> 方法中测试 &lt;code>newProxyInstance&lt;/code> 查看生成的 &lt;code>TimeProxy&lt;/code> 源码：&lt;/p>
+&lt;p>&lt;strong>测试代码&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">Proxy&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">newProxyInstance&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Flyable&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> MyInvocationHandler&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">new&lt;/span> Bird&lt;span style="color:#f92672">()));&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>生成的 TimeProxy.java 源码&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">package&lt;/span> com.youngfeng.proxy&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> java.lang.Override&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> java.lang.reflect.Method&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TimeProxy&lt;/span> &lt;span style="color:#66d9ef">implements&lt;/span> Flyable &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">private&lt;/span> InvocationHandler handler&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#a6e22e">TimeProxy&lt;/span>&lt;span style="color:#f92672">(&lt;/span>InvocationHandler handler&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">this&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">handler&lt;/span> &lt;span style="color:#f92672">=&lt;/span> handler&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">fly&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+Method method &lt;span style="color:#f92672">=&lt;/span> com&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">youngfeng&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">proxy&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">Flyable&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getMethod&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;fly&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">this&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">handler&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">invoke&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">this&lt;/span>&lt;span style="color:#f92672">,&lt;/span> method&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Exception e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+e&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>MyInvocationHandler.java&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">MyInvocationHandler&lt;/span> &lt;span style="color:#66d9ef">implements&lt;/span> InvocationHandler &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">private&lt;/span> Bird bird&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#a6e22e">MyInvocationHandler&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Bird bird&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">this&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">bird&lt;/span> &lt;span style="color:#f92672">=&lt;/span> bird&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">invoke&lt;/span>&lt;span style="color:#f92672">(&lt;/span>Object proxy&lt;span style="color:#f92672">,&lt;/span> Method method&lt;span style="color:#f92672">,&lt;/span> Object&lt;span style="color:#f92672">[]&lt;/span> args&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> start &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+method&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">invoke&lt;/span>&lt;span style="color:#f92672">(&lt;/span>bird&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> Object&lt;span style="color:#f92672">[]&lt;/span> &lt;span style="color:#f92672">{});&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>IllegalAccessException e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+e&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>InvocationTargetException e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+e&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">long&lt;/span> end &lt;span style="color:#f92672">=&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">currentTimeMillis&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Fly time = &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#f92672">(&lt;/span>end &lt;span style="color:#f92672">-&lt;/span> start&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>至此，整个方法栈的调用栈变成了这样：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/161e5ba294367cdd.png" alt="">&lt;/p>
+&lt;p>看到这里，估计很多同学已经晕了，在静态代理部分，我们在代理类中传入了被代理对象。可是，使用 &lt;code>newProxyInstance&lt;/code> 生成动态代理对象的时候，我们居然不再需要传入被代理对象了。我们传入了的实际对象是 &lt;code>InvocationHandler&lt;/code> 实现类的实例，这看起来有点像生成了 &lt;code>InvocationHandler&lt;/code> 的代理对象，在动态生成的代理类的任意方法中都会间接调用 &lt;code>InvocationHandler-&amp;gt;invoke (proxy, method, args)&lt;/code> 方法。&lt;/p>
+&lt;p>其实的确是这样。&lt;code>TimeProxy&lt;/code> 真正代理的对象就是 &lt;code>InvocationHandler&lt;/code>，不过这里设计的巧妙之处在于，&lt;code>InvocationHandler&lt;/code> 是一个接口，真正的实现由用户指定。另外，在每一个方法执行的时候，&lt;code>invoke&lt;/code> 方法都会被调用 ，这个时候如果你需要对某个方法进行自定义逻辑处理，可以根据 &lt;code>method&lt;/code> 的特征信息进行判断分别处理。&lt;/p>
+&lt;h2 id="如何使用">如何使用&lt;/h2>
+&lt;p>上面这段解释是告诉你在执行 &lt;code>Proxy-&amp;gt;newProxyInstance&lt;/code> 方法的时候真正发生的事情，而在实际使用过程中你完全可以忘掉上面的解释。按照设计者的初衷，我们做如下简单归纳：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>Proxy-&amp;gt;newProxyInstance (infs, handler)&lt;/code> 用于生成代理对象&lt;/li>
+&lt;li>&lt;code>InvocationHandler&lt;/code>这个接口主要用于自定义代理逻辑处理&lt;/li>
+&lt;li>为了完成对被代理对象的方法拦截，我们需要在 &lt;code>InvocationHandler&lt;/code> 对象中传入被代理对象实例。&lt;/li>
+&lt;/ul>
+&lt;p>查看上面的代码，你可以看到我将 &lt;code>Bird&lt;/code> 实例已经传入到了 &lt;code>MyInvocationHandler&lt;/code> 中，原因就是第三点。&lt;/p>
+&lt;p>这样设计有什么好处呢？有人说，我们大费周章，饶了一大圈，最终变成了这个样子，到底图什么呢？&lt;/p>
+&lt;p>想象一下，到此为止，如果我们还需要对其它任意对象进行代理，是否还需要改动 &lt;code>newProxyInstance&lt;/code> 方法的源码，答案是：完全不需要！&lt;/p>
+&lt;p>只要你在 &lt;code>newProxyInstance&lt;/code> 方法中指定代理需要实现的接口，指定用于自定义处理的 &lt;code>InvocationHandler&lt;/code> 对象，整个代理的逻辑处理都在你自定义的 &lt;code>InvocationHandler&lt;/code> 实现类中进行处理。至此，而我们终于可以从不断地写代理类用于实现自定义逻辑的重复工作中解放出来了，从此需要做什么，交给 &lt;code>InvocationHandler&lt;/code>。&lt;/p>
+&lt;p>事实上，我们之前给自己定下的目标 “使用同一个类来计算任意对象的任一方法的执行时间” 已经实现了。严格来说，是我们超额完成了任务，&lt;code>TimeProxy&lt;/code> 不仅可以计算方法执行的时间，也可以打印方法执行日志，这完全取决于你的 &lt;code>InvocationHandler&lt;/code> 接口实现。因此，这里取名为 &lt;code>TimeProxy&lt;/code> 其实已经不合适了。我们可以修改为和 &lt;code>JDK&lt;/code> 命名一致，即 &lt;code>$Proxy0&lt;/code>，感兴趣的同学请自行实践。&lt;/p>
+&lt;h2 id="jdk-实现揭秘">JDK 实现揭秘&lt;/h2>
+&lt;p>通过上面的这些步骤，我们完成了一个简易的仿 &lt;code>JDK&lt;/code> 实现的动态代理逻辑。接下来，我们一起来看一看 &lt;code>JDK&lt;/code> 实现的动态代理和我们到底有什么不同。&lt;/p>
+&lt;p>&lt;strong>Proxy.java&lt;/strong>&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/161e5ba294623577.png" alt="">&lt;/p>
+&lt;p>&lt;strong>InvocationHandler&lt;/strong>&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/161e5ba2d87bf2f1.png" alt="">&lt;/p>
+&lt;p>可以看到，官方版本 &lt;code>Proxy&lt;/code> 类提供的方法多一些，而我们主要使用的接口 &lt;code>newProxyInstance&lt;/code> 参数也和我们设计的不太一样。这里给大家简单解释一下，每个参数的意义：&lt;/p>
+&lt;ul>
+&lt;li>**Classloader：**类加载器，你可以使用自定义的类加载器，我们的实现版本为了简化，直接在代码中写死了 &lt;code>Classloader&lt;/code>。&lt;/li>
+&lt;li>**Class&amp;lt;?&amp;gt;[]：**第二个参数也和我们的实现版本不一致，这个其实很容易理解，我们应该允许我们自己实现的代理类同时实现多个接口。前面设计只传入一个接口，只是为了简化实现，让你专注核心逻辑实现而已。&lt;/li>
+&lt;/ul>
+&lt;p>最后一个参数就不用说了，和我们实现的版本完全是一样的。&lt;/p>
+&lt;p>仔细观察官方版本的 &lt;code>InvocationHandler&lt;/code>，它和我们自己的实现的版本也有一个细微的差别：官方版本 &lt;code>invoke&lt;/code> 方法有返回值，而我们的版本中是没有返回值的。那么，返回值到底有什么作用呢？直接来看官方文档：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/161e5ba2d92efdbe.png" alt="">&lt;/p>
+&lt;p>&lt;em>核心思想：这里的返回值类型必须和传入接口的返回值类型一致，或者与其封装对象的类型一致。&lt;/em>&lt;/p>
+&lt;p>遗憾的是，这里并没有说明返回值的用途，其实这里稍微发挥一下想象力就知道了。在我们的版本实现中，&lt;code>Flyable&lt;/code> 接口的所有方法都是没有返回值的，问题是，如果有返回值呢？是的，你没有猜错，这里的 &lt;code>invoke&lt;/code> 方法对应的就是传入接口中方法的返回值。&lt;/p>
+&lt;h2 id="答疑解惑">答疑解惑&lt;/h2>
+&lt;h3 id="invoke-方法的第一个参数-proxy-到底有什么作用">invoke 方法的第一个参数 proxy 到底有什么作用？&lt;/h3>
+&lt;p>这个问题其实也好理解，如果你的接口中有方法需要返回自身，如果在 &lt;code>invoke&lt;/code> 中没有传入这个参数，将导致实例无法正常返回。在这种场景中，&lt;code>proxy&lt;/code> 的用途就表现出来了。简单来说，这其实就是最近非常火的链式编程的一种应用实现。&lt;/p>
+&lt;h3 id="动态代理到底有什么用">动态代理到底有什么用？&lt;/h3>
+&lt;p>学习任何一门技术，一定要问一问自己，这到底有什么用。其实，在这篇文章的讲解过程中，我们已经说出了它的主要用途。你发现没，使用动态代理我们居然可以在不改变源码的情况下，直接在方法中插入自定义逻辑。这有点不太符合我们的一条线走到底的编程逻辑，这种编程模型有一个专业名称叫 &lt;code>AOP&lt;/code>。所谓的 &lt;code>AOP&lt;/code>，就像刀一样，抓住时机，趁机插入。&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/161e5ba2dfeb24bb.png" alt="">&lt;/p>
+&lt;p>基于这样一种动态特性，我们可以用它做很多事情，例如：&lt;/p>
+&lt;ul>
+&lt;li>事务提交或回退（&lt;code>Web&lt;/code> 开发中很常见）&lt;/li>
+&lt;li>权限管理&lt;/li>
+&lt;li>自定义缓存逻辑处理&lt;/li>
+&lt;li>&lt;code>SDK Bug&lt;/code> 修复 &amp;hellip;&lt;/li>
+&lt;/ul>
+&lt;h2 id="总结">总结&lt;/h2>
+&lt;p>到此为止，关于动态代理的所有讲解已经结束了，原谅我使用了一个诱导性的标题 “骗” 你进来阅读这篇文章。如果你不是一个久经沙场的 “老司机”，10 分钟完全看懂动态代理设计模式还是有一定难度的。但即使没有看懂也没关系，如果你在第一次阅读完这篇文章后依然一头雾水，就不妨再仔细阅读一次。在阅读的过程中，一定要跟着文章思路去敲代码。反反复复，一定会看懂的。我在刚刚学习动态代理设计模式的时候就反复看了不下 5 遍，并且亲自敲代码实践了多次。&lt;/p>
+&lt;p>为了让你少走弯路，我认为看懂这篇文章，你至少需要学习以下知识点：&lt;/p>
+&lt;ul>
+&lt;li>至少已经理解了面向对象语言的多态特性&lt;/li>
+&lt;li>了解简单的反射用法&lt;/li>
+&lt;li>会简单使用 &lt;code>JavaPoet&lt;/code> 生成 &lt;code>Java&lt;/code> 源码&lt;/li>
+&lt;/ul></description></item></channel></rss>

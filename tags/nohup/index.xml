@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>nohup on lrtg</title><link>https://lrtg.ml/tags/nohup/</link><description>Recent content in nohup on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Wed, 18 Jan 2017 16:13:21 +0000</lastBuildDate><atom:link href="https://lrtg.ml/tags/nohup/index.xml" rel="self" type="application/rss+xml"/><item><title>Linux 的 nohup 命令的用法</title><link>https://lrtg.ml/2017/01/18/Linux-%E7%9A%84-nohup-%E5%91%BD%E4%BB%A4%E7%9A%84%E7%94%A8%E6%B3%95/</link><pubDate>Wed, 18 Jan 2017 16:13:21 +0000</pubDate><guid>https://lrtg.ml/2017/01/18/Linux-%E7%9A%84-nohup-%E5%91%BD%E4%BB%A4%E7%9A%84%E7%94%A8%E6%B3%95/</guid><description>
+&lt;blockquote>
+&lt;p>如果你正在运行一个进程，而且你觉得在退出帐户时该进程还不会结束，那么可以使用 &lt;code>nohup&lt;/code> 命令。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="命令简介">命令简介&lt;/h1>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ nohup Command &lt;span style="color:#f92672">[&lt;/span> Arg … &lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &amp;amp; &lt;span style="color:#f92672">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>该命令可以在你退出帐户/关闭终端之后继续运行相应的进程。&lt;code>nohup&lt;/code> 就是不挂起的意思（&lt;code>no hang up&lt;/code>）。&lt;/p>
+&lt;p>&lt;code>nohup&lt;/code> 运行由 &lt;code>Command&lt;/code> 和相关的 &lt;code>Arg&lt;/code> 参数指定的命令，忽略所有挂断（&lt;code>SIGHUP&lt;/code>）信号。要运行后台中的 &lt;code>nohup&lt;/code> 命令，添加 &lt;code>&amp;amp;&lt;/code> （ 表示 &lt;code>and&lt;/code> 的符号）到命令的尾部。&lt;/p>
+&lt;p>如果使用 &lt;code>nohup&lt;/code> 命令提交作业，那么在缺省情况下该作业的所有输出都被重定向到一个名为 &lt;code>nohup.out&lt;/code> 的文件中，除非另外指定了输出文件。&lt;/p>
+&lt;h1 id="使用举例">使用举例&lt;/h1>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ nohup java -jar adapter-minisite.jar /tomcat-1 /tomcat-2 &amp;gt; logs.txt 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &amp;amp;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>在上面的例子中，运行命令 &lt;code>java -jar adapter-minisite.jar&lt;/code> 输入参数 &lt;code>/tomcat-1&lt;/code> 和 &lt;code>/tomcat-2&lt;/code>，输出被重定向到 &lt;code>logs.txt&lt;/code> 文件中。&lt;/p>
+&lt;h1 id="退出任务">退出任务&lt;/h1>
+&lt;p>如果运行的任务在当前 &lt;code>shell&lt;/code> 终端，可以通过 &lt;code>jobs&lt;/code> 命令查询相关信息，并且杀掉进程。&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># 查看当前 shell 终端的后台运行任务进程信息&lt;/span>
+$ jobs
+&lt;span style="color:#f92672">[&lt;/span>1&lt;span style="color:#f92672">]&lt;/span>+ Running nohup java -jar adapter-minisite.jar /tomcat-1 /tomcat-2 &amp;gt; logs.txt 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &amp;amp;
+&lt;span style="color:#75715e"># 杀掉任务号&lt;/span>
+$ kill %1
+&lt;span style="color:#75715e"># 或着找到 pid&lt;/span>
+$ jobs -l
+&lt;span style="color:#f92672">[&lt;/span>1&lt;span style="color:#f92672">]&lt;/span>+ &lt;span style="color:#ae81ff">11076&lt;/span> Running nohup java -jar adapter-minisite.jar /tomcat-1 /tomcat-2 &amp;gt; logs.txt 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &amp;amp;
+$ kill &lt;span style="color:#ae81ff">11076&lt;/span>
+&lt;span style="color:#75715e"># 或着&lt;/span>
+$ fg %n &lt;span style="color:#75715e"># 置为前端运行&lt;/span>
+Ctrl + c &lt;span style="color:#75715e"># 退出&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果非当前 &lt;code>shell&lt;/code> 终端，可以通过 &lt;code>ps auxf | grep 'adapter-minisite'&lt;/code> 获取 &lt;code>pid&lt;/code> 然后 &lt;code>kill pid&lt;/code>。&lt;/p>
+&lt;hr>
+&lt;p>&lt;a href="http://www.cnblogs.com/allenblogs/archive/2011/05/19/2051136.html">参考文章&lt;/a>&lt;/p></description></item></channel></rss>

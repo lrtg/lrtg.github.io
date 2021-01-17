@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Gogs on lrtg</title><link>https://lrtg.ml/tags/Gogs/</link><description>Recent content in Gogs on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Wed, 06 Jan 2021 14:01:50 +0800</lastBuildDate><atom:link href="https://lrtg.ml/tags/Gogs/index.xml" rel="self" type="application/rss+xml"/><item><title>Docker 安装 Gitea/Gogs 与主机共享 22 端口</title><link>https://lrtg.ml/2021/01/06/docker-gitea-share-port-22-with-host/</link><pubDate>Wed, 06 Jan 2021 14:01:50 +0800</pubDate><guid>https://lrtg.ml/2021/01/06/docker-gitea-share-port-22-with-host/</guid><description>
+&lt;p>如果主机的 22 端口已被使用，使用 &lt;code>Docker&lt;/code> 安装 &lt;code>Gitea&lt;/code> 时只能把容器的 22 端口映射到主机的其它端口（如：10022），这是没有任何问题的。但是以 &lt;code>SSH&lt;/code> 方式 &lt;code>clone&lt;/code> 项目时，&lt;code>URL&lt;/code> 长这样
+&lt;code>ssh://git@git.example.com:10022:username/project.git&lt;/code>&lt;/p>
+&lt;p>如果我们想要类似以下这样的 &lt;code>URL&lt;/code> 时就需要把 &lt;code>Gitea&lt;/code> 容器的和主机共享 22 端口
+&lt;code>git@git.example.com:username/project.git&lt;/code>&lt;/p>
+&lt;p>下面总结一下使用 &lt;code>Docker&lt;/code> 安装 &lt;code>Gitea&lt;/code> 共享主机 22 端口的主要步骤，&lt;code>Gogs&lt;/code> 应该是同理。&lt;/p>
+&lt;h3 id="创建-git-用户">创建 git 用户&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># Create git user&lt;/span>
+adduser git
+&lt;span style="color:#75715e"># Make sure user has UID and GID 1000&lt;/span>
+usermod -u &lt;span style="color:#ae81ff">1000&lt;/span> -g &lt;span style="color:#ae81ff">1000&lt;/span> git
+&lt;span style="color:#75715e"># Create docker group&lt;/span>
+groupadd docker
+&lt;span style="color:#75715e"># Add git user to docker group&lt;/span>
+usermod -aG docker git
+&lt;span style="color:#75715e"># Create the gitea data directory&lt;/span>
+mkdir -p /home/git/gitea/data
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="安装-gitea">安装 Gitea&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">docker run -d --name&lt;span style="color:#f92672">=&lt;/span>gitea -p 10022:22 -p 10080:3000 -v /home/git/gitea/data:/data --restart&lt;span style="color:#f92672">=&lt;/span>always gitea/gitea:latest
+&lt;span style="color:#75715e"># Create a symlink between the container authorized_keys and the host git user authorized_keys&lt;/span>
+ln -s /home/git/gitea/data/git/.ssh /home/git/
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="生成-ssh-key">生成 SSH key&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo -u git ssh-keygen -t rsa -b &lt;span style="color:#ae81ff">4096&lt;/span> -C &lt;span style="color:#e6db74">&amp;#34;Gitea Host Key&amp;#34;&lt;/span>
+echo &lt;span style="color:#e6db74">&amp;#34;no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty &lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>cat /home/git/.ssh/id_rsa.pub&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &amp;gt;&amp;gt; /home/git/.ssh/authorized_keys
+chmod &lt;span style="color:#ae81ff">600&lt;/span> /home/git/.ssh/authorized_keys
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="配置-ssh-passthrough">配置 SSH passthrough&lt;/h3>
+&lt;p>配置 &lt;code>passthrough&lt;/code> 连接到 &lt;code>Gitea&lt;/code> 容器的 &lt;code>SSH&lt;/code> 映射端口 10022&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mkdir -p /app/gitea/
+cat &amp;gt;/app/gitea/gitea &lt;span style="color:#e6db74">&amp;lt;&amp;lt;&amp;#39;END&amp;#39;
+&lt;/span>&lt;span style="color:#e6db74">#!/bin/sh
+&lt;/span>&lt;span style="color:#e6db74">ssh -p 10022 -o StrictHostKeyChecking=no git@127.0.0.1 \
+&lt;/span>&lt;span style="color:#e6db74">&amp;#34;SSH_ORIGINAL_COMMAND=\&amp;#34;$SSH_ORIGINAL_COMMAND\&amp;#34; $0 $@&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">END&lt;/span>
+chmod +x /app/gitea/gitea
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="caddy-反向代理配置">Caddy 反向代理配置&lt;/h3>
+&lt;p>这里使用 &lt;code>Caddy&lt;/code> 反向代理配置域名，&lt;code>Caddyfile&lt;/code> 配置信息如下：&lt;/p>
+&lt;pre>&lt;code>git.example.com {
+encode zstd gzip
+reverse_proxy localhost:10080
+header / Strict-Transport-Security &amp;quot;max-age=31536000;&amp;quot;
+}
+&lt;/code>&lt;/pre>&lt;p>配置完域名之后，输入域名进行安装，现在就可以修改 【SSH 服务域名】 为 &lt;code>git.example.com&lt;/code>，【Gitea 基本 URL】 为 &lt;code>https://git.example.com/&lt;/code>，也可以后通过 &lt;code>/home/git/gogs/data/gogs/conf/app.ini&lt;/code> 配置文件修改相关配置。&lt;/p>
+&lt;h3 id="注意事项">注意事项&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>由于 &lt;code>docker&lt;/code> 启动容器的默认 &lt;code>uid&lt;/code> 和 &lt;code>gid&lt;/code> 是 1000，所以 &lt;code>git&lt;/code> 用户的 &lt;code>uid&lt;/code>、&lt;code>gid&lt;/code> 必须为 1000，如果 &lt;code>git&lt;/code> 用户的 &lt;code>uid&lt;/code> 和 &lt;code>gid&lt;/code> 不是 1000（比如：1002），尝试通过 &lt;code>docker run --user 1002:1002&lt;/code>、 &lt;code>docker run -e &amp;quot;PUID=1002&amp;quot; -e &amp;quot;PGID=1002&amp;quot;&lt;/code> 等方式启动 &lt;code>docker&lt;/code> 容器都不管用。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>保证 &lt;code>git&lt;/code> 用户下的所有文件都属于 &lt;code>git&lt;/code> 用户和 &lt;code>git&lt;/code> 组&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">[&lt;/span>git&lt;span style="color:#f92672">]&lt;/span>$ ls -la /home/git/gitea/data
+total &lt;span style="color:#ae81ff">20&lt;/span>
+drwxrwxr-x &lt;span style="color:#ae81ff">5&lt;/span> git git &lt;span style="color:#ae81ff">4096&lt;/span> Jan &lt;span style="color:#ae81ff">5&lt;/span> 14:14 .
+drwxrwxr-x &lt;span style="color:#ae81ff">3&lt;/span> git git &lt;span style="color:#ae81ff">4096&lt;/span> Jan &lt;span style="color:#ae81ff">5&lt;/span> 13:56 ..
+drwxr-xr-x &lt;span style="color:#ae81ff">5&lt;/span> git git &lt;span style="color:#ae81ff">4096&lt;/span> Jan &lt;span style="color:#ae81ff">5&lt;/span> 14:20 git
+drwxr-xr-x &lt;span style="color:#ae81ff">10&lt;/span> git git &lt;span style="color:#ae81ff">4096&lt;/span> Jan &lt;span style="color:#ae81ff">5&lt;/span> 14:40 gitea
+drwx------ &lt;span style="color:#ae81ff">2&lt;/span> git git &lt;span style="color:#ae81ff">4096&lt;/span> Jan &lt;span style="color:#ae81ff">5&lt;/span> 14:14 ssh
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="参考文章">参考文章&lt;/h3>
+&lt;ul>
+&lt;li>&lt;a href="https://raincal.com/post/gogs-share-22-port">Gogs 与主机共享 22 端口&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://gitea.com/jwobith/docker-gitea#additional-steps">docker-gitea&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>5 分钟搭建 Git 服务器-Gogs</title><link>https://lrtg.ml/2016/09/06/gogs-installation-introduction/</link><pubDate>Tue, 06 Sep 2016 12:15:14 +0000</pubDate><guid>https://lrtg.ml/2016/09/06/gogs-installation-introduction/</guid><description>
+&lt;blockquote>
+&lt;p>Gogs 基于 Go 语言的自助 Git 服务。它具有易安装、跨平台、轻量级、开源化等特性&amp;hellip;&lt;/p>
+&lt;/blockquote>
+&lt;!-- raw HTML omitted -->
+&lt;p>{% img &lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/gogs-logo.png">https://cdn.jsdelivr.net/gh/0vo/oss/images/gogs-logo.png&lt;/a> 150 %}&lt;/p>
+&lt;p>最近新到一家公司，发现在使用 Gogs 搭建 Git 服务，遂研究了一下，和前段时间研究的 GitLab 做了一个简单的对比，虽然 Gogs 相对与 GitLab 还比较年轻，也许没有 GitLab 强大和稳健，但 Gogs 更加简单易用，而且能够满足正常的工作使用。&lt;/p>
+&lt;p>Gogs 是轻量级的 Git 服务，正如官方介绍的：一个廉价的树莓派的配置足以满足 Gogs 的最低系统硬件要求。最大程度上节省您的服务器资源！关键的一点是免费开源的，所有的代码都开源在 GitHub 上。下面结合官方的介绍，总结一下在 Linux 系统下的安装方法，真的是相当的简单，5 分钟足矣！&lt;/p>
+&lt;h1 id="一安装">一、安装&lt;/h1>
+&lt;h2 id="11-下载">1.1 下载&lt;/h2>
+&lt;p>下载对应系统版本的二进制安装包，并上传至 Linux 系统，或通过以下命令下载：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ wget https://github.com/gogits/gogs/releases/download/v0.9.97/linux_amd64.tar.gz
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;em>&lt;a href="https://github.com/gogits/gogs/releases">Gogs发布版本&lt;/a>&lt;/em>&lt;/p>
+&lt;h2 id="12-解压安装包">1.2 解压安装包&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ tar -xzvf gogs_v0.9.97_linux_amd64.tar.gz
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="13-安装">1.3 安装&lt;/h2>
+&lt;p>进入到刚刚解压后的目录执行命令 &lt;code>./gogs web&lt;/code>，出现以下信息：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1fo7tcw90n2j20u307cab3.jpg" alt="">&lt;/p>
+&lt;h2 id="14-配置">1.4 配置&lt;/h2>
+&lt;p>打开浏览器输地址入：&lt;code>http://ip:3000&lt;/code>，第一次会出现以下的配置界面，根据实际情况选择即可。&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/Gogs-install.png" alt="">&lt;/p>
+&lt;h2 id="15-完成安装">1.5 完成安装&lt;/h2>
+&lt;p>之后进入以下界面，表明安装已经完成。&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1fo7tdl9kvrj20xk0r60ub.jpg" alt="">&lt;/p>
+&lt;h2 id="16-后台运行">1.6 后台运行&lt;/h2>
+&lt;p>后台运行可参考以下命令：&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ nohup ./gogs web &amp;gt; nohup.out 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &amp;amp;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="升级">升级&lt;/h1>
+&lt;p>引用自官方&lt;a href="https://gogs.io/docs/upgrade/upgrade_from_binary">二级制升级文档&lt;/a>&lt;/p>
+&lt;h2 id="21-首先确认当前安装的位置">2.1 首先，确认当前安装的位置：&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># 默认位置在 git 用户下的家目录&lt;/span>
+$ sudo su - git
+$ cd ~
+$ pwd
+/home/git
+$ ls
+gogs gogs-repositories
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="22-然后将当前目录移动到另一个临时的位置但不是删除">2.2 然后将当前目录移动到另一个临时的位置，但不是删除！&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ mv gogs gogs_old
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="23-下载并解压新的二进制">2.3 下载并解压新的二进制：&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># 请根据系统和类型获取相应的二进制版本&lt;/span>
+$ wget https://dl.gogs.io/gogs_v$VERSION_$OS_$ARCH.tar.gz
+$ tar -zxvf gogs_v$VERSION_$OS_$ARCH.tar.gz
+$ ls
+gogs gogs_old gogs-repositories gogs_v$VERSION_$OS_$ARCH.tar.gz
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="24-复制-customdata-和-log-目录到新解压的目录中">2.4 复制 &lt;code>custom&lt;/code>、&lt;code>data&lt;/code> 和 &lt;code>log&lt;/code> 目录到新解压的目录中：&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ cp -R gogs_old/custom gogs
+$ cp -R gogs_old/data gogs
+$ cp -R gogs_old/log gogs
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="25-最后运行并打开浏览器进行测试">2.5 最后，运行并打开浏览器进行测试：&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ cd gogs
+$ ./gogs web
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr></description></item></channel></rss>

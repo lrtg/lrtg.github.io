@@ -1,0 +1,121 @@
+<!doctype html><html lang=en><head><title>Go 常用代码块 ::
+lrtg — a hugo blog of lrtg</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="总结备忘一下常用的的 Go 代码片段
+ 遍历目录下的文件 func getFilelist(r string) { err := filepath.Walk(r, func(p string, f os.FileInfo, err error) error { if f == nil { return nil } if p == r || f.IsDir() { return nil } fmt.Println(p) return nil }) if err != nil { fmt.Printf(&amp;#34;filepath.Walk() returned %v\n&amp;#34;, err) } }"><meta name=keywords content="Golang,,Go"><meta name=robots content="noodp"><link rel=canonical href=https://lrtg.ml/2017/12/06/go-commons-code-snippets/><link rel=stylesheet href=https://lrtg.ml/assets/style.css><link rel=stylesheet href=https://lrtg.ml/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://lrtg.ml/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://lrtg.ml/img/favicon.png><link href=https://lrtg.ml/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary"><meta name=twitter:title content="Go 常用代码块"><meta name=twitter:description content="总结备忘一下常用的的 Go 代码片段"><meta property="og:title" content="Go 常用代码块"><meta property="og:description" content="总结备忘一下常用的的 Go 代码片段"><meta property="og:type" content="article"><meta property="og:url" content="https://lrtg.ml/2017/12/06/go-commons-code-snippets/"><meta property="article:published_time" content="2017-12-06T10:07:54+00:00"><meta property="article:modified_time" content="2020-07-20T21:49:42+08:00"><meta property="og:site_name" content="lrtg"><meta name=google-site-verification content="1sqm8XMeeEHHbiKb2V2OrWT2WoAg7TUCXvXXLbP8O2s"></head><body class=dark-theme><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>lrtg's blog</span>
+<span class=logo__cursor></span></a><span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><ul class=menu__sub-inner><li class=menu__sub-inner-more-trigger>Show more
+<span class=menu__sub-inner-more-trigger-icon><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span></li><ul class="menu__sub-inner-more hidden"><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></ul></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41C32.4934 41 41 32.4934 41 22 41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>Go 常用代码块</h1><div class=post-meta><span class=post-date>2017-12-06</span>
+<span class=post-moddate>(Modified:
+2020-07-20)</span>
+<span class=post-read-time>— 2 min read</span></div><span class=post-tags><a href=https://lrtg.ml/tags/Golang/>#Golang</a>&nbsp;
+<a href=https://lrtg.ml/tags/Go/>#Go</a>&nbsp;</span><div class=post-content><blockquote><p>总结备忘一下常用的的 Go 代码片段</p></blockquote><h2 id=遍历目录下的文件>遍历目录下的文件</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>getFilelist</span>(<span style=color:#a6e22e>r</span> <span style=color:#66d9ef>string</span>) {
+    <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>filepath</span>.<span style=color:#a6e22e>Walk</span>(<span style=color:#a6e22e>r</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>p</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>f</span> <span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>FileInfo</span>, <span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>) <span style=color:#66d9ef>error</span> {
+        <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>f</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span> {
+            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>
+        }
+        <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>p</span> <span style=color:#f92672>==</span> <span style=color:#a6e22e>r</span> <span style=color:#f92672>||</span> <span style=color:#a6e22e>f</span>.<span style=color:#a6e22e>IsDir</span>() {
+            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>
+        }
+        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>p</span>)
+        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>
+    })
+    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;filepath.Walk() returned %v\n&#34;</span>, <span style=color:#a6e22e>err</span>)
+    }
+}
+</code></pre></div><h2 id=定时器>定时器</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>duration</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Second</span>
+<span style=color:#a6e22e>timer</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>NewTimer</span>(<span style=color:#a6e22e>duration</span>)
+<span style=color:#66d9ef>go</span> <span style=color:#66d9ef>func</span>() {
+    <span style=color:#66d9ef>for</span> {
+        <span style=color:#66d9ef>select</span> {
+        <span style=color:#66d9ef>case</span> <span style=color:#f92672>&lt;-</span><span style=color:#a6e22e>timer</span>.<span style=color:#a6e22e>C</span>:
+            <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;here&#34;</span>)
+            <span style=color:#a6e22e>timer</span>.<span style=color:#a6e22e>Reset</span>(<span style=color:#a6e22e>duration</span>)
+        }
+    }
+}()
+</code></pre></div><h2 id=定时执行任务>定时执行任务</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+
+<span style=color:#f92672>import</span> (
+    <span style=color:#e6db74>&#34;fmt&#34;</span>
+    <span style=color:#e6db74>&#34;time&#34;</span>
+)
+
+<span style=color:#66d9ef>const</span> <span style=color:#a6e22e>INTERVAL_PERIOD</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Duration</span> = <span style=color:#ae81ff>24</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Hour</span>
+
+<span style=color:#66d9ef>const</span> <span style=color:#a6e22e>HOUR_TO_TICK</span> <span style=color:#66d9ef>int</span> = <span style=color:#ae81ff>23</span>
+<span style=color:#66d9ef>const</span> <span style=color:#a6e22e>MINUTE_TO_TICK</span> <span style=color:#66d9ef>int</span> = <span style=color:#ae81ff>00</span>
+<span style=color:#66d9ef>const</span> <span style=color:#a6e22e>SECOND_TO_TICK</span> <span style=color:#66d9ef>int</span> = <span style=color:#ae81ff>03</span>
+
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+    <span style=color:#a6e22e>ticker</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>updateTicker</span>()
+    <span style=color:#66d9ef>for</span> {
+        <span style=color:#f92672>&lt;-</span><span style=color:#a6e22e>ticker</span>.<span style=color:#a6e22e>C</span>
+        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Now</span>(), <span style=color:#e6db74>&#34;- just ticked&#34;</span>)
+        <span style=color:#a6e22e>ticker</span> = <span style=color:#a6e22e>updateTicker</span>()
+    }
+}
+
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>updateTicker</span>() <span style=color:#f92672>*</span><span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Ticker</span> {
+    <span style=color:#a6e22e>n</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Date</span>(<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Now</span>().<span style=color:#a6e22e>Year</span>(), <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Now</span>().<span style=color:#a6e22e>Month</span>(), <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Now</span>().<span style=color:#a6e22e>Day</span>(),
+        <span style=color:#a6e22e>HOUR_TO_TICK</span>, <span style=color:#a6e22e>MINUTE_TO_TICK</span>, <span style=color:#a6e22e>SECOND_TO_TICK</span>, <span style=color:#ae81ff>0</span>, <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Local</span>)
+
+    <span style=color:#66d9ef>if</span> !<span style=color:#a6e22e>n</span>.<span style=color:#a6e22e>After</span>(<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Now</span>()) {
+        <span style=color:#a6e22e>n</span> = <span style=color:#a6e22e>n</span>.<span style=color:#a6e22e>Add</span>(<span style=color:#a6e22e>INTERVAL_PERIOD</span>)
+    }
+    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>n</span>, <span style=color:#e6db74>&#34;- next tick&#34;</span>)
+    <span style=color:#a6e22e>diff</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>n</span>.<span style=color:#a6e22e>Sub</span>(<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Now</span>())
+    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>NewTicker</span>(<span style=color:#a6e22e>diff</span>)
+}
+
+
+</code></pre></div><h2 id=读取文件>读取文件</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>f</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>Open</span>(<span style=color:#e6db74>&#34;/test.txt&#34;</span>)
+<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+    panic(<span style=color:#a6e22e>err</span>)
+}
+<span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>f</span>.<span style=color:#a6e22e>Close</span>()
+<span style=color:#a6e22e>fd</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>ioutil</span>.<span style=color:#a6e22e>ReadAll</span>(<span style=color:#a6e22e>f</span>)
+<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+    panic(<span style=color:#a6e22e>err</span>)
+}
+<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(string(<span style=color:#a6e22e>fd</span>))
+
+</code></pre></div><h2 id=map-转-json>map 转 json</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>m</span> <span style=color:#f92672>:=</span> make(<span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>interface</span>{})
+<span style=color:#a6e22e>m</span>[<span style=color:#e6db74>&#34;show&#34;</span>] = <span style=color:#e6db74>&#34;1&#34;</span>
+<span style=color:#a6e22e>m</span>[<span style=color:#e6db74>&#34;content&#34;</span>] = <span style=color:#e6db74>&#34;test&#34;</span>
+<span style=color:#a6e22e>j</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>json</span>.<span style=color:#a6e22e>Marshal</span>(<span style=color:#a6e22e>m</span>)
+<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+    panic(<span style=color:#a6e22e>err</span>)
+}
+<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(string(<span style=color:#a6e22e>j</span>))
+</code></pre></div><h2 id=json-转-map>json 转 map</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>result</span> = []byte(<span style=color:#e6db74>`
+</span><span style=color:#e6db74>{
+</span><span style=color:#e6db74>    &#34;show&#34;: 1,
+</span><span style=color:#e6db74>    &#34;content&#34;: &#34;test&#34;
+</span><span style=color:#e6db74>}`</span>)
+
+<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>r</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>interface</span>{}
+<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>json</span>.<span style=color:#a6e22e>Unmarshal</span>(<span style=color:#a6e22e>result</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>r</span>); <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+    panic(<span style=color:#a6e22e>err</span>)
+}
+<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>r</span>)
+</code></pre></div><h2 id=写文件>写文件</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>writeFile</span>(<span style=color:#a6e22e>path</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>b</span> []<span style=color:#66d9ef>byte</span>) {
+    <span style=color:#a6e22e>file</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>OpenFile</span>(<span style=color:#a6e22e>path</span>, <span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>O_WRONLY</span>|<span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>O_TRUNC</span>|<span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>O_CREATE</span>, <span style=color:#ae81ff>0777</span>)
+    <span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>file</span>.<span style=color:#a6e22e>Close</span>()
+
+    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+        panic(<span style=color:#a6e22e>err</span>)
+    }
+
+    <span style=color:#a6e22e>file</span>.<span style=color:#a6e22e>Write</span>(<span style=color:#a6e22e>b</span>)
+}
+</code></pre></div><h2 id=简单的获取-ip>简单的获取 IP</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>GetPulicIP</span>() <span style=color:#66d9ef>string</span> {
+    <span style=color:#a6e22e>conn</span>, <span style=color:#a6e22e>_</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>net</span>.<span style=color:#a6e22e>Dial</span>(<span style=color:#e6db74>&#34;udp&#34;</span>, <span style=color:#e6db74>&#34;8.8.8.8:80&#34;</span>)
+    <span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>Close</span>()
+    <span style=color:#a6e22e>localAddr</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>LocalAddr</span>().<span style=color:#a6e22e>String</span>()
+    <span style=color:#a6e22e>idx</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>strings</span>.<span style=color:#a6e22e>LastIndex</span>(<span style=color:#a6e22e>localAddr</span>, <span style=color:#e6db74>&#34;:&#34;</span>)
+    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>localAddr</span>[<span style=color:#ae81ff>0</span>:<span style=color:#a6e22e>idx</span>]
+}
+</code></pre></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://lrtg.ml/2017/12/31/summary-in-2017/><span class=button__icon>←</span>
+<span class=button__text>又是一年岁末时...</span></a></span>
+<span class="button next"><a href=https://lrtg.ml/2017/10/25/tmux-cheat-sheet/><span class=button__text>[转]Tmux 快捷键速查表</span>
+<span class=button__icon>→</span></a></span></div></div><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
+var d=document,s=d.createElement('script');s.async=true;s.src='//'+"lrtg"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user">© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</div></div></footer><script src=https://lrtg.ml/assets/main.js></script><script src=https://lrtg.ml/assets/prism.js></script></div></body></html>

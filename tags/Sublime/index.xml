@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sublime on lrtg</title><link>https://lrtg.ml/tags/Sublime/</link><description>Recent content in Sublime on lrtg</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</copyright><lastBuildDate>Mon, 24 Oct 2016 17:30:55 +0000</lastBuildDate><atom:link href="https://lrtg.ml/tags/Sublime/index.xml" rel="self" type="application/rss+xml"/><item><title>设置 Sublime Text3 主题透明</title><link>https://lrtg.ml/2016/10/24/%E8%AE%BE%E7%BD%AE-Sublime-Text3-%E4%B8%BB%E9%A2%98%E9%80%8F%E6%98%8E/</link><pubDate>Mon, 24 Oct 2016 17:30:55 +0000</pubDate><guid>https://lrtg.ml/2016/10/24/%E8%AE%BE%E7%BD%AE-Sublime-Text3-%E4%B8%BB%E9%A2%98%E9%80%8F%E6%98%8E/</guid><description>
+&lt;h1 id="1-下载安装包">1. 下载安装包&lt;/h1>
+&lt;p>下载地址：&lt;a href="https://github.com/vhanla/SublimeTextTrans">SublimeTextTrans&lt;/a>。&lt;/p>
+&lt;h1 id="2-安装插件">2. 安装插件&lt;/h1>
+&lt;p>解压到 Sublime Text3 的 Packages 存放目录下，命名为：&lt;code>SublimeTextTrans&lt;/code>。点击 Sublime Text3 的 &lt;code>Preferences -&amp;gt; Browse Packages&lt;/code> 打开 Packages 存放目录，一般情况是在 &lt;code>C:\Users\YOURNAME\AppData\Roaming\Sublime Text 3\Packages&lt;/code> 目录下。&lt;/p>
+&lt;h1 id="3-设置-sublime-text3-的透明度级别">3. 设置 Sublime Text3 的透明度级别。&lt;/h1>
+&lt;p>点击 Sublime Text3 的 &lt;code>Preferences -&amp;gt; Package Setting -&amp;gt; SublimeTextTrans -&amp;gt; Setting - User&lt;/code> 就可以设置透明度的级别了。&lt;/p>
+&lt;p>也可以通过 &lt;code>Ctrl+Shift+1、2、3、4、5、6&lt;/code> 加载预设的 6 个透明级别。预设的透明级别在 &lt;code>Preferences -&amp;gt; Package Setting -&amp;gt; SublimeTextTrans -&amp;gt; Setting - Default&lt;/code> 中可以查看。&lt;/p>
+&lt;hr></description></item><item><title>Sublime Text 插件安装</title><link>https://lrtg.ml/2016/07/25/Sublime-Text-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85/</link><pubDate>Mon, 25 Jul 2016 21:06:57 +0000</pubDate><guid>https://lrtg.ml/2016/07/25/Sublime-Text-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85/</guid><description>
+&lt;blockquote>
+&lt;p>Sublime Text 官方介绍：&lt;/p>
+&lt;blockquote>
+&lt;p>“Sublime Text is a sophisticated text editor for code, markup and prose.You&amp;rsquo;ll love the slick user interface, extraordinary features and amazing performance.”&lt;/p>
+&lt;/blockquote>
+&lt;/blockquote>
+&lt;p>Sublime Text 是一款优秀的轻量级编辑器，而且支持跨平台，支持Windows、Linux、Mac OS X 等主流操作系统。虽然是一款收费软件，但也允许人们&lt;strong>无限期免费使用&lt;/strong>。（&lt;a href="http://www.sublimetext.com/3">官方下载地址&lt;/a>）&lt;/p>
+&lt;p>Sublime Text 具有漂亮的用户界面和强大可扩展插件功能，本文介绍如何安装 Sublime Text 插件。&lt;/p>
+&lt;p>打开 Sublime Text 编辑器的 Console（控制台）使用快捷键 &lt;!-- raw HTML omitted -->ctrl+`&lt;!-- raw HTML omitted --> 或者点击菜单 &lt;!-- raw HTML omitted --> View &amp;gt; Show Console menu &lt;!-- raw HTML omitted --> 打开 Console，如图：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20160725212921.png" alt="">&lt;/p>
+&lt;p>Sublime Text 2 粘贴以下代码：&lt;/p>
+&lt;pre>&lt;code class="language-livecodeserver" data-lang="livecodeserver">import urllib2,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); os.makedirs( ipp ) if not os.path.exists(ipp) else None; urllib2.install_opener( urllib2.build_opener( urllib2.ProxyHandler()) ); by = urllib2.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); open( os.path.join( ipp, pf), 'wb' ).write(by) if dh == h else None; print('Error validating download (got %s instead of %s), please try manual install' % (dh, h) if dh != h else 'Please restart Sublime Text to finish installation')
+&lt;/code>&lt;/pre>&lt;p>Sublime Text 3 粘贴以下代码：&lt;/p>
+&lt;pre>&lt;code class="language-livecodeserver" data-lang="livecodeserver">import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)
+&lt;/code>&lt;/pre>&lt;p>敲回车等待安装完成后重启 Sublime Text 即可，按下快捷键 &lt;!-- raw HTML omitted --> ctrl + shift + p &lt;!-- raw HTML omitted --> ,输入 &lt;code>pci&lt;/code>（Package Control Install 简写）如图：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20160725213757.png" alt="">&lt;/p>
+&lt;p>敲回车即可打开插件安装界面，输入想要安装插件的名称即可开始安装，如图：&lt;/p>
+&lt;p>&lt;img src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20160725214353.png" alt="">&lt;/p>
+&lt;p>Sublime Text 插件安装介绍完了，需要注意的是安装过程中要保持网络畅通。&lt;/p>
+&lt;p>&lt;a href="https://packagecontrol.io/installation">参考网址&lt;/a>&lt;/p>
+&lt;hr></description></item></channel></rss>

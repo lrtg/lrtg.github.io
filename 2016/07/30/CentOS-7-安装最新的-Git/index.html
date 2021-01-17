@@ -1,0 +1,51 @@
+<!doctype html><html lang=en><head><title>CentOS 7 安装最新的 Git ::
+lrtg — a hugo blog of lrtg</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="yum 源仓库里的 Git 版本更新不及时，最新版本的 Git 是 1.8.3.1，但是官方最新版本已经到了 2.9.2。想要安装最新版本的的 Git，只能下载源码进行安装。
+ 1. 查看 yum 源仓库的 Git 信息： # yum info git 可以看出，截至目前，yum 源仓库中最新的 Git 版本才 1.8.3.1，而查看最新的 Git 发布版本，已经 2.9.2 了。"><meta name=keywords content="Linux,Git,CentOS"><meta name=robots content="noodp"><link rel=canonical href=https://lrtg.ml/2016/07/30/CentOS-7-%E5%AE%89%E8%A3%85%E6%9C%80%E6%96%B0%E7%9A%84-Git/><link rel=stylesheet href=https://lrtg.ml/assets/style.css><link rel=stylesheet href=https://lrtg.ml/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://lrtg.ml/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://lrtg.ml/img/favicon.png><link href=https://lrtg.ml/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary"><meta name=twitter:title content="CentOS 7 安装最新的 Git"><meta name=twitter:description content="> yum 源仓库里的 Git 版本更新不及时，最新版本的 Git 是 1.8.3.1，但是官方最新版本已经到了 2.9.2。想要安装最新版本的的 Git，只能下载源码进行安装。
+
+# 1. 查看 yum 源仓库的 Git 信息：
+
+```bash
+
+# yum info git
+
+```
+
+![][1]
+
+可以看出，截至目前，yum 源仓库中最新的 Git 版本才 1.8.3.1，而查看最[新的 Git 发布版本][2]，已经 2.9.2 了。"><meta property="og:title" content="CentOS 7 安装最新的 Git"><meta property="og:description" content="> yum 源仓库里的 Git 版本更新不及时，最新版本的 Git 是 1.8.3.1，但是官方最新版本已经到了 2.9.2。想要安装最新版本的的 Git，只能下载源码进行安装。
+
+# 1. 查看 yum 源仓库的 Git 信息：
+
+```bash
+
+# yum info git
+
+```
+
+![][1]
+
+可以看出，截至目前，yum 源仓库中最新的 Git 版本才 1.8.3.1，而查看最[新的 Git 发布版本][2]，已经 2.9.2 了。"><meta property="og:type" content="article"><meta property="og:url" content="https://lrtg.ml/2016/07/30/CentOS-7-%E5%AE%89%E8%A3%85%E6%9C%80%E6%96%B0%E7%9A%84-Git/"><meta property="article:published_time" content="2016-07-30T22:12:43+00:00"><meta property="article:modified_time" content="2020-07-20T21:49:42+08:00"><meta property="og:site_name" content="lrtg"><meta name=google-site-verification content="1sqm8XMeeEHHbiKb2V2OrWT2WoAg7TUCXvXXLbP8O2s"></head><body class=dark-theme><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>lrtg's blog</span>
+<span class=logo__cursor></span></a><span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><ul class=menu__sub-inner><li class=menu__sub-inner-more-trigger>Show more
+<span class=menu__sub-inner-more-trigger-icon><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span></li><ul class="menu__sub-inner-more hidden"><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></ul></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41C32.4934 41 41 32.4934 41 22 41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>CentOS 7 安装最新的 Git</h1><div class=post-meta><span class=post-date>2016-07-30</span>
+<span class=post-moddate>(Modified:
+2020-07-20)</span>
+<span class=post-read-time>— 1 min read</span></div><span class=post-tags><a href=https://lrtg.ml/tags/Linux/>#Linux</a>&nbsp;
+<a href=https://lrtg.ml/tags/Git/>#Git</a>&nbsp;
+<a href=https://lrtg.ml/tags/CentOS/>#CentOS</a>&nbsp;</span><div class=post-content><h2>Table of Contents</h2><aside class=table-of-contents><nav id=TableOfContents></nav></aside><blockquote><p>yum 源仓库里的 Git 版本更新不及时，最新版本的 Git 是 1.8.3.1，但是官方最新版本已经到了 2.9.2。想要安装最新版本的的 Git，只能下载源码进行安装。</p></blockquote><h1 id=1-查看-yum-源仓库的-git-信息>1. 查看 yum 源仓库的 Git 信息：</h1><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># yum info git</span>
+</code></pre></div><p><img src=https://cdn.jsdelivr.net/gh/0vo/oss/images/20160730222608.png alt></p><p>可以看出，截至目前，yum 源仓库中最新的 Git 版本才 1.8.3.1，而查看最<a href=https://github.com/git/git/releases>新的 Git 发布版本</a>，已经 2.9.2 了。</p><h1 id=2-依赖库安装>2. 依赖库安装</h1><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel</span>
+<span style=color:#75715e># yum install  gcc perl-ExtUtils-MakeMaker</span>
+</code></pre></div><h1 id=3-卸载低版本的-git>3. 卸载低版本的 Git</h1><p>通过命令：<code>git –-version</code> 查看系统带的版本，Git 版本是： <code>1.8.3.1</code>，所以先要卸载低版本的 Git，命令：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># yum remove git</span>
+</code></pre></div><h1 id=4-下载新版的-git-源码包>4. 下载新版的 Git 源码包</h1><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># wget https://github.com/git/git/archive/v2.9.2.tar.gz</span>
+</code></pre></div><p>也可以离线下载，然后传到 CentOS 系统中指定的目录下。</p><h1 id=5-解压到指定目录>5. 解压到指定目录</h1><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># tar -xzvf v2.9.2.tar.gz -C ~/app/</span>
+</code></pre></div><h1 id=6-安装-git>6. 安装 Git</h1><p>分别执行以下命令进行编译安装，编译过程可能比较漫长，请耐心等待完成。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># cd git-2.9.2</span>
+<span style=color:#75715e># make prefix=/usr/local/git all</span>
+<span style=color:#75715e># make prefix=/usr/local/git install</span>
+</code></pre></div><h1 id=7-添加到环境变量>7. 添加到环境变量</h1><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># echo &#34;export PATH=$PATH:/usr/local/git/bin&#34; &gt;&gt; /etc/bashrc</span>
+<span style=color:#75715e># source /etc/bashrc # 实时生效</span>
+</code></pre></div><h1 id=8-查看版本号>8. 查看版本号</h1><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># git --version</span>
+git version 2.9.2
+</code></pre></div><p>至此，CentOS 就安装上了最新版本的 Git。</p><hr></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://lrtg.ml/2016/07/31/CentOS-%E7%B3%BB%E7%BB%9F%E4%B8%8B-GitLab-%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/><span class=button__icon>←</span>
+<span class=button__text>CentOS 系统下 GitLab 搭建与基本配置</span></a></span>
+<span class="button next"><a href=https://lrtg.ml/2016/07/30/CentOS-7-%E5%AE%89%E8%A3%85-Node.js/><span class=button__text>CentOS 7 安装 Node.js</span>
+<span class=button__icon>→</span></a></span></div></div><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
+var d=document,s=d.createElement('script');s.async=true;s.src='//'+"lrtg"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user">© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</div></div></footer><script src=https://lrtg.ml/assets/main.js></script><script src=https://lrtg.ml/assets/prism.js></script></div></body></html>

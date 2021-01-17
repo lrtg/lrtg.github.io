@@ -1,0 +1,66 @@
+<!doctype html><html lang=en><head><title>Docker 安装 Gitea/Gogs 与主机共享 22 端口 ::
+lrtg — a hugo blog of lrtg</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="如果主机的 22 端口已被使用，使用 Docker 安装 Gitea 时只能把容器的 22 端口映射到主机的其它端口（如：10022），这是没有任何问题的。但是以 SSH 方式 clone 项目时，URL 长这样 ssh://git@git.example.com:10022:username/project.git
+如果我们想要类似以下这样的 URL 时就需要把 Gitea 容器的和主机共享 22 端口 git@git.example.com:username/project.git
+下面总结一下使用 Docker 安装 Gitea 共享主机 22 端口的主要步骤，Gogs 应该是同理。
+创建 git 用户 # Create git user adduser git # Make sure user has UID and GID 1000 usermod -u 1000 -g 1000 git # Create docker group groupadd docker # Add git user to docker group usermod -aG docker git # Create the gitea data directory mkdir -p /home/git/gitea/data"><meta name=keywords content="Gitea,Gogs,Git"><meta name=robots content="noodp"><link rel=canonical href=https://lrtg.ml/2021/01/06/docker-gitea-share-port-22-with-host/><link rel=stylesheet href=https://lrtg.ml/assets/style.css><link rel=stylesheet href=https://lrtg.ml/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://lrtg.ml/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://lrtg.ml/img/favicon.png><link href=https://lrtg.ml/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://lrtg.ml/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary"><meta name=twitter:title content="Docker 安装 Gitea/Gogs 与主机共享 22 端口"><meta name=twitter:description content="如果主机的 22 端口已被使用，使用 `Docker` 安装 `Gitea` 时只能把容器的 22 端口映射到主机的其它端口（如：10022），这是没有任何问题的。但是以 `SSH` 方式 `clone` 项目时，`URL` 长这样 `ssh://git@git.example.com:10022:username/project.git`
+如果我们想要类似以下这样的 `URL` 时就需要把 `Gitea` 容器的和主机共享 22 端口 `git@git.example.com:username/project.git`
+下面总结一下使用 `Docker` 安装 `Gitea` 共享主机 22 端口的主要步骤，`Gogs` 应该是同理。"><meta property="og:title" content="Docker 安装 Gitea/Gogs 与主机共享 22 端口"><meta property="og:description" content="如果主机的 22 端口已被使用，使用 `Docker` 安装 `Gitea` 时只能把容器的 22 端口映射到主机的其它端口（如：10022），这是没有任何问题的。但是以 `SSH` 方式 `clone` 项目时，`URL` 长这样 `ssh://git@git.example.com:10022:username/project.git`
+如果我们想要类似以下这样的 `URL` 时就需要把 `Gitea` 容器的和主机共享 22 端口 `git@git.example.com:username/project.git`
+下面总结一下使用 `Docker` 安装 `Gitea` 共享主机 22 端口的主要步骤，`Gogs` 应该是同理。"><meta property="og:type" content="article"><meta property="og:url" content="https://lrtg.ml/2021/01/06/docker-gitea-share-port-22-with-host/"><meta property="article:published_time" content="2021-01-06T14:01:50+08:00"><meta property="article:modified_time" content="2021-01-06T14:05:06+08:00"><meta property="og:site_name" content="lrtg"><meta name=google-site-verification content="1sqm8XMeeEHHbiKb2V2OrWT2WoAg7TUCXvXXLbP8O2s"></head><body class=dark-theme><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>lrtg's blog</span>
+<span class=logo__cursor></span></a><span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><ul class=menu__sub-inner><li class=menu__sub-inner-more-trigger>Show more
+<span class=menu__sub-inner-more-trigger-icon><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span></li><ul class="menu__sub-inner-more hidden"><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></ul></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/archive>Archive</a></li><li><a href=/about>About</a></li><li><a href=/friends>Friends</a></li><li><a href="https://www.google.com/search?q=site%3Alrtg.ml">Search</a></li><li><a href=/index.xml>RSS</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41C32.4934 41 41 32.4934 41 22 41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>Docker 安装 Gitea/Gogs 与主机共享 22 端口</h1><div class=post-meta><span class=post-date>2021-01-06</span>
+<span class=post-read-time>— 2 min read</span></div><span class=post-tags><a href=https://lrtg.ml/tags/Gitea/>#Gitea</a>&nbsp;
+<a href=https://lrtg.ml/tags/Gogs/>#Gogs</a>&nbsp;
+<a href=https://lrtg.ml/tags/Git/>#Git</a>&nbsp;</span><div class=post-content><p>如果主机的 22 端口已被使用，使用 <code>Docker</code> 安装 <code>Gitea</code> 时只能把容器的 22 端口映射到主机的其它端口（如：10022），这是没有任何问题的。但是以 <code>SSH</code> 方式 <code>clone</code> 项目时，<code>URL</code> 长这样
+<code>ssh://git@git.example.com:10022:username/project.git</code></p><p>如果我们想要类似以下这样的 <code>URL</code> 时就需要把 <code>Gitea</code> 容器的和主机共享 22 端口
+<code>git@git.example.com:username/project.git</code></p><p>下面总结一下使用 <code>Docker</code> 安装 <code>Gitea</code> 共享主机 22 端口的主要步骤，<code>Gogs</code> 应该是同理。</p><h3 id=创建-git-用户>创建 git 用户</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># Create git user</span>
+adduser git
+
+<span style=color:#75715e># Make sure user has UID and GID 1000</span>
+usermod -u <span style=color:#ae81ff>1000</span> -g <span style=color:#ae81ff>1000</span> git
+
+<span style=color:#75715e># Create docker group</span>
+groupadd docker
+
+<span style=color:#75715e># Add git user to docker group</span>
+usermod -aG docker git
+
+<span style=color:#75715e># Create the gitea data directory</span>
+
+mkdir -p /home/git/gitea/data
+</code></pre></div><h3 id=安装-gitea>安装 Gitea</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>docker run -d --name<span style=color:#f92672>=</span>gitea -p 10022:22 -p 10080:3000 -v /home/git/gitea/data:/data --restart<span style=color:#f92672>=</span>always gitea/gitea:latest
+
+<span style=color:#75715e># Create a symlink between the container authorized_keys and the host git user authorized_keys</span>
+ln -s /home/git/gitea/data/git/.ssh /home/git/
+</code></pre></div><h3 id=生成-ssh-key>生成 SSH key</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo -u git ssh-keygen -t rsa -b <span style=color:#ae81ff>4096</span> -C <span style=color:#e6db74>&#34;Gitea Host Key&#34;</span>
+
+echo <span style=color:#e6db74>&#34;no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty </span><span style=color:#66d9ef>$(</span>cat /home/git/.ssh/id_rsa.pub<span style=color:#66d9ef>)</span><span style=color:#e6db74>&#34;</span> &gt;&gt; /home/git/.ssh/authorized_keys
+
+chmod <span style=color:#ae81ff>600</span> /home/git/.ssh/authorized_keys
+</code></pre></div><h3 id=配置-ssh-passthrough>配置 SSH passthrough</h3><p>配置 <code>passthrough</code> 连接到 <code>Gitea</code> 容器的 <code>SSH</code> 映射端口 10022</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>mkdir -p /app/gitea/
+
+cat &gt;/app/gitea/gitea <span style=color:#e6db74>&lt;&lt;&#39;END&#39;
+</span><span style=color:#e6db74>#!/bin/sh
+</span><span style=color:#e6db74>ssh -p 10022 -o StrictHostKeyChecking=no git@127.0.0.1 \
+</span><span style=color:#e6db74>&#34;SSH_ORIGINAL_COMMAND=\&#34;$SSH_ORIGINAL_COMMAND\&#34; $0 $@&#34;
+</span><span style=color:#e6db74>END</span>
+
+chmod +x /app/gitea/gitea
+</code></pre></div><h3 id=caddy-反向代理配置>Caddy 反向代理配置</h3><p>这里使用 <code>Caddy</code> 反向代理配置域名，<code>Caddyfile</code> 配置信息如下：</p><pre><code>git.example.com {
+    encode zstd gzip
+
+    reverse_proxy localhost:10080
+    header / Strict-Transport-Security &quot;max-age=31536000;&quot;
+}
+</code></pre><p>配置完域名之后，输入域名进行安装，现在就可以修改 【SSH 服务域名】 为 <code>git.example.com</code>，【Gitea 基本 URL】 为 <code>https://git.example.com/</code>，也可以后通过 <code>/home/git/gogs/data/gogs/conf/app.ini</code> 配置文件修改相关配置。</p><h3 id=注意事项>注意事项</h3><ul><li><p>由于 <code>docker</code> 启动容器的默认 <code>uid</code> 和 <code>gid</code> 是 1000，所以 <code>git</code> 用户的 <code>uid</code>、<code>gid</code> 必须为 1000，如果 <code>git</code> 用户的 <code>uid</code> 和 <code>gid</code> 不是 1000（比如：1002），尝试通过 <code>docker run --user 1002:1002</code>、 <code>docker run -e "PUID=1002" -e "PGID=1002"</code> 等方式启动 <code>docker</code> 容器都不管用。</p></li><li><p>保证 <code>git</code> 用户下的所有文件都属于 <code>git</code> 用户和 <code>git</code> 组</p></li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#f92672>[</span>git<span style=color:#f92672>]</span>$ ls -la /home/git/gitea/data
+total <span style=color:#ae81ff>20</span>
+drwxrwxr-x  <span style=color:#ae81ff>5</span> git git <span style=color:#ae81ff>4096</span> Jan  <span style=color:#ae81ff>5</span> 14:14 .
+drwxrwxr-x  <span style=color:#ae81ff>3</span> git git <span style=color:#ae81ff>4096</span> Jan  <span style=color:#ae81ff>5</span> 13:56 ..
+drwxr-xr-x  <span style=color:#ae81ff>5</span> git git <span style=color:#ae81ff>4096</span> Jan  <span style=color:#ae81ff>5</span> 14:20 git
+drwxr-xr-x <span style=color:#ae81ff>10</span> git git <span style=color:#ae81ff>4096</span> Jan  <span style=color:#ae81ff>5</span> 14:40 gitea
+drwx------  <span style=color:#ae81ff>2</span> git git <span style=color:#ae81ff>4096</span> Jan  <span style=color:#ae81ff>5</span> 14:14 ssh
+</code></pre></div><h3 id=参考文章>参考文章</h3><ul><li><a href=https://raincal.com/post/gogs-share-22-port>Gogs 与主机共享 22 端口</a></li><li><a href=https://gitea.com/jwobith/docker-gitea#additional-steps>docker-gitea</a></li></ul></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://lrtg.ml/2021/01/16/mysql-innodb-tx-isolation/><span class=button__icon>←</span>
+<span class=button__text>MySQL InnoDB 事务隔离级别总结</span></a></span>
+<span class="button next"><a href=https://lrtg.ml/2020/12/06/replace-java-try-catch-with-lambda/><span class=button__text>使用 Lambda 优雅的处理 Java 异常</span>
+<span class=button__icon>→</span></a></span></div></div><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
+var d=document,s=d.createElement('script');s.async=true;s.src='//'+"lrtg"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user">© 2019 – 2020 lrtg All Rights Reserved | CC 4.0 by-nc-sa License</div></div></footer><script src=https://lrtg.ml/assets/main.js></script><script src=https://lrtg.ml/assets/prism.js></script></div></body></html>
