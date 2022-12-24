@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Oracle on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/Oracle/</link><description>Recent content in Oracle on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 28 Jul 2016 14:06:36 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/Oracle/rss.xml" rel="self" type="application/rss+xml"/><item><title>Oracle 与 MySQL 知识总结</title><link>https://3w.vercel.app/2016/07/28/Oracle-%E4%B8%8E-MySQL-%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/</link><pubDate>Thu, 28 Jul 2016 14:06:36 +0000</pubDate><guid>https://3w.vercel.app/2016/07/28/Oracle-%E4%B8%8E-MySQL-%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/</guid><description>&lt;blockquote>
+&lt;p>对日常工作中使用 Oracle 和 MySQL 数据库知识对比总结。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="sqlplus-连接数据库的方式">SQLPlus 连接数据库的方式&lt;/h1>
+&lt;h2 id="cmd-中输入sqlplus-用户名密码数据库实例">cmd 中输入：sqlplus 用户名/密码@数据库实例&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sqlplus system/lxr316@oracle
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sqlplus sys/admin as sysdba
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="打开-sqlplus-直接输入用户名和密码">打开 SQLPlus 直接输入用户名和密码&lt;/h2>
+&lt;h2 id="使用命令">使用命令&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>connect sys/admin as sysdba
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>connect system/lxr316
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>

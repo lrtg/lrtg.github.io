@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tmux on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/Tmux/</link><description>Recent content in Tmux on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 25 Oct 2017 14:45:24 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/Tmux/rss.xml" rel="self" type="application/rss+xml"/><item><title>[转]Tmux 快捷键速查表</title><link>https://3w.vercel.app/2017/10/25/tmux-cheat-sheet/</link><pubDate>Wed, 25 Oct 2017 14:45:24 +0000</pubDate><guid>https://3w.vercel.app/2017/10/25/tmux-cheat-sheet/</guid><description>&lt;h1 id="tmux-快捷键--速查表">Tmux 快捷键 &amp;amp; 速查表&lt;/h1>
+&lt;p>启动新会话：&lt;/p>
+&lt;pre>&lt;code>tmux [new -s 会话名 -n 窗口名]
+&lt;/code>&lt;/pre>
+&lt;p>恢复会话：&lt;/p>
+&lt;pre>&lt;code>tmux at [-t 会话名]
+&lt;/code>&lt;/pre>
+&lt;p>列出所有会话：&lt;/p>
+&lt;pre>&lt;code>tmux ls
+&lt;/code>&lt;/pre>
+&lt;p>&lt;a name="killSessions">&lt;/a>关闭会话：&lt;/p>
+&lt;pre>&lt;code>tmux kill-session -t 会话名
+&lt;/code>&lt;/pre>
+&lt;p>&lt;a name="killAllSessions">&lt;/a>关闭所有会话：&lt;/p>
+&lt;pre>&lt;code>tmux ls | grep : | cut -d. -f1 | awk '{print substr($1, 0, length($1)-1)}' | xargs kill
+&lt;/code>&lt;/pre></description></item></channel></rss>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Gogs on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/Gogs/</link><description>Recent content in Gogs on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 06 Jan 2021 14:01:50 +0800</lastBuildDate><atom:link href="https://3w.vercel.app/tags/Gogs/rss.xml" rel="self" type="application/rss+xml"/><item><title>Docker 安装 Gitea/Gogs 与主机共享 22 端口</title><link>https://3w.vercel.app/2021/01/06/docker-gitea-share-port-22-with-host/</link><pubDate>Wed, 06 Jan 2021 14:01:50 +0800</pubDate><guid>https://3w.vercel.app/2021/01/06/docker-gitea-share-port-22-with-host/</guid><description>&lt;p>如果主机的 22 端口已被使用，使用 &lt;code>Docker&lt;/code> 安装 &lt;code>Gitea&lt;/code> 时只能把容器的 22 端口映射到主机的其它端口（如：10022），这是没有任何问题的。但是以 &lt;code>SSH&lt;/code> 方式 &lt;code>clone&lt;/code> 项目时，&lt;code>URL&lt;/code> 长这样
+&lt;code>ssh://git@git.example.com:10022:username/project.git&lt;/code>&lt;/p>
+&lt;p>如果我们想要类似以下这样的 &lt;code>URL&lt;/code> 时就需要把 &lt;code>Gitea&lt;/code> 容器的和主机共享 22 端口
+&lt;code>git@git.example.com:username/project.git&lt;/code>&lt;/p>
+&lt;p>下面总结一下使用 &lt;code>Docker&lt;/code> 安装 &lt;code>Gitea&lt;/code> 共享主机 22 端口的主要步骤，&lt;code>Gogs&lt;/code> 应该是同理。&lt;/p>
+&lt;h3 id="创建-git-用户">创建 git 用户&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># Create git user&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>adduser git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># Make sure user has UID and GID 1000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>usermod -u &lt;span style="color:#40a070">1000&lt;/span> -g &lt;span style="color:#40a070">1000&lt;/span> git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># Create docker group&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>groupadd docker
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># Add git user to docker group&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>usermod -aG docker git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># Create the gitea data directory&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mkdir -p /home/git/gitea/data
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>5 分钟搭建 Git 服务器-Gogs</title><link>https://3w.vercel.app/2016/09/06/gogs-installation-introduction/</link><pubDate>Tue, 06 Sep 2016 12:15:14 +0000</pubDate><guid>https://3w.vercel.app/2016/09/06/gogs-installation-introduction/</guid><description>&lt;blockquote>
+&lt;p>Gogs 基于 Go 语言的自助 Git 服务。它具有易安装、跨平台、轻量级、开源化等特性&amp;hellip;&lt;/p>
+&lt;/blockquote>
+&lt;!-- ![][1] -->
+&lt;p>{% img
+&lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/gogs-logo.png" title="https://cdn.jsdelivr.net/gh/0vo/oss/images/gogs-logo.png" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+https://cdn.jsdelivr.net/gh/0vo/oss/images/gogs-logo.png
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 150 %}&lt;/p>
+&lt;p>最近新到一家公司，发现在使用 Gogs 搭建 Git 服务，遂研究了一下，和前段时间研究的 GitLab 做了一个简单的对比，虽然 Gogs 相对与 GitLab 还比较年轻，也许没有 GitLab 强大和稳健，但 Gogs 更加简单易用，而且能够满足正常的工作使用。&lt;/p>
+&lt;p>Gogs 是轻量级的 Git 服务，正如官方介绍的：一个廉价的树莓派的配置足以满足 Gogs 的最低系统硬件要求。最大程度上节省您的服务器资源！关键的一点是免费开源的，所有的代码都开源在 GitHub 上。下面结合官方的介绍，总结一下在 Linux 系统下的安装方法，真的是相当的简单，5 分钟足矣！&lt;/p></description></item></channel></rss>

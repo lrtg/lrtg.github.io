@@ -1,0 +1,777 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ehlxr's Blog</title><link>https://3w.vercel.app/</link><description>Recent content on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 26 Jul 2022 21:46:25 +0800</lastBuildDate><atom:link href="https://3w.vercel.app/rss.xml" rel="self" type="application/rss+xml"/><item><title>Docker 搭建 Keepalived 实现 Nginx 双机热备</title><link>https://3w.vercel.app/2022/07/10/docker-keepalived-nginx-ha/</link><pubDate>Sun, 10 Jul 2022 13:12:14 +0000</pubDate><guid>https://3w.vercel.app/2022/07/10/docker-keepalived-nginx-ha/</guid><description>&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/keepalived-nginx-ha.jpg" alt="keepalived Nginx HA" />&lt;/p>
+&lt;p>docker 搭建 keepalived 实现 nginx 双机热备&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>❯ docker run --privileged -d --name node1 debian:11 top -b
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>❯ docker run --privileged -d --name node2 debian:11 top -b
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>–-privileged&lt;/code> 是指以特权模式启动容器，否则 keepalived 无法成功生成虚拟 IP&lt;/p>
+&lt;p>分别进入 node1、node2 容器节点（&lt;code>docker exec -it node1 /bin/bash&lt;/code> 和 &lt;code>docker exec -it node2 /bin/bash&lt;/code> ）&lt;/p>
+&lt;p>安装以下软件 &lt;code>apt update &amp;amp;&amp;amp; apt install curl vim iproute2 inetutils-ping psmisc net-tools systemctl nginx keepalived -y&lt;/code>&lt;/p></description></item><item><title>快速排序理解</title><link>https://3w.vercel.app/2022/03/19/quick-sort/</link><pubDate>Sat, 19 Mar 2022 18:25:46 +0800</pubDate><guid>https://3w.vercel.app/2022/03/19/quick-sort/</guid><description>&lt;p>快速排序算法核心思想，取待排序序列中的某个元素作为分区点，大于分区点的元素挪到分区点右边（从小到大排序），小于分区点的元素挪到分区点左边。然后分区点左右两边的子序列循环以上操作，直至子序列长度为 &lt;code>1&lt;/code>。&lt;/p>
+&lt;p>&lt;strong>左右指针法实现思路&lt;/strong>&lt;/p>
+&lt;p>1、首先定义分区点（pivot）&lt;code>p&lt;/code>，&lt;code>p&lt;/code> 一般为数组 &lt;code>a&lt;/code> 的第一个元素或最后一个元素
+2、然后定义左（&lt;code>l&lt;/code>）、右（&lt;code>r&lt;/code>）两个指针分别指向数组的第一个元素（&lt;code>a[0]&lt;/code>）和最后一个元素 (&lt;code>a[a.length - 1]&lt;/code>)
+3、如果 &lt;code>a[l] &amp;gt; a[p]&lt;/code>，&lt;code>l、p&lt;/code> 下标元素互换，&lt;code>l&lt;/code> 前进 &lt;code>1&lt;/code> 位
+4、如果 &lt;code>a[r] &amp;lt; a[p]&lt;/code>，&lt;code>r、p&lt;/code> 下标元素互换，&lt;code>r&lt;/code> 后退 &lt;code>1&lt;/code> 位
+5、如果 &lt;code>l &amp;gt;= r&lt;/code>，排序结束&lt;/p></description></item><item><title>堆排序理解</title><link>https://3w.vercel.app/2022/03/19/heap-sort/</link><pubDate>Sat, 19 Mar 2022 16:28:35 +0800</pubDate><guid>https://3w.vercel.app/2022/03/19/heap-sort/</guid><description>&lt;p>堆排序的关键是构建大（小）顶堆，堆顶元素就是最大（小）的元素，然后堆顶元素和末尾元素交换位置，再次堆化除最后一个元素外的其它元素，循环次过程即可完成排序。&lt;/p>
+&lt;p>翻译成代码如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020;font-weight:bold">public&lt;/span> &lt;span style="color:#902000">void&lt;/span> &lt;span style="color:#06287e">sort&lt;/span>&lt;span style="color:#666">(&lt;/span>&lt;span style="color:#902000">int&lt;/span> a&lt;span style="color:#666">)&lt;/span> &lt;span style="color:#666">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">for&lt;/span>&lt;span style="color:#666">(&lt;/span>&lt;span style="color:#902000">int&lt;/span> i &lt;span style="color:#666">=&lt;/span> a&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">length&lt;/span> &lt;span style="color:#666">-&lt;/span> 1&lt;span style="color:#666">;&lt;/span> i &lt;span style="color:#666">&amp;gt;&lt;/span> 0&lt;span style="color:#666">;&lt;/span> i&lt;span style="color:#666">--)&lt;/span> &lt;span style="color:#666">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> buildHeap&lt;span style="color:#666">(&lt;/span>a&lt;span style="color:#666">,&lt;/span> i&lt;span style="color:#666">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#60a0b0;font-style:italic">// 堆顶元素和最后一个元素交换，除过最后一个元素外其它元素再次构建大顶堆
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span> swap&lt;span style="color:#666">(&lt;/span>a&lt;span style="color:#666">,&lt;/span> 0&lt;span style="color:#666">,&lt;/span> i&lt;span style="color:#666">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#666">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#666">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>KMP 算法理解</title><link>https://3w.vercel.app/2022/03/12/the-kmp/</link><pubDate>Sat, 12 Mar 2022 22:44:00 +0000</pubDate><guid>https://3w.vercel.app/2022/03/12/the-kmp/</guid><description>&lt;h2 id="字符串前缀-与字符串后缀">&lt;strong>字符串前缀&lt;/strong> 与&lt;strong>字符串后缀&lt;/strong>&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>字符串前缀(&lt;code>Proper prefix&lt;/code>) ：包含第一个字符，不包含最后一个字符的所有子串
+例如：&lt;code>abababca&lt;/code> 的前缀：&lt;code>a、ab、aba、abab、ababa、ababab、abababc&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>字符串后缀(&lt;code>Proper suffix&lt;/code>)：不包含第一个字符，包含最后一个字符的所有子串
+例如：&lt;code>abababca&lt;/code> 的后缀：&lt;code>a、ca、bca、abca、babca、ababca、bababca&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="字符串部分匹配表">&lt;strong>字符串部分匹配表&lt;/strong>&lt;/h2>
+&lt;p>字符串部分匹配表 (&lt;code>Partial Match Table&lt;/code>) 也称为 &lt;code>next&lt;/code> 数组，例如：&lt;code>abababca&lt;/code> 的部分匹配表为：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>char&lt;/th>
+&lt;th>a&lt;/th>
+&lt;th>b&lt;/th>
+&lt;th>a&lt;/th>
+&lt;th>b&lt;/th>
+&lt;th>a&lt;/th>
+&lt;th>b&lt;/th>
+&lt;th>c&lt;/th>
+&lt;th>a&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>index&lt;/td>
+&lt;td>0&lt;/td>
+&lt;td>1&lt;/td>
+&lt;td>2&lt;/td>
+&lt;td>3&lt;/td>
+&lt;td>4&lt;/td>
+&lt;td>5&lt;/td>
+&lt;td>6&lt;/td>
+&lt;td>7&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>value&lt;/td>
+&lt;td>0&lt;/td>
+&lt;td>0&lt;/td>
+&lt;td>1&lt;/td>
+&lt;td>2&lt;/td>
+&lt;td>3&lt;/td>
+&lt;td>4&lt;/td>
+&lt;td>0&lt;/td>
+&lt;td>1&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table></description></item><item><title>JVM TLAB</title><link>https://3w.vercel.app/2021/07/27/jvm-tlab/</link><pubDate>Tue, 27 Jul 2021 09:35:05 +0000</pubDate><guid>https://3w.vercel.app/2021/07/27/jvm-tlab/</guid><description>&lt;p>&lt;strong>TLAB（Thread Local Allocation Buffer）&lt;/strong> 线程本地分配缓存区&lt;/p>
+&lt;ol>
+&lt;li>由于对象一般分配在堆上，而堆是线程共用的，因此可能会有多个线程在堆上申请空间，而每一次的&lt;strong>对象分配都必须加锁保证线程同步&lt;/strong>，会使分配的效率下降。考虑到对象分配几乎是 &lt;code>Java&lt;/code> 中最常用的操作，因此 &lt;code>JVM&lt;/code> 使用了 &lt;code>TLAB&lt;/code> 这样的线程专有区域来避免多线程冲突，提高对象分配的效率。&lt;/li>
+&lt;li>我们说 &lt;code>TLAB&lt;/code> 是线程独享的，但是只是在 &lt;strong>“分配”&lt;/strong> 这个动作上是线程独享的，至于在读取、垃圾回收等动作上都是线程共享的。而且在使用上也没有什么区别&lt;/li>
+&lt;li>&lt;code>JVM&lt;/code> 为了提升对象内存分配的效率，对于所创建的线程都会分配一块独立的空间 &lt;code>TLAB&lt;/code>，其大小由 &lt;code>JVM&lt;/code> 根据运行的情况计算而得，在 &lt;code>TLAB&lt;/code> 上分配对象时不需要加锁，因此 &lt;strong>JVM 在给线程的对象分配内存时会尽量的在 TLAB 上分配&lt;/strong>，在这种情况下 JVM 中分配对象内存的性能和 &lt;code>C&lt;/code> 基本是一样高效的，但如果对象过大的话则仍然是直接使用堆空间分配&lt;/li>
+&lt;li>在 &lt;code>TLAB&lt;/code> 分配之后，并不影响对象的移动和回收，也就是说，虽然对象刚开始可能通过 &lt;code>TLAB&lt;/code> 分配内存，存放在 &lt;code>Eden&lt;/code> 区，但是还是会被垃圾回收或者被移到 &lt;code>Survivor Space、Old Gen&lt;/code> 等。&lt;/li>
+&lt;li>&lt;strong>“堆是线程共享的内存区域” 这句话并不完全正确&lt;/strong>，因为 &lt;code>TLAB&lt;/code> 是堆内存的一部分，它在读取上确实是线程共享的，但是在内存分配上，是线程独享的。&lt;/li>
+&lt;li>&lt;code>TLAB&lt;/code> 的空间其实并不大（默认是 &lt;code>eden&lt;/code> 区空间的 &lt;code>1%&lt;/code>），所以大对象还是可能需要在堆内存中直接分配。那么，对象的内存分配步骤就是先尝试 &lt;code>TLAB&lt;/code> 分配，空间不足之后，再判断是否应该直接进入老年代，然后再确定是再 &lt;code>eden&lt;/code> 分配还是在老年代分配。&lt;/li>
+&lt;/ol></description></item><item><title>MySQL InnoDB 事务隔离级别总结</title><link>https://3w.vercel.app/2021/01/16/mysql-innodb-tx-isolation/</link><pubDate>Sat, 16 Jan 2021 22:12:07 +0800</pubDate><guid>https://3w.vercel.app/2021/01/16/mysql-innodb-tx-isolation/</guid><description>&lt;h3 id="sql-事务隔离级别说明">SQL 事务隔离级别说明&lt;/h3>
+&lt;p>SQL 标准定义了 4 类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。&lt;/p>
+&lt;p>&lt;strong>Read Uncommitted（读取未提交内容）&lt;/strong>&lt;/p>
+&lt;p>在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。&lt;/p>
+&lt;p>&lt;strong>Read Committed（读取提交内容）&lt;/strong>&lt;/p>
+&lt;p>这是大多数数据库系统的默认隔离级别（但不是 MySQL 默认的）。它满足了隔离的简单定义：一个事务只能看见已经提交事务所做的改变。这种隔离级别 也支持所谓的不可重复读（Nonrepeatable Read），因为同一事务的其他实例在该实例处理其间可能会有新的 commit，所以同一 select 可能返回不同结果。&lt;/p>
+&lt;p>&lt;strong>Repeatable Read（可重读）&lt;/strong>&lt;/p>
+&lt;p>这是 MySQL 的默认事务隔离级别，它确保同一事务的多个实例在并发读取数据时，会看到同样的数据行。不过理论上，这会导致另一个棘手的问题：幻读 （Phantom Read），简单的说，幻读指当用户读取某一范围的数据行时，另一个事务又在该范围内插入了新行，当用户再读取该范围的数据行时，会发现有新的 &lt;code>“幻影”&lt;/code> 行。&lt;/p>
+&lt;blockquote>
+&lt;p>InnoDB 存储引擎通过 &lt;code>MVCC&lt;/code> 机制（快照读）和 &lt;code>next-key lock&lt;/code>（当前读）解决了该问题。&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;strong>Serializable（可串行化）&lt;/strong>&lt;/p>
+&lt;p>这是最高的隔离级别，它通过强制事务排序，使之不可能相互冲突，从而解决幻读问题。简言之，它是在每个读的数据行上加上共享锁。在这个级别，可能导致大量的超时现象和锁竞争。&lt;/p></description></item><item><title>Docker 安装 Gitea/Gogs 与主机共享 22 端口</title><link>https://3w.vercel.app/2021/01/06/docker-gitea-share-port-22-with-host/</link><pubDate>Wed, 06 Jan 2021 14:01:50 +0800</pubDate><guid>https://3w.vercel.app/2021/01/06/docker-gitea-share-port-22-with-host/</guid><description>&lt;p>如果主机的 22 端口已被使用，使用 &lt;code>Docker&lt;/code> 安装 &lt;code>Gitea&lt;/code> 时只能把容器的 22 端口映射到主机的其它端口（如：10022），这是没有任何问题的。但是以 &lt;code>SSH&lt;/code> 方式 &lt;code>clone&lt;/code> 项目时，&lt;code>URL&lt;/code> 长这样
+&lt;code>ssh://git@git.example.com:10022:username/project.git&lt;/code>&lt;/p>
+&lt;p>如果我们想要类似以下这样的 &lt;code>URL&lt;/code> 时就需要把 &lt;code>Gitea&lt;/code> 容器的和主机共享 22 端口
+&lt;code>git@git.example.com:username/project.git&lt;/code>&lt;/p>
+&lt;p>下面总结一下使用 &lt;code>Docker&lt;/code> 安装 &lt;code>Gitea&lt;/code> 共享主机 22 端口的主要步骤，&lt;code>Gogs&lt;/code> 应该是同理。&lt;/p>
+&lt;h3 id="创建-git-用户">创建 git 用户&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># Create git user&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>adduser git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># Make sure user has UID and GID 1000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>usermod -u &lt;span style="color:#40a070">1000&lt;/span> -g &lt;span style="color:#40a070">1000&lt;/span> git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># Create docker group&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>groupadd docker
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># Add git user to docker group&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>usermod -aG docker git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># Create the gitea data directory&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mkdir -p /home/git/gitea/data
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>使用 Lambda 优雅的处理 Java 异常</title><link>https://3w.vercel.app/2020/12/06/replace-java-try-catch-with-lambda/</link><pubDate>Sun, 06 Dec 2020 22:48:28 +0800</pubDate><guid>https://3w.vercel.app/2020/12/06/replace-java-try-catch-with-lambda/</guid><description>&lt;p>使用过 &lt;code>Java&lt;/code> 的函数接口，就会被简介的语法深深的吸引，苦于代码中大量的 &lt;code>try...catch&lt;/code> 繁琐代码，最近借鉴 &lt;code>java.util.Optional&lt;/code> 的实现写了个简化的小工具。&lt;/p>
+&lt;p>以 &lt;code>Long.valueOf()&lt;/code> 为例，假如需要把一个字符串转换为&lt;code>long&lt;/code>，如果转换失败则设置默认值为 &lt;code>-1&lt;/code>，一般会作如下处理：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>String param &lt;span style="color:#666">=&lt;/span> &lt;span style="color:#4070a0">&amp;#34;10s&amp;#34;&lt;/span>&lt;span style="color:#666">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#902000">long&lt;/span> result&lt;span style="color:#666">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020;font-weight:bold">try&lt;/span> &lt;span style="color:#666">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#666">=&lt;/span> Long&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">parseLong&lt;/span>&lt;span style="color:#666">(&lt;/span>param&lt;span style="color:#666">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#666">}&lt;/span> &lt;span style="color:#007020;font-weight:bold">catch&lt;/span> &lt;span style="color:#666">(&lt;/span>Exception e&lt;span style="color:#666">)&lt;/span> &lt;span style="color:#666">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#60a0b0;font-style:italic">// 捕获异常处理
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#666">=&lt;/span> &lt;span style="color:#666">-&lt;/span>1L&lt;span style="color:#666">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#666">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果使用简化工具：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>Long result &lt;span style="color:#666">=&lt;/span> Try&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">of&lt;/span>&lt;span style="color:#666">(()&lt;/span> &lt;span style="color:#666">-&amp;gt;&lt;/span> Long&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">valueOf&lt;/span>&lt;span style="color:#666">(&lt;/span>param&lt;span style="color:#666">)).&lt;/span>&lt;span style="color:#4070a0">trap&lt;/span>&lt;span style="color:#666">(&lt;/span>e &lt;span style="color:#666">-&amp;gt;&lt;/span> &lt;span style="color:#666">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#60a0b0;font-style:italic">// 自行异常处理
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span>&lt;span style="color:#666">}).&lt;/span>&lt;span style="color:#4070a0">get&lt;/span>&lt;span style="color:#666">(-&lt;/span>1L&lt;span style="color:#666">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>或者：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>Long result &lt;span style="color:#666">=&lt;/span> Try&lt;span style="color:#666">.&amp;lt;&lt;/span>String&lt;span style="color:#666">,&lt;/span> Long&lt;span style="color:#666">&amp;gt;&lt;/span>of&lt;span style="color:#666">(&lt;/span>Long&lt;span style="color:#666">::&lt;/span>valueOf&lt;span style="color:#666">).&lt;/span>&lt;span style="color:#4070a0">trap&lt;/span>&lt;span style="color:#666">(&lt;/span>Throwable&lt;span style="color:#666">::&lt;/span>printStackTrace&lt;span style="color:#666">).&lt;/span>&lt;span style="color:#4070a0">apply&lt;/span>&lt;span style="color:#666">(&lt;/span>param&lt;span style="color:#666">).&lt;/span>&lt;span style="color:#4070a0">get&lt;/span>&lt;span style="color:#666">(-&lt;/span>1L&lt;span style="color:#666">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果不需要异常处理：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>Long result &lt;span style="color:#666">=&lt;/span> Try&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">of&lt;/span>&lt;span style="color:#666">(()&lt;/span> &lt;span style="color:#666">-&amp;gt;&lt;/span> Long&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">valueOf&lt;/span>&lt;span style="color:#666">(&lt;/span>param&lt;span style="color:#666">)).&lt;/span>&lt;span style="color:#4070a0">get&lt;/span>&lt;span style="color:#666">(-&lt;/span>1L&lt;span style="color:#666">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">// Long result = Try.&amp;lt;String, Long&amp;gt;of(Long::valueOf).apply(param).get(-1L);
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果处理没有返回值的代码，如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>ArrayList&lt;span style="color:#666">&amp;lt;&lt;/span>String&lt;span style="color:#666">&amp;gt;&lt;/span> list &lt;span style="color:#666">=&lt;/span> &lt;span style="color:#007020;font-weight:bold">new&lt;/span> ArrayList&lt;span style="color:#666">&amp;lt;&amp;gt;();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Try&lt;span style="color:#666">.&amp;lt;&lt;/span>String&lt;span style="color:#666">&amp;gt;&lt;/span>of&lt;span style="color:#666">(&lt;/span>v &lt;span style="color:#666">-&amp;gt;&lt;/span> list&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">add&lt;/span>&lt;span style="color:#666">(&lt;/span>10&lt;span style="color:#666">,&lt;/span> v&lt;span style="color:#666">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">trap&lt;/span>&lt;span style="color:#666">(&lt;/span>e &lt;span style="color:#666">-&amp;gt;&lt;/span> System&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">out&lt;/span>&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">println&lt;/span>&lt;span style="color:#666">(&lt;/span>e&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">getMessage&lt;/span>&lt;span style="color:#666">()))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">accept&lt;/span>&lt;span style="color:#666">(&lt;/span>&lt;span style="color:#4070a0">&amp;#34;test&amp;#34;&lt;/span>&lt;span style="color:#666">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>HTTPS 笔记</title><link>https://3w.vercel.app/2020/03/11/https-note/</link><pubDate>Wed, 11 Mar 2020 17:57:16 +0800</pubDate><guid>https://3w.vercel.app/2020/03/11/https-note/</guid><description>随着互联网的迅速发展，网络安全问题日益凸显，现在 Chrome 浏览器已经开始阻止非 https 网站的访问了。对于 https 的流程一直不是十分清晰，借着还没有完全复工有时间</description></item><item><title>Maven 配置文件 settings.xml 详解</title><link>https://3w.vercel.app/2020/03/02/maven-setting-config/</link><pubDate>Mon, 02 Mar 2020 14:50:48 +0800</pubDate><guid>https://3w.vercel.app/2020/03/02/maven-setting-config/</guid><description>settings.xml 是 maven 的配置文件，用户配置文件存放于 ${user.home}/.m2/ 目录下，系统全局配置文件放置于 ${maven.home}/conf/ 目录下，pom.xml 是 maven 的项目的配置文件。 配置文件的优先级从高到低为</description></item><item><title>[转]理解 Java 动态代理</title><link>https://3w.vercel.app/2020/01/02/java-dynamic-proxy/</link><pubDate>Thu, 02 Jan 2020 15:28:26 +0800</pubDate><guid>https://3w.vercel.app/2020/01/02/java-dynamic-proxy/</guid><description>原文地址 动态代理是 Java 语言中非常经典的一种设计模式，也是所有设计模式中最难理解的一种。本文将通过一个简单的例子模拟 JDK 动态代理实现，让你彻底明白</description></item><item><title>三十而立之年</title><link>https://3w.vercel.app/2019/12/31/thirty-years-old/</link><pubDate>Tue, 31 Dec 2019 15:12:18 +0800</pubDate><guid>https://3w.vercel.app/2019/12/31/thirty-years-old/</guid><description>又一年即将结束，时间过得真的很快，快到不敢静下来细细回忆。小时候觉得二十多岁的人年纪好大，再后来觉得三十岁应该离自己很远吧，没想到自己的三十</description></item><item><title>Rust 中字符串总结</title><link>https://3w.vercel.app/2019/08/04/string-in-rust/</link><pubDate>Sun, 04 Aug 2019 11:06:43 +0000</pubDate><guid>https://3w.vercel.app/2019/08/04/string-in-rust/</guid><description>&lt;p>&lt;code>Rust&lt;/code> 中字符串和 &lt;code>Java&lt;/code> 和 &lt;code>Go&lt;/code> 中的表示有很大的区别，刚开始接触的时候有点儿懵，今天花点时间总结备忘一下。&lt;/p>
+&lt;p>&lt;code>Rust&lt;/code> 字符串有两种形式：&lt;code>str&lt;/code> 和 &lt;code>String&lt;/code>，&lt;code>str&lt;/code> 是内置的原始数据类型，通常是以借用的形式（&lt;code>&amp;amp;str&lt;/code> 字符串 &lt;code>slice&lt;/code>）使用，而 &lt;code>String&lt;/code> 是标准库提供的一种结构体，内部存储一个 &lt;code>u8&lt;/code> 类型的 &lt;code>Vec&lt;/code>：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020;font-weight:bold">pub&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">struct&lt;/span> &lt;span style="color:#007020">String&lt;/span> {&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb"> &lt;/span>vec: &lt;span style="color:#007020">Vec&lt;/span>&lt;span style="color:#666">&amp;lt;&lt;/span>&lt;span style="color:#902000">u8&lt;/span>&lt;span style="color:#666">&amp;gt;&lt;/span>,&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">&lt;/span>}&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>按比例控制流量的一种实现</title><link>https://3w.vercel.app/2019/07/19/control-traffic-by-rate/</link><pubDate>Fri, 19 Jul 2019 09:51:25 +0000</pubDate><guid>https://3w.vercel.app/2019/07/19/control-traffic-by-rate/</guid><description>&lt;p>网关做灰度的时候，要控制流量的比例，比如 3:7 的分发流量到两个不同版本的服务上去。刚开始的想法是每次流量过来生成 100 以内的随机数，随机数落在那个区间就转到那个版本的服务上去，但是发现这样无法较精准的保证 3:7 的比例，因为有可能某段时间内生成的随机数大范围的落在某个区间内，比如请求了 100 次，每次生成的随机数都是大于 30 的，这样 70% 比例的服务就承受了 100% 的流量。&lt;/p>
+&lt;p>接下来想到了第二种解决方案，能够保证 10（基数） 倍的流量比例正好是 3:7，思路如下：&lt;/p>
+&lt;p>1、生成 0 - 99 的数组（集合）
+2、打乱数组（集合）的顺序，为了防止出现某比例的流量集中出现
+3、全局的计数器，要考虑原子性
+4、从数组（集合）中取出计数器和 100 取余后位置的值
+5、判断取到的值落在那个区间&lt;/p></description></item><item><title>关于跑步</title><link>https://3w.vercel.app/2019/04/21/run/</link><pubDate>Sun, 21 Apr 2019 19:47:32 +0000</pubDate><guid>https://3w.vercel.app/2019/04/21/run/</guid><description>天气暖和了，19 年的跑步计划已经在心中盘算好久了，本打算昨天生日的时候去开始的，结果天公不作美，一直在下小雨。 关于跑步，一开始为了减肥，现在</description></item><item><title>有人把生活过成了诗，有人却在彷徨挣扎…</title><link>https://3w.vercel.app/2019/04/18/essay/</link><pubDate>Thu, 18 Apr 2019 10:16:21 +0000</pubDate><guid>https://3w.vercel.app/2019/04/18/essay/</guid><description>有人把生活过成了诗，有人却在彷徨挣扎… 总有一些人能让自己触动心弦，仔细想，也许他们并没有比自己“能耐”多少，或许只是自己已习惯奔波，没有了理</description></item><item><title>可靠消息最终一致性分布式事务实现方案</title><link>https://3w.vercel.app/2019/01/25/eventually-consistency/</link><pubDate>Fri, 25 Jan 2019 15:59:11 +0000</pubDate><guid>https://3w.vercel.app/2019/01/25/eventually-consistency/</guid><description>&lt;p>提到分布式应用，就不得不考虑分布式事务。在分布式事务中，常见的有 &lt;code>CAP&lt;/code>，&lt;code>BASE&lt;/code> 理论，解决方案也有很多种，比如：&lt;code>2PC&lt;/code>、&lt;code>TCC&lt;/code> 、最终一致性等。&lt;/p>
+&lt;p>&lt;code>2PC&lt;/code>（两阶段提交）比较适合单块应用，跨多个库的分布式事务。因为严重依赖于数据库层面来搞定复杂的事务，效率很低，绝对不适合高并发的场景，而且，对于微服务而言，不推荐一个服务出现跨多个数据库操作， 如果需要操作其它数据库数据，推荐通过调用别的服务接口来实现。&lt;/p>
+&lt;p>&lt;code>TCC&lt;/code> 属于强一致性事务的方案，适用资金流转业务相关业务，比如：支付、交易等场景。根据 &lt;code>CAP&lt;/code> 理论，这种实现需要牺牲可用性。&lt;/p>
+&lt;p>如果是一般的分布式事务场景，比如：订单插入之后要调用库存服务更新库存，库存数据没有资金那么的敏感，可以用可靠消息最终一致性方案。&lt;/p>
+&lt;p>下面是一种可靠消息最终一致性事务方案的实现流程：&lt;/p></description></item><item><title>浅谈分布式事务</title><link>https://3w.vercel.app/2019/01/25/distributed-system-transaction/</link><pubDate>Fri, 25 Jan 2019 15:57:42 +0000</pubDate><guid>https://3w.vercel.app/2019/01/25/distributed-system-transaction/</guid><description>&lt;p>通俗的理解，事务是一组原子操作单元。我们希望一些列的操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。&lt;/p>
+&lt;p>传统的单机应用系统一般使用一个关系型数据库，利用数据库事务来保证数据的一致性，下面先了解一下本地数据库事务的一些特性。&lt;/p>
+&lt;h2 id="一本地数据库事务">一、本地数据库事务&lt;/h2>
+&lt;p>事务从数据库角度说，就是一组 &lt;code>SQL&lt;/code> 指令，要么全部执行成功，若因为某个原因其中一条指令执行有错误，则撤销先前执行过的所有指令。&lt;/p>
+&lt;p>关系型数据库（例如：&lt;code>MySQL&lt;/code>、&lt;code>SQL Server&lt;/code>、&lt;code>Oracle&lt;/code> 等）事务都有以下几个特性：&lt;strong>原子性&lt;/strong>（&lt;code>Atomicity&lt;/code>）、&lt;strong>一致性&lt;/strong>（&lt;code>Consistency&lt;/code>）、&lt;strong>隔离性或独立性&lt;/strong>（&lt;code>Isolation&lt;/code>）&lt;strong>和持久性&lt;/strong>（&lt;code>Durabilily&lt;/code>），简称就是 &lt;strong>ACID&lt;/strong>。&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>原子性&lt;/strong>：表示事务执行过程中的任何失败都将导致事务所做的任何修改失效。&lt;/li>
+&lt;li>&lt;strong>一致性&lt;/strong>：表示当事务执行失败时，所有被该事务影响的数据都应该恢复到事务执行前的状态。&lt;/li>
+&lt;li>&lt;strong>隔离性&lt;/strong>：表示在事务执行过程中对数据的修改，在事务提交之前对其他事务不可见。&lt;/li>
+&lt;li>&lt;strong>持久性&lt;/strong>：表示已提交的数据在事务执行失败时，数据的状态都应该正确。&lt;/li>
+&lt;/ul></description></item><item><title>About</title><link>https://3w.vercel.app/about/</link><pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate><guid>https://3w.vercel.app/about/</guid><description>屌丝码农。。。 About Blog 本站是使用 Hugo 博客框架搭建，主题使用的是 hugo-theme-next ，镜像托管在 Vercel 之上。 Copyright 本站是为了个人交流学习而搭建，本站内容若非注明【转】均来自本</description></item><item><title>恍恍惚惚又一年</title><link>https://3w.vercel.app/2018/12/31/summary-in-2018/</link><pubDate>Mon, 31 Dec 2018 09:03:33 +0000</pubDate><guid>https://3w.vercel.app/2018/12/31/summary-in-2018/</guid><description>&lt;p>再强大的内心，估计也抵抗不住岁月的流逝吧&amp;hellip;那天和媳妇聊天，说起十年前，觉得十年好遥远，现在觉得十年前就想是在昨天。&lt;/p>
+&lt;p>今天是 2018 年的最后一天，像去年的今天一样，仿佛就像是在昨天，想着总结一下过去的一年，发现啥都写不出来。&lt;/p>
+&lt;p>今年为了西安房子的装修，从 6 月份后几乎每隔一月就在西安和北京奔波一回。装修房子的过程是痛苦的，什么都不懂，多花了不少冤枉钱，效果也不太满意，如果还会有第二套房子装修，我想应该会好很多吧！&lt;/p>
+&lt;p>工作上马马虎虎，个人能力感觉也没什么长进。又一波互联网大寒冬来袭，倒了一大批创业公司，各大公司也纷纷传出裁员的新闻，瑟瑟发抖，越来越焦虑了！&lt;/p></description></item><item><title>JVM-垃圾回收（二）</title><link>https://3w.vercel.app/2018/08/23/jvm-gc2/</link><pubDate>Thu, 23 Aug 2018 15:15:07 +0000</pubDate><guid>https://3w.vercel.app/2018/08/23/jvm-gc2/</guid><description>&lt;blockquote>
+&lt;p>接着上次 JVM 中 GC 机制的总结，这次主要复习一下垃圾收集的常用算法和 Minor GC、Full GC 相关的一些知识点。&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="一垃圾收集算法">一、垃圾收集算法&lt;/h2>
+&lt;h3 id="11-标记---清除mark-sweep">1.1 标记 - 清除（Mark-Sweep）&lt;/h3>
+&lt;p>算法分成 “标记”、“清除” 两个阶段：首先标记出所有需要回收的对象（两次标记），在标记完成后统一回收所有被标记的对象。如下图所示：&lt;/p>
+&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1ftwah4c7cxj20gv07b0sz.jpg" alt="" />&lt;/p></description></item><item><title>JVM-垃圾回收（一）</title><link>https://3w.vercel.app/2018/08/23/jvm-gc1/</link><pubDate>Thu, 23 Aug 2018 11:25:52 +0000</pubDate><guid>https://3w.vercel.app/2018/08/23/jvm-gc1/</guid><description>&lt;p>在 JVM 运行时数据区域中，程序计数器、虚拟机栈和本地方法栈这三个区域属于线程私有的，只存在于线程的生命周期内，线程结束之后也会消失，因此不需要对这三个区域进行垃圾回收。垃圾回收主要是针对 Java 堆和方法区进行。&lt;/p>
+&lt;h2 id="一判断对象状态">一、判断对象状态&lt;/h2>
+&lt;p>JVM 在回收一个对象时，首先要判断这个对象的状态，如果判断对象为无效的（没有被任何对象或变量引用），则需要被 JVM 垃圾回收器回收。&lt;/p>
+&lt;h3 id="11-引用计数算法">1.1 引用计数算法&lt;/h3>
+&lt;p>给对象添加一个引用计数器，当对象增加一个引用时计数器加 1，引用失效时计数器减 1。引用计数不为 0 的对象仍然存活。&lt;/p></description></item><item><title>Java 位运算笔记</title><link>https://3w.vercel.app/2018/08/02/java-positional-operator/</link><pubDate>Thu, 02 Aug 2018 17:24:58 +0000</pubDate><guid>https://3w.vercel.app/2018/08/02/java-positional-operator/</guid><description>&lt;p>一些零碎的知识点总是似懂非懂，用法老是模棱两可，每次都要去网络上查询，长时间不用又忘记了。比如 Java 中的位运算。今天抽空归纳总结一下，加强一下记忆。&lt;/p>
+&lt;h2 id="一原码反码和补码">一、原码、反码和补码&lt;/h2>
+&lt;h3 id="11-原码">1.1 原码&lt;/h3>
+&lt;p>一个数在计算机中的二进制表示形式，叫做这个数的机器数。机器数是带符号的，在计算机用一个数的最高位存放符号，正数为 0, 负数为 1。所以，为区别起见，将带符号位的机器数对应的真正数值称为机器数的真值。&lt;/p>
+&lt;p>原码就是符号位加上真值的绝对值，即用第一位表示符号，其余位表示值。比如 8 位二进制:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>[+1] 原 = 0000 0001
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[-1] 原 = 1000 0001
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>第一位是符号位，因为第一位是符号位，所以 8 位二进制数的取值范围就是：[1111 1111 , 0111 1111]，即：[-127 , 127]&lt;/p></description></item><item><title>SQL 事务隔离</title><link>https://3w.vercel.app/2018/05/31/sql-transaction-isolation/</link><pubDate>Thu, 31 May 2018 13:55:26 +0000</pubDate><guid>https://3w.vercel.app/2018/05/31/sql-transaction-isolation/</guid><description>&lt;p>SQL 标准定义了 4 类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。&lt;/p>
+&lt;h2 id="一sql-事务隔离级别说明">一、SQL 事务隔离级别说明&lt;/h2>
+&lt;h3 id="11-read-uncommitted读取未提交内容">1.1 Read Uncommitted（读取未提交内容）&lt;/h3>
+&lt;p>在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。&lt;/p></description></item><item><title>JVM-运行时数据区域</title><link>https://3w.vercel.app/2018/04/08/jvm-runtime-data-area/</link><pubDate>Sun, 08 Apr 2018 17:30:33 +0000</pubDate><guid>https://3w.vercel.app/2018/04/08/jvm-runtime-data-area/</guid><description>&lt;p>Java 的内存区域划分绝不仅仅只是堆内存（heap）和栈内存（Stack），实际上 JVM 在执行 Java 程序的过程中会把它所管理的内存划分为以下几个数据区域：程序计数器、Java 虚拟机栈、本地方法栈、堆、方法区、运行时常量和直接内存。如下图所示：&lt;/p>
+&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/jvm-runtime-data-area.png" alt="Runtime DataArea" />&lt;/p></description></item><item><title>Mac 实用小工具</title><link>https://3w.vercel.app/2018/03/30/mac-utility-tools/</link><pubDate>Fri, 30 Mar 2018 20:45:40 +0000</pubDate><guid>https://3w.vercel.app/2018/03/30/mac-utility-tools/</guid><description>&lt;blockquote>
+&lt;p>记录备忘一下 Mac 系统下一些实用的小工具&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="收费">收费&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>Bartender&lt;/code> : 菜单栏管理工具，可以将菜单放进 Bartender 的二级菜单&lt;/li>
+&lt;li>&lt;code>SizeUp&lt;/code> : 实用分屏小工具&lt;/li>
+&lt;li>&lt;code>Proxifier&lt;/code> : 配合 ss/ssr 可以实现真正的全局代理软件&lt;/li>
+&lt;li>&lt;code>iStat Menus&lt;/code> : 能够在系统菜单栏实时监控 CPU、内存、硬盘、网络、温度、电池以及系统时间等&lt;/li>
+&lt;li>&lt;code>CleanMyMac&lt;/code> : 系统清理工具，可以清除 mac 系统多余的语言包、系统缓存、应用程序等&lt;/li>
+&lt;li>&lt;code>KeyCue&lt;/code> : 快捷键辅助工具，忘记一些快捷键的时候按住 Command 就会出现快捷键大全的菜单&lt;/li>
+&lt;li>&lt;code>Araxis Merge&lt;/code> : 可视化文件合并以及数据同步工具&lt;/li>
+&lt;li>&lt;code>BetterZip&lt;/code> : 功能非常强大的压缩解压缩软件&lt;/li>
+&lt;li>&lt;code>Parallels Desktop&lt;/code> : 最佳 Mac 虚拟机解决方案&lt;/li>
+&lt;li>&lt;code>TinyCal&lt;/code> : 小历 - 小而美的日历 (OS X)&lt;/li>
+&lt;/ul></description></item><item><title>漂 泊</title><link>https://3w.vercel.app/2018/03/10/drifter/</link><pubDate>Sat, 10 Mar 2018 23:02:47 +0000</pubDate><guid>https://3w.vercel.app/2018/03/10/drifter/</guid><description>&lt;p>北漂，是一种选择，但越来越多的会是无奈和彷徨，
+踌躇满志而来，万念俱灰而归，也许就是大多数北漂的归属，结局也许有些夸张。
+最终，我还是无法爱上这座城市，最起码我努力爱过&amp;hellip;&lt;/p>
+&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbgy1fp8q20yzt6g206y046x0m.gif" alt="" />&lt;/p></description></item><item><title>Golang 反射使用总结</title><link>https://3w.vercel.app/2018/01/26/golang-reflect/</link><pubDate>Fri, 26 Jan 2018 21:27:56 +0000</pubDate><guid>https://3w.vercel.app/2018/01/26/golang-reflect/</guid><description>&lt;p>Go 语言中反射的操作主要定义在标准库
+&lt;a href="https://golang.org/pkg/reflect/" title="&amp;lt;code&amp;gt;reflect&amp;lt;/code&amp;gt;" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+&lt;code>reflect&lt;/code>
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 中，在标准库中定义了两种类型来表现运行时的对象信息，分别是：
+&lt;a href="https://golang.org/pkg/reflect/#Value" title="&amp;lt;code&amp;gt;reflect.Value&amp;lt;/code&amp;gt;" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+&lt;code>reflect.Value&lt;/code>
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>（反射对象的类型）和
+&lt;a href="https://golang.org/pkg/reflect/#Type" title="&amp;lt;code&amp;gt;reflect.Type&amp;lt;/code&amp;gt;" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+&lt;code>reflect.Type&lt;/code>
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>（反射对象的值），Go 语言中所有反射操作都是基于这两个类型进行的。&lt;/p>
+&lt;p>{% img
+&lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/golang-reflect.jpg" title="https://cdn.jsdelivr.net/gh/0vo/oss/images/golang-reflect.jpg" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+https://cdn.jsdelivr.net/gh/0vo/oss/images/golang-reflect.jpg
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 350 %}&lt;/p>
+&lt;!-- ![golang-reflect][1] -->
+&lt;p>为了方便演示操作（
+&lt;a href="https://github.com/ehlxr/go-utils/blob/master/common/reflect/main.go" title="完整代码示例" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+完整代码示例
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>），首先定义以下结构体以及字段、方法：&lt;/p></description></item><item><title>Kubernetes 学习笔记之 MiniKube 安装</title><link>https://3w.vercel.app/2018/01/12/kubernetes-minikube-installation/</link><pubDate>Fri, 12 Jan 2018 09:23:01 +0000</pubDate><guid>https://3w.vercel.app/2018/01/12/kubernetes-minikube-installation/</guid><description>&lt;p>Kubernetes 集群的搭建是有一定难度的，尤其是对于初学者来说，好多概念和原理不懂，即使有现成的教程也会出现很多不可预知的问题，很容易打击学习的积极性，就此弃坑。好在 Kubernetes 社区提供了可以在本地开发和体验的极简集群安装 MiniKube，对于入门学习来说很方便。&lt;/p>
+&lt;p>{% img
+&lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1fo7n00rkl6j20b40b4goj.jpg" title="https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1fo7n00rkl6j20b40b4goj.jpg" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1fo7n00rkl6j20b40b4goj.jpg
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 300 %}&lt;/p>
+&lt;!-- ![minikube][1] -->
+&lt;p>MiniKube 官方安装介绍已经非常详细了，可以参考
+&lt;a href="https://github.com/kubernetes/minikube#installation" title="installation" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+installation
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>。但是在国内由于网络访问原因（懂的），即使有梯子也很折腾，所以记录一下阿里修改后的 MiniKube 安装。使用阿里修改后的 MiniKube 就可以从阿里云的镜像地址来获取所需 Docker 镜像和配置，其它的并没有差异，下文着重介绍。&lt;/p></description></item><item><title>又是一年岁末时...</title><link>https://3w.vercel.app/2017/12/31/summary-in-2017/</link><pubDate>Sun, 31 Dec 2017 11:52:58 +0000</pubDate><guid>https://3w.vercel.app/2017/12/31/summary-in-2017/</guid><description>&lt;p>2017 年最后一天了，北京的天气很好，阳光明媚，关键是没有雾霾。说起雾霾，今年北京可是&amp;quot;治理&amp;quot;的很有效果，截止目前雾霾天和去年的好天气一样多，买了个空气净化器还没怎么派上用场，哈哈。&lt;/p>
+&lt;p>步入了婚姻的殿堂，享受幸福的同是多了一份责任。进入人生下一个阶段，需要处理的关系更多，新的一年需要勉励自己不断前行&amp;hellip;&lt;/p>
+&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1fodlad6j39g20dw06i4qp.gif" alt="" />&lt;/p>
+&lt;p>奋斗在一线的程序猿，到了一定的阶段，就不得不审视一下自己的未来。作为碌碌无为低端程序猿的我，此刻对未来感到深深的迷茫。少了年少时的拼劲，多了肩膀上的重担，不知作为下一个低端人群的我在北京还能拼搏多久。&lt;/p></description></item><item><title>Go 常用代码块</title><link>https://3w.vercel.app/2017/12/06/go-commons-code-snippets/</link><pubDate>Wed, 06 Dec 2017 10:07:54 +0000</pubDate><guid>https://3w.vercel.app/2017/12/06/go-commons-code-snippets/</guid><description>&lt;blockquote>
+&lt;p>总结备忘一下常用的的 Go 代码片段&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="遍历目录下的文件">遍历目录下的文件&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020;font-weight:bold">func&lt;/span> &lt;span style="color:#06287e">getFilelist&lt;/span>(r &lt;span style="color:#902000">string&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> err &lt;span style="color:#666">:=&lt;/span> filepath.&lt;span style="color:#06287e">Walk&lt;/span>(r, &lt;span style="color:#007020;font-weight:bold">func&lt;/span>(p &lt;span style="color:#902000">string&lt;/span>, f os.FileInfo, err &lt;span style="color:#902000">error&lt;/span>) &lt;span style="color:#902000">error&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">if&lt;/span> f &lt;span style="color:#666">==&lt;/span> &lt;span style="color:#007020;font-weight:bold">nil&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#007020;font-weight:bold">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">if&lt;/span> p &lt;span style="color:#666">==&lt;/span> r &lt;span style="color:#666">||&lt;/span> f.&lt;span style="color:#06287e">IsDir&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#007020;font-weight:bold">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fmt.&lt;span style="color:#06287e">Println&lt;/span>(p)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#007020;font-weight:bold">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> })
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">if&lt;/span> err &lt;span style="color:#666">!=&lt;/span> &lt;span style="color:#007020;font-weight:bold">nil&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fmt.&lt;span style="color:#06287e">Printf&lt;/span>(&lt;span style="color:#4070a0">&amp;#34;filepath.Walk() returned %v\n&amp;#34;&lt;/span>, err)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>[转]Tmux 快捷键速查表</title><link>https://3w.vercel.app/2017/10/25/tmux-cheat-sheet/</link><pubDate>Wed, 25 Oct 2017 14:45:24 +0000</pubDate><guid>https://3w.vercel.app/2017/10/25/tmux-cheat-sheet/</guid><description>&lt;h1 id="tmux-快捷键--速查表">Tmux 快捷键 &amp;amp; 速查表&lt;/h1>
+&lt;p>启动新会话：&lt;/p>
+&lt;pre>&lt;code>tmux [new -s 会话名 -n 窗口名]
+&lt;/code>&lt;/pre>
+&lt;p>恢复会话：&lt;/p>
+&lt;pre>&lt;code>tmux at [-t 会话名]
+&lt;/code>&lt;/pre>
+&lt;p>列出所有会话：&lt;/p>
+&lt;pre>&lt;code>tmux ls
+&lt;/code>&lt;/pre>
+&lt;p>&lt;a name="killSessions">&lt;/a>关闭会话：&lt;/p>
+&lt;pre>&lt;code>tmux kill-session -t 会话名
+&lt;/code>&lt;/pre>
+&lt;p>&lt;a name="killAllSessions">&lt;/a>关闭所有会话：&lt;/p>
+&lt;pre>&lt;code>tmux ls | grep : | cut -d. -f1 | awk '{print substr($1, 0, length($1)-1)}' | xargs kill
+&lt;/code>&lt;/pre></description></item><item><title>[转] Go Cheat Sheet</title><link>https://3w.vercel.app/2017/08/24/golang-cheat-sheet/</link><pubDate>Thu, 24 Aug 2017 14:18:53 +0000</pubDate><guid>https://3w.vercel.app/2017/08/24/golang-cheat-sheet/</guid><description>&lt;h1 id="go-cheat-sheet">Go Cheat Sheet&lt;/h1>
+&lt;h2 id="credits">Credits&lt;/h2>
+&lt;p>Most example code taken from
+&lt;a href="http://tour.golang.org/" title="A Tour of Go" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+A Tour of Go
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>, which is an excellent introduction to Go.
+If you&amp;rsquo;re new to Go, do that tour. Seriously.&lt;/p>
+&lt;h2 id="go-in-a-nutshell">Go in a Nutshell&lt;/h2>
+&lt;ul>
+&lt;li>Imperative language&lt;/li>
+&lt;li>Statically typed&lt;/li>
+&lt;li>Syntax tokens similar to C (but less parentheses and no semicolons) and the structure to Oberon-2&lt;/li>
+&lt;li>Compiles to native code (no JVM)&lt;/li>
+&lt;li>No classes, but structs with methods&lt;/li>
+&lt;li>Interfaces&lt;/li>
+&lt;li>No implementation inheritance. There&amp;rsquo;s
+&lt;a href="http://golang.org/doc/effective%5Fgo.html#embedding" title="type embedding" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+type embedding
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>, though.&lt;/li>
+&lt;li>Functions are first class citizens&lt;/li>
+&lt;li>Functions can return multiple values&lt;/li>
+&lt;li>Has closures&lt;/li>
+&lt;li>Pointers, but not pointer arithmetic&lt;/li>
+&lt;li>Built-in concurrency primitives: Goroutines and Channels&lt;/li>
+&lt;/ul></description></item><item><title>使用 PowerMock 进行单元测试</title><link>https://3w.vercel.app/2017/07/25/use-introduction-of-powermock/</link><pubDate>Tue, 25 Jul 2017 19:01:14 +0000</pubDate><guid>https://3w.vercel.app/2017/07/25/use-introduction-of-powermock/</guid><description>&lt;blockquote>
+&lt;p>单元测试（Unit Testing）又称为模块测试，是针对程序模块（软件设计的最小单位）来进行正确性检验的测试工作。如果我们写的代码依赖于某些模块对象，而单元测试过程中这些对象又很难手动创建，或者模块还没有开发完成，那么就使用一个虚拟的对象来完成单元测试，这就是所谓的 Mock。&lt;/p>
+&lt;/blockquote>
+&lt;p>Java 单元测试中比较流行的 Mock 测试框架有
+&lt;a href="http://www.jmock.org/" title="jMock" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+jMock
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>、
+&lt;a href="http://easymock.org/" title="EasyMock" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+EasyMock
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>、
+&lt;a href="https://github.com/mockito/mockito" title="Mockito" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+Mockito
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>，但是这些 Mock 工具都不能 Mock &lt;code>static&lt;/code>、&lt;code>final&lt;/code>、&lt;code>private&lt;/code> 方法等，而
+&lt;a href="https://github.com/powermock/powermock" title="PowerMock" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+PowerMock
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 能够做到。&lt;/p>
+&lt;p>使用 PowerMock，首先需要使用 &lt;code>@RunWith(PowerMockRunner.class)&lt;/code> 将测试用例的 Runner 改为 &lt;code>PowerMockRunner&lt;/code>。如果要 Mock &lt;code>static&lt;/code>、&lt;code>final&lt;/code>、&lt;code>private&lt;/code> 等方法的时候，就需要加注解 &lt;code>@PrepareForTest&lt;/code>。&lt;/p>
+&lt;p>PowerMock 有两个版本，一个是基于 EasyMock 实现的，另一个是基于 Mockito 实现的。&lt;/p>
+&lt;p>下面我将以 PowerMock 的 Mockito 的版本来讲述如何使用 PowerMock。&lt;/p></description></item><item><title>[转] Java 程序员的 Golang 入门笔记</title><link>https://3w.vercel.app/2017/07/22/from-java-to-golang/</link><pubDate>Sat, 22 Jul 2017 11:23:10 +0000</pubDate><guid>https://3w.vercel.app/2017/07/22/from-java-to-golang/</guid><description>&lt;blockquote>
+&lt;p>最近抽空学习了一下 &lt;code>Go&lt;/code> 语言，好多特性感觉非常棒，由于高效的开发效率以及性能，现在好多优秀的开源项目都是基于 &lt;code>Go&lt;/code> 开发，比如 &lt;code>Docker&lt;/code>、&lt;code>etcd&lt;/code>、&lt;code>consul&lt;/code>、&lt;code>Kubernetes&lt;/code> 等。&lt;code>Go&lt;/code> 势必会在互联网技术的服务化，容器化的将来大展拳脚。正好网上看到一篇关于 &lt;code>Java&lt;/code> 程序员入门 &lt;code>Golang&lt;/code> 的文章，写的挺好的，所以特此转载过来，再加上自己的一些学习经验，供大家参考。&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>Golang&lt;/code> 从 &lt;code>09&lt;/code> 年发布，中间经历了多个版本的演进，已经渐渐趋于成熟，其媲美于 &lt;code>C&lt;/code> 语言的性能、&lt;code>Python&lt;/code> 的开发效率，又被称为 21 世纪的 &lt;code>C&lt;/code> 语言，尤其适合开发后台服务。这篇文章主要是介绍 &lt;code>Golang&lt;/code> 的一些主要特性，和 &lt;code>Java&lt;/code> 做一个对比，以便更好的理解 &lt;code>Golang&lt;/code> 这门语言。&lt;/p>
+&lt;p>关于 &lt;code>Golang&lt;/code> 环境的搭建就不讲了，可以参考
+&lt;a href="https://golang.org/doc/install" title="官方文档" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+官方文档
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 或者大神
+&lt;a href="https://github.com/astaxie" title="astaxie" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+astaxie
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 的开源书籍
+&lt;a href="https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/01.0.md" title="build-web-application-with-golang" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+build-web-application-with-golang
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 的相关篇章。下面我没让你就从 &lt;code>Go&lt;/code> 版本的&lt;code> Hello World&lt;/code> 开始。&lt;/p></description></item><item><title>[转] Git查看、删除、重命名远程分支和tag</title><link>https://3w.vercel.app/2017/06/15/%E8%BD%AC-Git%E6%9F%A5%E7%9C%8B%E5%88%A0%E9%99%A4%E9%87%8D%E5%91%BD%E5%90%8D%E8%BF%9C%E7%A8%8B%E5%88%86%E6%94%AF%E5%92%8Ctag/</link><pubDate>Thu, 15 Jun 2017 10:18:29 +0000</pubDate><guid>https://3w.vercel.app/2017/06/15/%E8%BD%AC-Git%E6%9F%A5%E7%9C%8B%E5%88%A0%E9%99%A4%E9%87%8D%E5%91%BD%E5%90%8D%E8%BF%9C%E7%A8%8B%E5%88%86%E6%94%AF%E5%92%8Ctag/</guid><description>&lt;h2 id="查看远程分支">查看远程分支&lt;/h2>
+&lt;p>加上 &lt;code>-a&lt;/code> 参数可以查看远程分支，远程分支会用红色表示出来（如果你开了颜色支持的话）：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ git branch -a
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> master
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> remote
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> tungway
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> v1.52
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* zrong
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> remotes/origin/master
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> remotes/origin/tungway
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> remotes/origin/v1.52
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> remotes/origin/zrong
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="删除远程分支和-tag">删除远程分支和 &lt;code>tag&lt;/code>&lt;/h2>
+&lt;p>在 &lt;code>Git v1.7.0&lt;/code> 之后，可以使用这种语法删除远程分支：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ git push origin --delete &amp;lt;branchName&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>占用端口、PID 查询总结</title><link>https://3w.vercel.app/2017/05/24/query-port-pid/</link><pubDate>Wed, 24 May 2017 10:45:20 +0000</pubDate><guid>https://3w.vercel.app/2017/05/24/query-port-pid/</guid><description>&lt;blockquote>
+&lt;p>总结一下日常工作学习中常用的查询占用端口、PID相关命令。主要有命令 ps、lsof、netstat 等命令。&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="ps">ps&lt;/h2>
+&lt;p>&lt;code>ps -ef&lt;/code> 或者 &lt;code>ps aux&lt;/code>&lt;/p>
+&lt;p>根据命令（IntelliJIDEALicenseServer）搜索 PID（17107）&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ ps -ef | grep IntelliJIDEALicenseServer | grep -v &lt;span style="color:#4070a0">&amp;#34;grep&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#40a070">501&lt;/span> &lt;span style="color:#40a070">17017&lt;/span> &lt;span style="color:#40a070">12203&lt;/span> &lt;span style="color:#40a070">0&lt;/span> 10:01上午 ttys000 0:00.02 IntelliJIDEALicenseServer -p &lt;span style="color:#40a070">21014&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="lsof">lsof&lt;/h2>
+&lt;p>根据 PID（17107）搜索占用端口（21014）&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ lsof -p &lt;span style="color:#40a070">17017&lt;/span> -nP | grep TCP
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>IntelliJI &lt;span style="color:#40a070">17017&lt;/span> ehlxr 3u IPv4 0xc0df10496212b0e3 0t0 TCP *:21014 &lt;span style="color:#666">(&lt;/span>LISTEN&lt;span style="color:#666">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 或者使用&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ lsof -nP -iTCP -sTCP:LISTEN | grep &lt;span style="color:#40a070">17017&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;ul>
+&lt;li>-n 表示不显示主机名&lt;/li>
+&lt;li>-P 表示不显示端口俗称&lt;/li>
+&lt;/ul>
+&lt;/blockquote></description></item><item><title>Linux 操作笔记</title><link>https://3w.vercel.app/2017/04/14/Linux-%E6%93%8D%E4%BD%9C%E7%AC%94%E8%AE%B0/</link><pubDate>Fri, 14 Apr 2017 11:18:41 +0000</pubDate><guid>https://3w.vercel.app/2017/04/14/Linux-%E6%93%8D%E4%BD%9C%E7%AC%94%E8%AE%B0/</guid><description>&lt;blockquote>
+&lt;p>好记性不如烂笔头，记录一下日常工作学习中常使用的 Linux 命令。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="安装磁盘分配">安装磁盘分配&lt;/h1>
+&lt;ul>
+&lt;li>&lt;code>/boot&lt;/code> 用来存放与 Linux 系统启动有关的程序，比如启动引导装载程序等，建议大小为 100MB。&lt;/li>
+&lt;li>&lt;code>swap&lt;/code> 实现虚拟内存，建议大小是物理内存的1~2倍。&lt;/li>
+&lt;li>&lt;code>/&lt;/code> Linux系统的根目录，所有的目录都挂在这个目录下面，建议大小为5GB以上。&lt;/li>
+&lt;li>&lt;code>/home&lt;/code> 存放普通用户的数据，是普通用户的宿主目录，建议大小为剩下的空间。&lt;/li>
+&lt;/ul>
+&lt;h1 id="系统目录结构">系统目录结构&lt;/h1>
+&lt;ul>
+&lt;li>&lt;code>/&lt;/code>：存放系统程序，也就是 At&amp;amp;t 开发的 Unix 程序。&lt;/li>
+&lt;li>&lt;code>/usr&lt;/code>：存放 Unix 系统商（比如 IBM 和 HP）开发的程序。&lt;/li>
+&lt;li>&lt;code>/usr/local&lt;/code>：存放用户自己安装的程序。&lt;/li>
+&lt;li>&lt;code>/opt&lt;/code>：在某些系统，用于存放第三方厂商开发的程序，所以取名为 option，意为 &amp;ldquo;选装&amp;rdquo;。&lt;/li>
+&lt;/ul></description></item><item><title>Poker 机械键盘入手记</title><link>https://3w.vercel.app/2017/04/09/Poker-%E6%9C%BA%E6%A2%B0%E9%94%AE%E7%9B%98%E5%85%A5%E6%89%8B%E8%AE%B0/</link><pubDate>Sun, 09 Apr 2017 16:49:50 +0000</pubDate><guid>https://3w.vercel.app/2017/04/09/Poker-%E6%9C%BA%E6%A2%B0%E9%94%AE%E7%9B%98%E5%85%A5%E6%89%8B%E8%AE%B0/</guid><description>&lt;p>作为一个码农，天天和键盘打交道，没有一款称心如意的键盘怎么能行了？要说那一款键盘堪称神器，我想大多数程序员首推 HHKB ，怎奈囊中羞涩，只能找一款 HHKB 的替代品，于是，Poker 浮现我的眼中，经济实惠，小巧玲珑，深得我心&amp;hellip;&lt;/p>
+&lt;p>关注这款键盘其实很久了，虽说相对于 HHKB 来说便宜很多，但也有点儿心疼，迟迟没能入手。最近过生日，女朋友很民主的征求我的意见，问我想要什么礼物，嘿嘿&lt;/p></description></item><item><title>Java 获取系统的配置信息</title><link>https://3w.vercel.app/2017/03/29/Java-%E8%8E%B7%E5%8F%96%E7%B3%BB%E7%BB%9F%E7%9A%84%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF/</link><pubDate>Wed, 29 Mar 2017 15:33:54 +0000</pubDate><guid>https://3w.vercel.app/2017/03/29/Java-%E8%8E%B7%E5%8F%96%E7%B3%BB%E7%BB%9F%E7%9A%84%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF/</guid><description>&lt;p>&lt;code>System.getProperty()&lt;/code> 可以获取系统的配置信息，最近项目开发中要用到临时文件，所以想到了使用系统临时文件目录，最后得知可以通过 &lt;code>System.getProperty(&amp;quot;java.io.tmpdir&amp;quot;)&lt;/code> 可以获取不同操作系统平台下的临时目录。比如：&lt;/p>
+&lt;p>在 &lt;code>windows&lt;/code> 中的目录是：&lt;code>C:\Users\登录用户~1\AppData\Local\Temp\&lt;/code>&lt;/p>
+&lt;p>在 &lt;code>linux&lt;/code> 下的目录是：&lt;code>/tmp&lt;/code>&lt;/p>
+&lt;p>在 &lt;code>Mac&lt;/code> 下目录是 &lt;code>/var/folders/c8/2c9rf0ss2w9c8tdtfcgvg9kh0000gn/T/&lt;/code> （我感觉是不同电脑应该不一样）&lt;/p></description></item><item><title>Mac 使用技巧总结</title><link>https://3w.vercel.app/2017/02/21/Mac-%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/</link><pubDate>Tue, 21 Feb 2017 21:40:06 +0000</pubDate><guid>https://3w.vercel.app/2017/02/21/Mac-%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/</guid><description>&lt;blockquote>
+&lt;p>Mac 系统日常使用技巧归纳总结。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="一mac-中-finder-显示关闭隐藏文件">一、Mac 中 Finder 显示、关闭隐藏文件&lt;/h1>
+&lt;h2 id="11-终端命令模式">1.1 终端命令模式&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>打开终端，输入：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 此命令显示隐藏文件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>defaults write com.apple.finder AppleShowAllFiles -bool &lt;span style="color:#007020">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 此命令关闭显示隐藏文件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>defaults write com.apple.finder AppleShowAllFiles -bool &lt;span style="color:#007020">false&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>命令运行之后需要重新加载 Finder&lt;/p>
+&lt;p>快捷键 &lt;code>Option + Command + ESC&lt;/code>，选中 &lt;code>Finder&lt;/code>，重新启动即可&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="12-finder-快捷键">1.2 Finder 快捷键&lt;/h2>
+&lt;p>在 macOS Sierra（10.12） 版本的系统中，我们可以使用快捷键&lt;code>⌘⇧.&lt;/code>(&lt;code>Command + Shift + .&lt;/code>) 来快速（在 Finder 中）显示和隐藏隐藏文件了。&lt;/p></description></item><item><title>Linux 的 nohup 命令的用法</title><link>https://3w.vercel.app/2017/01/18/Linux-%E7%9A%84-nohup-%E5%91%BD%E4%BB%A4%E7%9A%84%E7%94%A8%E6%B3%95/</link><pubDate>Wed, 18 Jan 2017 16:13:21 +0000</pubDate><guid>https://3w.vercel.app/2017/01/18/Linux-%E7%9A%84-nohup-%E5%91%BD%E4%BB%A4%E7%9A%84%E7%94%A8%E6%B3%95/</guid><description>&lt;blockquote>
+&lt;p>如果你正在运行一个进程，而且你觉得在退出帐户时该进程还不会结束，那么可以使用 &lt;code>nohup&lt;/code> 命令。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="命令简介">命令简介&lt;/h1>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ nohup Command &lt;span style="color:#666">[&lt;/span> Arg … &lt;span style="color:#666">]&lt;/span> &lt;span style="color:#666">[&lt;/span> &amp;amp; &lt;span style="color:#666">]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>该命令可以在你退出帐户/关闭终端之后继续运行相应的进程。&lt;code>nohup&lt;/code> 就是不挂起的意思（&lt;code>no hang up&lt;/code>）。&lt;/p>
+&lt;p>&lt;code>nohup&lt;/code> 运行由 &lt;code>Command&lt;/code> 和相关的 &lt;code>Arg&lt;/code> 参数指定的命令，忽略所有挂断（&lt;code>SIGHUP&lt;/code>）信号。要运行后台中的 &lt;code>nohup&lt;/code> 命令，添加 &lt;code>&amp;amp;&lt;/code> （ 表示 &lt;code>and&lt;/code> 的符号）到命令的尾部。&lt;/p>
+&lt;p>如果使用 &lt;code>nohup&lt;/code> 命令提交作业，那么在缺省情况下该作业的所有输出都被重定向到一个名为 &lt;code>nohup.out&lt;/code> 的文件中，除非另外指定了输出文件。&lt;/p></description></item><item><title>Linux 中 fg、bg、jobs 等指令</title><link>https://3w.vercel.app/2017/01/18/Linux-%E4%B8%AD-fgbgjobs-%E7%AD%89%E6%8C%87%E4%BB%A4/</link><pubDate>Wed, 18 Jan 2017 15:30:16 +0000</pubDate><guid>https://3w.vercel.app/2017/01/18/Linux-%E4%B8%AD-fgbgjobs-%E7%AD%89%E6%8C%87%E4%BB%A4/</guid><description>&lt;blockquote>
+&lt;p>记录总结一下 &lt;code>Linux&lt;/code> 中 &lt;code>fg&lt;/code>、&lt;code>bg&lt;/code>、&lt;code>jobs&lt;/code>、&lt;code>&amp;amp;&lt;/code>、&lt;code>ctrl + z&lt;/code> 等相关指令对任务进程的操作。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="一基本用法">一、基本用法&lt;/h1>
+&lt;h2 id="11--和-jobs-指令">1.1 &lt;code>&amp;amp;&lt;/code> 和 &lt;code>jobs&lt;/code> 指令&lt;/h2>
+&lt;p>&lt;code>&amp;amp;&lt;/code> 用在一个命令的最后，可以把这个命令转换为后台运行的任务进程。&lt;/p>
+&lt;p>&lt;code>jobs&lt;/code> 查看当前终端有多少在后台运行的进程。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;code>jobs&lt;/code> 命令执行的结果，&lt;code>＋&lt;/code> 表示是一个当前的作业，&lt;code>-&lt;/code> 减号表示是一个当前作业之后的一个作业。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>jobs -l&lt;/code> 选项可显示所有任务的进程号 &lt;code>pid&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>jobs&lt;/code> 的状态可以是 &lt;code>running&lt;/code>，&lt;code>stopped&lt;/code>，&lt;code>terminated&lt;/code>。但是如果任务进程被终止了（&lt;code>kill&lt;/code>），当前的终端环境中也就删除了任务的进程标识；也就是说 &lt;strong>jobs 命令显示的是当前 shell 环境中后台正在运行或者被挂起的任务进程信息&lt;/strong>&lt;/p>
+&lt;/li>
+&lt;/ul></description></item><item><title>[转] CentOS 升级 kernel</title><link>https://3w.vercel.app/2017/01/10/%E8%BD%AC-CentOS-%E5%8D%87%E7%BA%A7-kernel/</link><pubDate>Tue, 10 Jan 2017 11:01:09 +0000</pubDate><guid>https://3w.vercel.app/2017/01/10/%E8%BD%AC-CentOS-%E5%8D%87%E7%BA%A7-kernel/</guid><description>&lt;h1 id="一手动档">一、手动档&lt;/h1>
+&lt;p>手动档就是从源码开始编译内核安装，好处是可以自己选择任意版本的内核，缺点就是耗时长，编译安装消耗系统资源&lt;/p>
+&lt;h2 id="11获取-kernel-源码">1.1、获取 kernel 源码&lt;/h2>
+&lt;p>这世界上最伟大的 Linux 内核源码下载地址是
+&lt;a href="https://kernel.org/" title="kernel" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+kernel
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 官网，选择一个稳定版本下载即可&lt;/p>
+&lt;h2 id="12解压并清理">1.2、解压并清理&lt;/h2>
+&lt;p>官方要求将其解压到 &lt;code>/usr/src&lt;/code> 目录，其实在哪都可以，为了规范一点索性也解压到此位置，然后为了防止编译残留先做一次清理动作&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 下载内核源码&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.8.6.tar.xz
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 解压并移动到 /usr/src&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ tar -Jxvf linux-4.8.6.tar.xz
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ mv linux-4.8.6 /usr/src/kernels
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 执行清理（没 gcc 的要装一下）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#007020">cd&lt;/span> /usr/src/kernels/linux-4.8.6
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ make mrproper &lt;span style="color:#666">&amp;amp;&amp;amp;&lt;/span> make clean
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Docker 利用数据卷容器来备份、恢复、迁移数据</title><link>https://3w.vercel.app/2017/01/09/Docker-%E5%88%A9%E7%94%A8%E6%95%B0%E6%8D%AE%E5%8D%B7%E5%AE%B9%E5%99%A8%E6%9D%A5%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE/</link><pubDate>Mon, 09 Jan 2017 16:54:24 +0000</pubDate><guid>https://3w.vercel.app/2017/01/09/Docker-%E5%88%A9%E7%94%A8%E6%95%B0%E6%8D%AE%E5%8D%B7%E5%AE%B9%E5%99%A8%E6%9D%A5%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE/</guid><description>&lt;blockquote>
+&lt;p>在 Docker 容器之间如果需要共享数据，可以创建一个数据卷容器来实现，并且可以方便的通过数据卷容器来备份、恢复、迁移数据。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="创建数据卷容器">创建数据卷容器&lt;/h1>
+&lt;p>创建一个名为：dbdata 的数据卷容器；设置挂载点为 &lt;code>/vdata&lt;/code>。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo docker run -d -v /vdata --name dbdata alpine sh
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>数据卷容器是一个普通的 Docker 容器，可以不需要启动。&lt;/p></description></item><item><title>CentOS 7 安装Python3、pip3</title><link>https://3w.vercel.app/2017/01/07/CentOS-7-%E5%AE%89%E8%A3%85Python3pip3/</link><pubDate>Sat, 07 Jan 2017 19:23:22 +0000</pubDate><guid>https://3w.vercel.app/2017/01/07/CentOS-7-%E5%AE%89%E8%A3%85Python3pip3/</guid><description>&lt;p>CentOS 7 默认安装了 Python 2，当需要使用 Python 3 的时候，可以手动下载 Python 源码后编译安装。&lt;/p>
+&lt;h1 id="一安装-python-3">一、安装 Python 3&lt;/h1>
+&lt;h2 id="11-安装准备">1.1 安装准备&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo mkdir /usr/local/python3 &lt;span style="color:#60a0b0;font-style:italic"># 创建安装目录&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 下载 Python 源文件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wget --no-check-certificate https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tgz
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 注意：wget获取https的时候要加上：--no-check-certificate&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ tar -xzvf Python-3.6.0.tgz &lt;span style="color:#60a0b0;font-style:italic"># 解压缩包&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#007020">cd&lt;/span> Python-3.6.0 &lt;span style="color:#60a0b0;font-style:italic"># 进入解压目录&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Good bye 2016...</title><link>https://3w.vercel.app/2016/12/31/Good-bye-2016.../</link><pubDate>Sat, 31 Dec 2016 12:51:14 +0000</pubDate><guid>https://3w.vercel.app/2016/12/31/Good-bye-2016.../</guid><description>&lt;p>时光飞逝，转眼间，2016 年已经在今天画上句号，结束了，再提起 2016 年就已经是过往了&amp;hellip;&lt;/p>
+&lt;p>印象中，十年应该要算是很长的一段时间吧，但仔细一琢磨十年前也就才 2006 年&amp;hellip;那时候是高中，每天除了上课就是写作业，学习很枯燥总感觉时间很多，憧憬着美好的未来，过着也算是无忧无虑生活。每天放学，下晚自习，总是很快的骑着自行车冲出校门口，因为晚了学生会很多，那时候骑自行车一个比一个快。周五不用上晚自习，三五成群去网吧通宵，包宿八块钱八个小时，从晚上十点到第二天早上六点，六点从网吧出来总会有种恍如隔世的感觉，大街上几乎没有人，回出租屋睡上一天，感觉就是一周最美好的时光了！看着别的同学拿着小灵通、MP3 ，很羡慕，自已也想要有一个，都不敢奢望能有一台电脑&amp;hellip;一切仿佛也就是昨天而已，但是已经十年之前了，不禁一颤，人生能有几个十年&amp;hellip;&lt;/p></description></item><item><title>[转] shell 中单引号、双引号、反引号、反斜杠区别</title><link>https://3w.vercel.app/2016/12/30/%E8%BD%AC-shell-%E4%B8%AD%E5%8D%95%E5%BC%95%E5%8F%B7%E5%8F%8C%E5%BC%95%E5%8F%B7%E5%8F%8D%E5%BC%95%E5%8F%B7%E5%8F%8D%E6%96%9C%E6%9D%A0%E5%8C%BA%E5%88%AB/</link><pubDate>Fri, 30 Dec 2016 15:36:51 +0000</pubDate><guid>https://3w.vercel.app/2016/12/30/%E8%BD%AC-shell-%E4%B8%AD%E5%8D%95%E5%BC%95%E5%8F%B7%E5%8F%8C%E5%BC%95%E5%8F%B7%E5%8F%8D%E5%BC%95%E5%8F%B7%E5%8F%8D%E6%96%9C%E6%9D%A0%E5%8C%BA%E5%88%AB/</guid><description>&lt;blockquote>
+&lt;p>&lt;code>shell&lt;/code> 可以识别 &lt;code>4&lt;/code> 种不同类型的引字符号：单引号字符 &lt;code>'&lt;/code>，双引号字符 &lt;code>&amp;quot;&lt;/code>，反斜杠字符 &lt;code>\&lt;/code>，反引号字符 &lt;code>`&lt;/code> ，学习 &lt;code>shell&lt;/code> 编程的朋友可以看下。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="1-单引号--">1. 单引号( &lt;code>'&lt;/code> )&lt;/h1>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ grep Susan phonebook
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Susan Goldberg 403-212-4921
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Susan Topple 212-234-2343
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果我们想查找的是 &lt;code>Susan Goldberg&lt;/code>，不能直接使用 &lt;code>grep Susan Goldberg phonebook&lt;/code> 命令，&lt;code>grep&lt;/code> 会把 &lt;code>Goldberg&lt;/code> 和 &lt;code>phonebook&lt;/code> 当作需要搜索的文件。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ grep &lt;span style="color:#4070a0">&amp;#39;Susan Gold&amp;#39;&lt;/span> phonebook
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Susan Goldberg 403-212-4921
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>当 &lt;code>shell&lt;/code> 碰到第一个单引号时，它忽略掉其后直到右引号的所有特殊字符。&lt;/p></description></item><item><title>CentOS 安装 Nginx</title><link>https://3w.vercel.app/2016/12/23/CentOS-%E5%AE%89%E8%A3%85-Nginx/</link><pubDate>Fri, 23 Dec 2016 11:20:44 +0000</pubDate><guid>https://3w.vercel.app/2016/12/23/CentOS-%E5%AE%89%E8%A3%85-Nginx/</guid><description>&lt;h1 id="一安装准备">一、安装准备&lt;/h1>
+&lt;p>首先由于 Nginx 的一些模块依赖一些 lib 库，所以在安装 Nginx 之前，必须先安装这些 lib 库，这些依赖库主要有 g++、gcc、openssl-devel、pcre-devel 和 zlib-devel，执行如下命令安装：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ yum install gcc-c++
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ yum install pcre pcre-devel
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ yum install zlib zlib-devel
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ yum install openssl openssl--devel
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="二安装-nginx">二、安装 Nginx&lt;/h1>
+&lt;p>安装之前，最好检查一下是否已经安装有 Nginx&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ find -name nginx
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>CentOS 安装 rar、zip 解压缩</title><link>https://3w.vercel.app/2016/12/22/CentOS-%E5%AE%89%E8%A3%85-rarzip-%E8%A7%A3%E5%8E%8B%E7%BC%A9/</link><pubDate>Thu, 22 Dec 2016 15:39:45 +0000</pubDate><guid>https://3w.vercel.app/2016/12/22/CentOS-%E5%AE%89%E8%A3%85-rarzip-%E8%A7%A3%E5%8E%8B%E7%BC%A9/</guid><description>&lt;p>Windows 系统压缩的 rar 和 zip 文件，在 Linux 系统下是无法通过 tar 命令解压缩的，需要使用 rar 和 zip 命令来解压缩。下面记录一下 rar 和 zip 安装和简单的使用。&lt;/p>
+&lt;h1 id="一rar-安装使用">一、rar 安装使用&lt;/h1>
+&lt;p>Linux 系统下使用 rarlinux 解压缩 rar 压缩文件，下载页面：http://www.rarsoft.com/download.htm。&lt;/p>
+&lt;h2 id="11-下载系统对应的版本">1.1 下载系统对应的版本&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ wget http://www.rarsoft.com/rar/rarlinux-x64-5.4.0.tar.gz
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="12-解压安装">1.2 解压、安装&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ tar -zxvf rarlinux-x64-5.4.0.tar.gz
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#007020">cd&lt;/span> rar
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ make
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Vim Tab 设置为 4 个空格</title><link>https://3w.vercel.app/2016/12/02/Vim-Tab-%E8%AE%BE%E7%BD%AE%E4%B8%BA-4-%E4%B8%AA%E7%A9%BA%E6%A0%BC/</link><pubDate>Fri, 02 Dec 2016 20:46:05 +0000</pubDate><guid>https://3w.vercel.app/2016/12/02/Vim-Tab-%E8%AE%BE%E7%BD%AE%E4%B8%BA-4-%E4%B8%AA%E7%A9%BA%E6%A0%BC/</guid><description>&lt;p>在 &lt;code>vim&lt;/code> 的配置文件中（Liunx：&lt;code>/etc/vimrc&lt;/code>）中添加以下代码后，重启 &lt;code>vim&lt;/code> 即可实现按 &lt;code>TAB&lt;/code> 产生 &lt;code>4&lt;/code> 个空格：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">set&lt;/span> &lt;span style="color:#bb60d5">ts&lt;/span>&lt;span style="color:#666">=&lt;/span>&lt;span style="color:#40a070">4&lt;/span> &lt;span style="color:#60a0b0;font-style:italic"># 注：ts 是 tabstop 的缩写，设 TAB 宽 4 个空格&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">set&lt;/span> expandtab
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>对于已保存的文件，可以使用下面的方法进行空格和 &lt;code>TAB&lt;/code> 的替换：&lt;/p>
+&lt;p>&lt;code>TAB&lt;/code> 替换为空格：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>:set &lt;span style="color:#bb60d5">ts&lt;/span>&lt;span style="color:#666">=&lt;/span>&lt;span style="color:#40a070">4&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>:set expandtab
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>:%retab!
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>忙忙碌碌的十一月份</title><link>https://3w.vercel.app/2016/11/30/%E5%BF%99%E5%BF%99%E7%A2%8C%E7%A2%8C%E7%9A%84%E5%8D%81%E4%B8%80%E6%9C%88%E4%BB%BD/</link><pubDate>Wed, 30 Nov 2016 20:04:13 +0000</pubDate><guid>https://3w.vercel.app/2016/11/30/%E5%BF%99%E5%BF%99%E7%A2%8C%E7%A2%8C%E7%9A%84%E5%8D%81%E4%B8%80%E6%9C%88%E4%BB%BD/</guid><description>&lt;p>早就有计划在西安买房，一直觉得还早，主要是没钱，近期有人肯借钱就想看看市场。买房需要做很多准备工作，本想着慢慢先看着，一边从同学朋友那里打听消息，一边从网上看各个楼盘信息，怎奈越看越着急，就想一下子赶紧买了。看中的两个楼盘，价格其实都远远超过自己的预算和目前能承受的能力，不得不说我是一个容易被蛊惑的人，听着置业顾问的天花乱坠的描述，有好几次都差点都掉坑里了。&lt;/p>
+&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20161130202110.jpg" alt="" />&lt;/p></description></item><item><title>[转] Linux 查看系统内核版本和发行版本</title><link>https://3w.vercel.app/2016/11/18/%E8%BD%AC-Linux-%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E5%92%8C%E5%8F%91%E8%A1%8C%E7%89%88%E6%9C%AC/</link><pubDate>Fri, 18 Nov 2016 14:56:43 +0000</pubDate><guid>https://3w.vercel.app/2016/11/18/%E8%BD%AC-Linux-%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8%E7%89%88%E6%9C%AC%E5%92%8C%E5%8F%91%E8%A1%8C%E7%89%88%E6%9C%AC/</guid><description>&lt;h1 id="一查看-linux-内核版本命令">一、查看 Linux 内核版本命令&lt;/h1>
+&lt;p>以下两条命令适合所有 &lt;code>Linux&lt;/code> 系统。&lt;/p>
+&lt;h2 id="1cat-procversion">1、cat /proc/version&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ cat /proc/version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Linux version 3.10.0-327.el7.x86_64 &lt;span style="color:#666">(&lt;/span>builder@kbuilder.dev.centos.org&lt;span style="color:#666">)&lt;/span> &lt;span style="color:#666">(&lt;/span>gcc version 4.8.3 &lt;span style="color:#40a070">20140911&lt;/span> &lt;span style="color:#666">(&lt;/span>Red Hat 4.8.3-9&lt;span style="color:#666">)&lt;/span> &lt;span style="color:#666">(&lt;/span>GCC&lt;span style="color:#666">)&lt;/span> &lt;span style="color:#666">)&lt;/span> &lt;span style="color:#60a0b0;font-style:italic">#1 SMP Thu Nov 19 22:10:57 UTC 2015&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>➜ ~ cat /proc/version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Linux version 4.4.0-36-generic &lt;span style="color:#666">(&lt;/span>buildd@lcy01-01&lt;span style="color:#666">)&lt;/span> &lt;span style="color:#666">(&lt;/span>gcc version 5.4.0 &lt;span style="color:#40a070">20160609&lt;/span> &lt;span style="color:#666">(&lt;/span>Ubuntu 5.4.0-6ubuntu1~16.04.2&lt;span style="color:#666">)&lt;/span> &lt;span style="color:#666">)&lt;/span> &lt;span style="color:#60a0b0;font-style:italic">#55-Ubuntu SMP Thu Aug 11 18:01:55 UTC 2016&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2uname--a">2、uname -a&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ uname -a
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Linux centos 3.10.0-327.el7.x86_64 &lt;span style="color:#60a0b0;font-style:italic">#1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>➜ ~ uname -a
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Linux www 4.4.0-36-generic &lt;span style="color:#60a0b0;font-style:italic">#55-Ubuntu SMP Thu Aug 11 18:01:55 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Test daocloud CI</title><link>https://3w.vercel.app/2016/11/18/Test-daocloud-CI/</link><pubDate>Fri, 18 Nov 2016 09:44:35 +0000</pubDate><guid>https://3w.vercel.app/2016/11/18/Test-daocloud-CI/</guid><description>Test daocloud CI</description></item><item><title>[转] Git 版本回滚</title><link>https://3w.vercel.app/2016/11/07/%E8%BD%AC-Git-%E7%89%88%E6%9C%AC%E5%9B%9E%E6%BB%9A/</link><pubDate>Mon, 07 Nov 2016 16:53:38 +0000</pubDate><guid>https://3w.vercel.app/2016/11/07/%E8%BD%AC-Git-%E7%89%88%E6%9C%AC%E5%9B%9E%E6%BB%9A/</guid><description>&lt;blockquote>
+&lt;p>总有一天你会遇到下面的问题：&lt;/p>
+&lt;/blockquote>
+&lt;ul>
+&lt;li>改完代码匆忙提交，上线发现有问题，怎么办？赶紧回滚。&lt;/li>
+&lt;li>改完代码测试也没有问题，但是上线发现你的修改影响了之前运行正常的代码报错，必须回滚。&lt;/li>
+&lt;/ul>
+&lt;p>这些开发中很常见的问题，所以 &lt;code>git&lt;/code> 的取消提交，回退甚至返回上一版本都是特别重要的。大致分为下面 &lt;code>2&lt;/code> 种情况：&lt;/p>
+&lt;h1 id="一没有-push">一、没有 push&lt;/h1>
+&lt;p>这种情况发生在你的本地代码仓库，可能你 &lt;code>add&lt;/code>，&lt;code>commit&lt;/code> 以后发现代码有点问题，准备取消提交，用到下面命令回退到某个版本：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>git reset &lt;span style="color:#666">[&lt;/span>--soft | --mixed | --hard&lt;span style="color:#666">]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Docker 学习笔记</title><link>https://3w.vercel.app/2016/11/03/Docker-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link><pubDate>Thu, 03 Nov 2016 15:46:19 +0000</pubDate><guid>https://3w.vercel.app/2016/11/03/Docker-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid><description>&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20161103001.png" alt="Docker" />&lt;/p>
+&lt;h1 id="一centos-系统安装">一、CentOS 系统安装&lt;/h1>
+&lt;p>参考《Docker — 从入门到实践》 之
+&lt;a href="https://github.com/yeasy/docker_practice/blob/master/install/centos.md" title="&amp;amp;ldquo;CentOS 操作系统安装 Docker&amp;amp;rdquo;" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+&amp;ldquo;CentOS 操作系统安装 Docker&amp;rdquo;
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>&lt;/p>
+&lt;h2 id="11-系统要求">1.1 系统要求&lt;/h2>
+&lt;p>Docker 最低支持 CentOS 7。&lt;/p>
+&lt;p>Docker 需要安装在 64 位的平台，并且内核版本不低于 3.10。 CentOS 7 满足最低内核的要求，但由于内核版本比较低，部分功能（如 &lt;code>overlay2&lt;/code> 存储层驱动）无法使用，并且部分功能可能不太稳定。&lt;/p>
+&lt;p>参考升级
+&lt;a href="http://ehlxr.me/2017/01/10/%E8%BD%AC-CentOS-%E5%8D%87%E7%BA%A7-kernel/" title="CentOS 升级 kernel" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+CentOS 升级 kernel
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>&lt;/p>
+&lt;h2 id="12-使用脚本自动安装">1.2 使用脚本自动安装&lt;/h2>
+&lt;p>Docker 官方为了简化安装流程，提供了一套安装脚本，CentOS 系统上可以使用这套脚本安装：&lt;/p></description></item><item><title>测试使用 daocloud 持续构建 Hexo</title><link>https://3w.vercel.app/2016/11/02/%E6%B5%8B%E8%AF%95%E4%BD%BF%E7%94%A8-daocloud-%E6%8C%81%E7%BB%AD%E6%9E%84%E5%BB%BA-Hexo/</link><pubDate>Wed, 02 Nov 2016 19:03:06 +0000</pubDate><guid>https://3w.vercel.app/2016/11/02/%E6%B5%8B%E8%AF%95%E4%BD%BF%E7%94%A8-daocloud-%E6%8C%81%E7%BB%AD%E6%9E%84%E5%BB%BA-Hexo/</guid><description>测试使用 daocloud 持续构建 Hexo {% note danger %} Coding Hexo DaoCloud {% endnote %} {% note primary %} 看到这边博文，表示持续构建成功！！！ {% endnote %}</description></item><item><title>测试 Travis CI 结合 Hexo 使用</title><link>https://3w.vercel.app/2016/11/02/%E6%B5%8B%E8%AF%95-Travis-CI-%E7%BB%93%E5%90%88-Hexo-%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 02 Nov 2016 17:32:35 +0000</pubDate><guid>https://3w.vercel.app/2016/11/02/%E6%B5%8B%E8%AF%95-Travis-CI-%E7%BB%93%E5%90%88-Hexo-%E4%BD%BF%E7%94%A8/</guid><description>测试 Travis CI 结合 Hexo 使用</description></item><item><title>热爱微小的改变</title><link>https://3w.vercel.app/2016/10/31/%E7%83%AD%E7%88%B1%E5%BE%AE%E5%B0%8F%E7%9A%84%E6%94%B9%E5%8F%98/</link><pubDate>Mon, 31 Oct 2016 17:05:37 +0000</pubDate><guid>https://3w.vercel.app/2016/10/31/%E7%83%AD%E7%88%B1%E5%BE%AE%E5%B0%8F%E7%9A%84%E6%94%B9%E5%8F%98/</guid><description>&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20161031001.jpg" alt="" />
+当你有着强烈的情绪时，可能是因为你要明哲保身。你不愿冒险因为你害怕被拒绝、害怕失败、害怕自己hold不住。真的，试想下如果你彻底的失败了，甚至在完全陌生的人面前流泪你会怎么做？也许你不相信你会采取合理的风险。也许你曾经打破常规去挑战自我的极限，但是结果却并不令你满意。但卖掉你所有的财产，搬去墨西哥并非我今天所谈论的改变类型。&lt;/p></description></item><item><title>看懂的人都还在加班中...</title><link>https://3w.vercel.app/2016/10/27/%E7%9C%8B%E6%87%82%E7%9A%84%E4%BA%BA%E9%83%BD%E8%BF%98%E5%9C%A8%E5%8A%A0%E7%8F%AD%E4%B8%AD.../</link><pubDate>Thu, 27 Oct 2016 15:06:38 +0000</pubDate><guid>https://3w.vercel.app/2016/10/27/%E7%9C%8B%E6%87%82%E7%9A%84%E4%BA%BA%E9%83%BD%E8%BF%98%E5%9C%A8%E5%8A%A0%E7%8F%AD%E4%B8%AD.../</guid><description>&lt;blockquote>
+&lt;p>以下是关于程序员的一些笑话，据说看懂的人都还在加班中。&lt;/p>
+&lt;/blockquote>
+&lt;p>0、老婆给当程序员的老公打电话：下班顺路买十个包子，如果看到卖西瓜的，买一个。当晚老公手捧一个包子进了家门。老婆怒道：你怎么只买一个包子？！老公甚恐，喃喃道：因为我真看到卖西瓜的了。&lt;/p>
+&lt;p>1、一程序员去面试，面试官问：“你毕业才两年，这三年工作经验是怎么来的？！”程序员答：“加班。”&lt;/p>
+&lt;p>2、某程序员对书法十分感兴趣，退休后决定在这方面有所建树。于是花重金购买了上等的文房四宝。一日，饭后突生雅兴，一番磨墨拟纸，并点上了上好的檀香，颇有王羲之风范，又具颜真卿气势，定神片刻，泼墨挥毫，郑重地写下一行字：&lt;code>hello world&lt;/code>。&lt;/p>
+&lt;p>3、问：程序员最讨厌康熙的哪个儿子。答：胤禩。因为他是八阿哥（&lt;code>bug&lt;/code>）&lt;/p></description></item><item><title>Windows 10 删除、恢复资源管理器中“视频、图片”等文件夹</title><link>https://3w.vercel.app/2016/10/25/Windows-10-%E5%88%A0%E9%99%A4%E6%81%A2%E5%A4%8D%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86%E5%99%A8%E4%B8%AD%E8%A7%86%E9%A2%91%E5%9B%BE%E7%89%87%E7%AD%89%E6%96%87%E4%BB%B6%E5%A4%B9/</link><pubDate>Tue, 25 Oct 2016 11:48:31 +0000</pubDate><guid>https://3w.vercel.app/2016/10/25/Windows-10-%E5%88%A0%E9%99%A4%E6%81%A2%E5%A4%8D%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86%E5%99%A8%E4%B8%AD%E8%A7%86%E9%A2%91%E5%9B%BE%E7%89%87%E7%AD%89%E6%96%87%E4%BB%B6%E5%A4%B9/</guid><description>&lt;blockquote>
+&lt;p>Windows 10 资源管理器中的&amp;quot;视频、图片、文档、下载、音乐、桌面&amp;quot;等文件夹目前通过一般途径是删除不了的，只能通过注册表的删除删掉，本文介绍一种比较简单的删除、恢复方法。&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20161025111013.jpg" alt="" />&lt;/p></description></item><item><title>设置 Sublime Text3 主题透明</title><link>https://3w.vercel.app/2016/10/24/%E8%AE%BE%E7%BD%AE-Sublime-Text3-%E4%B8%BB%E9%A2%98%E9%80%8F%E6%98%8E/</link><pubDate>Mon, 24 Oct 2016 17:30:55 +0000</pubDate><guid>https://3w.vercel.app/2016/10/24/%E8%AE%BE%E7%BD%AE-Sublime-Text3-%E4%B8%BB%E9%A2%98%E9%80%8F%E6%98%8E/</guid><description>&lt;h1 id="1-下载安装包">1. 下载安装包&lt;/h1>
+&lt;p>下载地址：
+&lt;a href="https://github.com/vhanla/SublimeTextTrans" title="SublimeTextTrans" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+SublimeTextTrans
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>。&lt;/p>
+&lt;h1 id="2-安装插件">2. 安装插件&lt;/h1>
+&lt;p>解压到 Sublime Text3 的 Packages 存放目录下，命名为：&lt;code>SublimeTextTrans&lt;/code>。点击 Sublime Text3 的 &lt;code>Preferences -&amp;gt; Browse Packages&lt;/code> 打开 Packages 存放目录，一般情况是在 &lt;code>C:\Users\YOURNAME\AppData\Roaming\Sublime Text 3\Packages&lt;/code> 目录下。&lt;/p>
+&lt;h1 id="3-设置-sublime-text3-的透明度级别">3. 设置 Sublime Text3 的透明度级别。&lt;/h1>
+&lt;p>点击 Sublime Text3 的 &lt;code>Preferences -&amp;gt; Package Setting -&amp;gt; SublimeTextTrans -&amp;gt; Setting - User&lt;/code> 就可以设置透明度的级别了。&lt;/p></description></item><item><title>[转]用 Markdown 写印象笔记（Evernote）</title><link>https://3w.vercel.app/2016/10/19/%E8%BD%AC%E7%94%A8-Markdown-%E5%86%99%E5%8D%B0%E8%B1%A1%E7%AC%94%E8%AE%B0Evernote/</link><pubDate>Wed, 19 Oct 2016 10:47:23 +0000</pubDate><guid>https://3w.vercel.app/2016/10/19/%E8%BD%AC%E7%94%A8-Markdown-%E5%86%99%E5%8D%B0%E8%B1%A1%E7%AC%94%E8%AE%B0Evernote/</guid><description>&lt;p>使用印象笔记很久了，什么都觉得很好，就是不支持 Markdown 书写语法，实在是太遗憾了。今天发现网上有人介绍了一款 Sublime 的一个插件
+&lt;a href="https://packagecontrol.io/packages/Evernote" title="Evernote" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+Evernote
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>，尝试了一下觉得还是一个不错的方案，正好我也很喜欢使用 Sublime 编辑器，如此甚好，哈哈&amp;hellip;&lt;/p>
+&lt;!-- ![][2] -->
+&lt;p>{% img
+&lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/2016101901.png" title="https://cdn.jsdelivr.net/gh/0vo/oss/images/2016101901.png" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+https://cdn.jsdelivr.net/gh/0vo/oss/images/2016101901.png
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 400 %}&lt;/p></description></item><item><title>[转] Kafka入门教程</title><link>https://3w.vercel.app/2016/10/10/%E8%BD%AC-Kafka%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/</link><pubDate>Mon, 10 Oct 2016 21:40:52 +0000</pubDate><guid>https://3w.vercel.app/2016/10/10/%E8%BD%AC-Kafka%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/</guid><description>&lt;h1 id="一基本概念">一、基本概念&lt;/h1>
+&lt;h2 id="1-介绍">1. 介绍&lt;/h2>
+&lt;p>Kafka 是一个分布式的、可分区的、可复制的消息系统。它提供了普通消息系统的功能，但具有自己独特的设计。&lt;strong>这个独特的设计是什么样的呢？&lt;/strong>&lt;/p>
+&lt;!-- ![][1] -->
+&lt;p>{% img
+&lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/kafka-logo.png" title="https://cdn.jsdelivr.net/gh/0vo/oss/images/kafka-logo.png" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+https://cdn.jsdelivr.net/gh/0vo/oss/images/kafka-logo.png
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 400 %}&lt;/p></description></item><item><title>闲言碎语，不知所云...</title><link>https://3w.vercel.app/2016/09/28/%E9%97%B2%E8%A8%80%E7%A2%8E%E8%AF%AD%E4%B8%8D%E7%9F%A5%E6%89%80%E4%BA%91.../</link><pubDate>Wed, 28 Sep 2016 13:34:18 +0000</pubDate><guid>https://3w.vercel.app/2016/09/28/%E9%97%B2%E8%A8%80%E7%A2%8E%E8%AF%AD%E4%B8%8D%E7%9F%A5%E6%89%80%E4%BA%91.../</guid><description>&lt;blockquote>
+&lt;p>闲言碎语，不知所云，乱七八糟，聊以自慰&amp;hellip;&lt;/p>
+&lt;/blockquote>
+&lt;p>搭建博客有一段时间了，记录总结的基本都是技术相关的，对于一个有强迫症加语文学的不好的人来说，总结技术文章太痛苦了，总结一篇文章得纠结好久，总觉得组织的语言不够恰当准确，每次都是改了又改，反复琢磨，怎奈肚子里的墨水实在是少的可怜，真是羡慕那些可以把自己心里所想的东西用文字能够表达很清楚的人。&lt;/p>
+&lt;p>说到底还是看的东西少，缺少写东西的锻炼，青春迷茫的时候有大把机会可以利用，可惜都不知道把时间用在了哪儿，等慢慢想要沉淀的时候才发现工作和生活中琐碎已经占据了所有的时间。但不管怎样，从此刻启程，做一些自己想要做的事儿，我想应该不会太晚吧！&lt;/p></description></item><item><title>Oh My Zsh 替换你的 Bash Shell</title><link>https://3w.vercel.app/2016/09/24/using-oh-my-zsh/</link><pubDate>Sat, 24 Sep 2016 12:31:21 +0000</pubDate><guid>https://3w.vercel.app/2016/09/24/using-oh-my-zsh/</guid><description>&lt;blockquote>
+&lt;p>Oh-My-Zsh is an open source, community-driven framework for managing your ZSH configuration. It comes bundled with a ton of helpful functions, helpers, plugins, themes, and a few things that make you shout&amp;hellip;&lt;/p>
+&lt;/blockquote>
+&lt;p>
+&lt;a href="http://ohmyz.sh/" title="Oh My ZSH!" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+Oh My ZSH!
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>&lt;/p>
+&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/OMZLogo_BnW.png" alt="Oh My Zsh" />&lt;/p>
+&lt;!-- {% img https://cdn.jsdelivr.net/gh/0vo/oss/images/OMZLogo_BnW.png 200 'Oh My Zsh'%} -->
+&lt;h1 id="1-oh-my-zsh-简介">1. Oh My Zsh 简介&lt;/h1>
+&lt;p>无意中看见了 Linux 的一款 Shell，相比于 Bash 极其美艳，决定入坑试水一下，不试不知道，一试绝对有惊喜，不仅外观美艳而且功能强大，那还有不替换 Bash 的理由吗？搞起搞起&amp;hellip;&amp;hellip;&lt;/p></description></item><item><title>5 分钟搭建 Git 服务器-Gogs</title><link>https://3w.vercel.app/2016/09/06/gogs-installation-introduction/</link><pubDate>Tue, 06 Sep 2016 12:15:14 +0000</pubDate><guid>https://3w.vercel.app/2016/09/06/gogs-installation-introduction/</guid><description>&lt;blockquote>
+&lt;p>Gogs 基于 Go 语言的自助 Git 服务。它具有易安装、跨平台、轻量级、开源化等特性&amp;hellip;&lt;/p>
+&lt;/blockquote>
+&lt;!-- ![][1] -->
+&lt;p>{% img
+&lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/gogs-logo.png" title="https://cdn.jsdelivr.net/gh/0vo/oss/images/gogs-logo.png" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+https://cdn.jsdelivr.net/gh/0vo/oss/images/gogs-logo.png
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 150 %}&lt;/p>
+&lt;p>最近新到一家公司，发现在使用 Gogs 搭建 Git 服务，遂研究了一下，和前段时间研究的 GitLab 做了一个简单的对比，虽然 Gogs 相对与 GitLab 还比较年轻，也许没有 GitLab 强大和稳健，但 Gogs 更加简单易用，而且能够满足正常的工作使用。&lt;/p>
+&lt;p>Gogs 是轻量级的 Git 服务，正如官方介绍的：一个廉价的树莓派的配置足以满足 Gogs 的最低系统硬件要求。最大程度上节省您的服务器资源！关键的一点是免费开源的，所有的代码都开源在 GitHub 上。下面结合官方的介绍，总结一下在 Linux 系统下的安装方法，真的是相当的简单，5 分钟足矣！&lt;/p></description></item><item><title>CentOS 中配置 Git 命令自动补全</title><link>https://3w.vercel.app/2016/09/04/CentOS-%E4%B8%AD%E9%85%8D%E7%BD%AE-Git-%E5%91%BD%E4%BB%A4%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8/</link><pubDate>Sun, 04 Sep 2016 10:03:35 +0000</pubDate><guid>https://3w.vercel.app/2016/09/04/CentOS-%E4%B8%AD%E9%85%8D%E7%BD%AE-Git-%E5%91%BD%E4%BB%A4%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8/</guid><description>&lt;h1 id="1-step-1">1. Step 1&lt;/h1>
+&lt;p>保存以下文件的内容为：&lt;code>git-completion.bash&lt;/code>&lt;/p>
+&lt;p>
+&lt;a href="https://github.com/git/git/blob/master/contrib/completion/git-completion.bash" title="git-completion.bash" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+git-completion.bash
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>&lt;/p>
+&lt;h1 id="2--step-2">2. Step 2&lt;/h1>
+&lt;p>将上述文件 &lt;code>git-completion.bash&lt;/code> copy 至个人 &lt;code>home&lt;/code> 目录，可设为隐藏文件以免后续被误删。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ cp git-completion.bash ~/.git-completion.bash
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Naruto-Pictures</title><link>https://3w.vercel.app/2016/09/02/Naruto-Pictures/</link><pubDate>Fri, 02 Sep 2016 14:36:04 +0000</pubDate><guid>https://3w.vercel.app/2016/09/02/Naruto-Pictures/</guid><description>{% gp 5-3 %} {% endgp %}</description></item><item><title>使用Hexo基于GitHub Pages搭建个人博客（三）</title><link>https://3w.vercel.app/2016/08/30/%E4%BD%BF%E7%94%A8Hexo%E5%9F%BA%E4%BA%8EGitHub-Pages%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%89/</link><pubDate>Tue, 30 Aug 2016 14:23:52 +0000</pubDate><guid>https://3w.vercel.app/2016/08/30/%E4%BD%BF%E7%94%A8Hexo%E5%9F%BA%E4%BA%8EGitHub-Pages%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%89/</guid><description>&lt;blockquote>
+&lt;p>生命不息，折腾不休。从搭建 blog 以来，博文虽没有写几篇，但折腾的时间花了不少，走过了不少弯路，也踩过了不少的坑，虽然很懒，但本着好记性不如烂笔头的宗旨，打算在折腾记忆尚未磨灭之际记录一下走过的路和踩过的坑&amp;hellip;&lt;/p>
+&lt;/blockquote>
+&lt;p>接着前两篇使用 Hexo 基于 GitHub Pages 搭建个人博客之上，本文记录了在使用非常漂亮简洁的
+&lt;a href="http://theme-next.iissnan.com/" title="Next" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+Next
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 主题过程中的各种折腾，其它主题的相关设置大同小异。再次衷心的感谢 Hexo 的作者和 Next 主题作者的无私奉献。&lt;/p>
+&lt;h1 id="一主题基本配置">一、主题基本配置&lt;/h1>
+&lt;p>记录一下 Next 主题的基本配置、设置「阅读全文」、关闭新建页面的评论功能、页面文章的篇数、宽度调节、设置「JavaScript 第三方库」等内容、在线字体替换（选择关闭，加快访问速度）&lt;/p></description></item><item><title>[转] Java程序员情书</title><link>https://3w.vercel.app/2016/08/22/%E8%BD%AC-Java%E7%A8%8B%E5%BA%8F%E5%91%98%E6%83%85%E4%B9%A6/</link><pubDate>Mon, 22 Aug 2016 14:24:15 +0000</pubDate><guid>https://3w.vercel.app/2016/08/22/%E8%BD%AC-Java%E7%A8%8B%E5%BA%8F%E5%91%98%E6%83%85%E4%B9%A6/</guid><description>&lt;p>我能抽象出整个世界．．．&lt;/p>
+&lt;p>但是我却不能抽象出你．．．&lt;/p>
+&lt;p>你肯定是一个单例，因为你是那样的独一无二&amp;hellip;&lt;/p>
+&lt;p>所以我的世界并不完整．．．&lt;/p>
+&lt;p>我可以重载甚至覆盖这个世界里的任何一种方法．．．&lt;/p>
+&lt;p>但是却不能覆盖对你的思念．．．&lt;/p>
+&lt;p>也许命中注定了 你与我存在于不同的包里&amp;hellip;&lt;/p>
+&lt;p>在你的世界里，你被烙上了私有的属性&amp;hellip;&lt;/p></description></item><item><title>CentOS 系统下 GitLab 搭建与基本配置</title><link>https://3w.vercel.app/2016/07/31/CentOS-%E7%B3%BB%E7%BB%9F%E4%B8%8B-GitLab-%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</link><pubDate>Sun, 31 Jul 2016 18:15:47 +0000</pubDate><guid>https://3w.vercel.app/2016/07/31/CentOS-%E7%B3%BB%E7%BB%9F%E4%B8%8B-GitLab-%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</guid><description>&lt;blockquote>
+&lt;p>
+&lt;a href="https://about.gitlab.com/" title="GitLab 是一个开源的版本管理系统，提供了类似于 GitHub 的源代码浏览，管理缺陷和注释等功能，你可以将代码免费托管到 GitLab.com，而且不限项目数量和成员数。最吸引人的一点是，可以在自己的服务器上搭建 GitLab CE （社区免费版）版本，方便内部团队协作开发和代码管理。" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+GitLab 是一个开源的版本管理系统，提供了类似于 GitHub 的源代码浏览，管理缺陷和注释等功能，你可以将代码免费托管到 GitLab.com，而且不限项目数量和成员数。最吸引人的一点是，可以在自己的服务器上搭建 GitLab CE （社区免费版）版本，方便内部团队协作开发和代码管理。
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;p>下面介绍如何在 CentOS 服务器上搭建 GitLab CE 版本，以及一些基本的配置。&lt;/p>
+&lt;h1 id="1-安装">1. 安装&lt;/h1>
+&lt;p>GitLab 提供了两种安装方式：源码手动编译安装和软件包管理安装。&lt;/p>
+&lt;p>源码手动编译安装虽然配置灵活，但过程比较麻烦，不容易安装成功，所以我这里选择软件包管理安装的形式。&lt;/p>
+&lt;h2 id="11-使用-gitlab-提供仓库在线安装">1.1 使用 GitLab 提供仓库在线安装&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>yum install gitlab-ce
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>CentOS 7 安装最新的 Git</title><link>https://3w.vercel.app/2016/07/30/CentOS-7-%E5%AE%89%E8%A3%85%E6%9C%80%E6%96%B0%E7%9A%84-Git/</link><pubDate>Sat, 30 Jul 2016 22:12:43 +0000</pubDate><guid>https://3w.vercel.app/2016/07/30/CentOS-7-%E5%AE%89%E8%A3%85%E6%9C%80%E6%96%B0%E7%9A%84-Git/</guid><description>&lt;blockquote>
+&lt;p>yum 源仓库里的 Git 版本更新不及时，最新版本的 Git 是 1.8.3.1，但是官方最新版本已经到了 2.9.2。想要安装最新版本的的 Git，只能下载源码进行安装。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="1-查看-yum-源仓库的-git-信息">1. 查看 yum 源仓库的 Git 信息：&lt;/h1>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># yum info git&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20160730222608.png" alt="" />&lt;/p>
+&lt;p>可以看出，截至目前，yum 源仓库中最新的 Git 版本才 1.8.3.1，而查看最
+&lt;a href="https://github.com/git/git/releases" title="新的 Git 发布版本" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+新的 Git 发布版本
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>，已经 2.9.2 了。&lt;/p></description></item><item><title>CentOS 7 安装 Node.js</title><link>https://3w.vercel.app/2016/07/30/CentOS-7-%E5%AE%89%E8%A3%85-Node.js/</link><pubDate>Sat, 30 Jul 2016 16:19:03 +0000</pubDate><guid>https://3w.vercel.app/2016/07/30/CentOS-7-%E5%AE%89%E8%A3%85-Node.js/</guid><description>&lt;blockquote>
+&lt;p>
+&lt;a href="https://nodejs.org/en/" title="Node.js® is a JavaScript runtime built on Chrome&amp;amp;rsquo;s V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. Node.js&amp;amp;rsquo; package ecosystem, npm, is the largest ecosystem of open source libraries in the world." rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+Node.js® is a JavaScript runtime built on Chrome&amp;rsquo;s V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. Node.js&amp;rsquo; package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="1-下载源码安装文件">1. 下载源码安装文件&lt;/h1>
+&lt;h2 id="11-在线安装">1.1 在线安装&lt;/h2>
+&lt;p>通过以下命令下载源文件：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>wget https://nodejs.org/dist/v4.4.7/node-v4.4.7.tar.gz
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>[转]将 Centos 的 yum 源更改为国内的阿里云源</title><link>https://3w.vercel.app/2016/07/30/%E8%BD%AC%E5%B0%86-Centos-%E7%9A%84-yum-%E6%BA%90%E6%9B%B4%E6%94%B9%E4%B8%BA%E5%9B%BD%E5%86%85%E7%9A%84%E9%98%BF%E9%87%8C%E4%BA%91%E6%BA%90/</link><pubDate>Sat, 30 Jul 2016 11:57:59 +0000</pubDate><guid>https://3w.vercel.app/2016/07/30/%E8%BD%AC%E5%B0%86-Centos-%E7%9A%84-yum-%E6%BA%90%E6%9B%B4%E6%94%B9%E4%B8%BA%E5%9B%BD%E5%86%85%E7%9A%84%E9%98%BF%E9%87%8C%E4%BA%91%E6%BA%90/</guid><description>&lt;p>阿里云Linux安装镜像源地址：http://mirrors.aliyun.com/&lt;/p>
+&lt;p>CentOS系统更换软件安装源&lt;/p>
+&lt;h3 id="一备份你的原镜像文件以免出错后可以恢复">一、备份你的原镜像文件，以免出错后可以恢复。&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Oracle 与 MySQL 知识总结</title><link>https://3w.vercel.app/2016/07/28/Oracle-%E4%B8%8E-MySQL-%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/</link><pubDate>Thu, 28 Jul 2016 14:06:36 +0000</pubDate><guid>https://3w.vercel.app/2016/07/28/Oracle-%E4%B8%8E-MySQL-%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/</guid><description>&lt;blockquote>
+&lt;p>对日常工作中使用 Oracle 和 MySQL 数据库知识对比总结。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="sqlplus-连接数据库的方式">SQLPlus 连接数据库的方式&lt;/h1>
+&lt;h2 id="cmd-中输入sqlplus-用户名密码数据库实例">cmd 中输入：sqlplus 用户名/密码@数据库实例&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sqlplus system/lxr316@oracle
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sqlplus sys/admin as sysdba
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="打开-sqlplus-直接输入用户名和密码">打开 SQLPlus 直接输入用户名和密码&lt;/h2>
+&lt;h2 id="使用命令">使用命令&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>connect sys/admin as sysdba
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>connect system/lxr316
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>GitHub 更新已经 fork 的项目</title><link>https://3w.vercel.app/2016/07/28/update-from-github-fork/</link><pubDate>Thu, 28 Jul 2016 10:12:15 +0000</pubDate><guid>https://3w.vercel.app/2016/07/28/update-from-github-fork/</guid><description>&lt;blockquote>
+&lt;p>GitHub 上有个很方便的功能叫 fork，将别人的工程一键复制到自己账号下。这个功能很方便，但有点不足的是，当源项目更新后，你 fork 的分支并不会一起更新，需要自己手动去更新，下面记录下网上找到的更新的开发方法。&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="1-在本地装好-github-客户端或者-git-客户端">1. 在本地装好 GitHub 客户端，或者 Git 客户端&lt;/h3>
+&lt;h3 id="2-clone-自己的-fork-分支到本地">2. clone 自己的 fork 分支到本地&lt;/h3>
+&lt;p>可以直接使用 GitHub 客户端，clone 到本地，如果使用命令行，命令为：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ git clone git@github.com:ehlxr/strman-java.git
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Sublime Text 插件安装</title><link>https://3w.vercel.app/2016/07/25/Sublime-Text-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85/</link><pubDate>Mon, 25 Jul 2016 21:06:57 +0000</pubDate><guid>https://3w.vercel.app/2016/07/25/Sublime-Text-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85/</guid><description>&lt;blockquote>
+&lt;p>Sublime Text 官方介绍：&lt;/p>
+&lt;blockquote>
+&lt;p>“Sublime Text is a sophisticated text editor for code, markup and prose.You&amp;rsquo;ll love the slick user interface, extraordinary features and amazing performance.”&lt;/p>
+&lt;/blockquote>
+&lt;/blockquote>
+&lt;p>Sublime Text 是一款优秀的轻量级编辑器，而且支持跨平台，支持Windows、Linux、Mac OS X 等主流操作系统。虽然是一款收费软件，但也允许人们&lt;strong>无限期免费使用&lt;/strong>。（
+&lt;a href="http://www.sublimetext.com/3" title="官方下载地址" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+官方下载地址
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>）&lt;/p>
+&lt;p>Sublime Text 具有漂亮的用户界面和强大可扩展插件功能，本文介绍如何安装 Sublime Text 插件。&lt;/p></description></item><item><title>Git 同时 push 到多个远程仓库</title><link>https://3w.vercel.app/2016/07/24/Git-%E5%90%8C%E6%97%B6-push-%E5%88%B0%E5%A4%9A%E4%B8%AA%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93/</link><pubDate>Sun, 24 Jul 2016 18:55:59 +0000</pubDate><guid>https://3w.vercel.app/2016/07/24/Git-%E5%90%8C%E6%97%B6-push-%E5%88%B0%E5%A4%9A%E4%B8%AA%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93/</guid><description>&lt;h3 id="方法一">方法一&lt;/h3>
+&lt;p>如果一个本地仓库添加多个远程仓库，不想 git push 多次，可以修改 .git/config 文件&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>vim .git/config
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>比如以下信息表示在 git@OSC 和 GitHub 两个远程托管&lt;/p>
+&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/20160724193534.png" alt="" />&lt;/p></description></item><item><title>使用Hexo基于GitHub Pages搭建个人博客（二）</title><link>https://3w.vercel.app/2016/07/23/%E4%BD%BF%E7%94%A8Hexo%E5%9F%BA%E4%BA%8EGitHub-Pages%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%BA%8C/</link><pubDate>Sat, 23 Jul 2016 15:57:49 +0000</pubDate><guid>https://3w.vercel.app/2016/07/23/%E4%BD%BF%E7%94%A8Hexo%E5%9F%BA%E4%BA%8EGitHub-Pages%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%BA%8C/</guid><description>&lt;p>上一篇介绍了 GitHub Pages 服务开启，这篇文章将介绍 Hexo 的安装和使用以及将博客部署到 GitHub Pages 的操作。&lt;/p>
+&lt;p>
+&lt;a href="https://hexo.io/zh-cn/docs/" title="Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>&lt;/p>
+&lt;h1 id="一nodejs-安装">一、Node.js 安装&lt;/h1>
+&lt;p>Hexo 是基于 Node.js 安装，所以安装 Hexo 之前首先要安装 Node.js。下载地址：https://nodejs.org/en/download/ 根据自己的操作系统，下载对应版本即可。Windons 安装过程比较简单，一直下一步即可安装完成。&lt;/p>
+&lt;p>
+&lt;a href="http://ehlxr.me/2016/07/30/CentOS-7-%E5%AE%89%E8%A3%85-Node-js/" title="CentOS 7 安装 Node.js" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+CentOS 7 安装 Node.js
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>&lt;/p></description></item><item><title>使用Hexo基于GitHub Pages搭建个人博客（一）</title><link>https://3w.vercel.app/2016/07/23/%E4%BD%BF%E7%94%A8Hexo%E5%9F%BA%E4%BA%8EGitHub-Pages%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%80/</link><pubDate>Sat, 23 Jul 2016 11:35:43 +0000</pubDate><guid>https://3w.vercel.app/2016/07/23/%E4%BD%BF%E7%94%A8Hexo%E5%9F%BA%E4%BA%8EGitHub-Pages%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E4%B8%80/</guid><description>&lt;blockquote>
+&lt;p>&lt;code>GitHub Pages&lt;/code> 是 &lt;code>GitHub&lt;/code> 提供的免费开源的静态站点托管服务，利用这个服务可以搭建轻量级的博客系统，本文介绍了如何使用 &lt;code>Hexo&lt;/code> 结合 &lt;code>GitHub Pages&lt;/code> 服务搭建个人博客。&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="一安装配置-git">一、安装配置 &lt;code>Git&lt;/code>&lt;/h1>
+&lt;h2 id="11-安装-git">1.1 安装 &lt;code>Git&lt;/code>&lt;/h2>
+&lt;p>使用 &lt;code>GitHub&lt;/code> 首先要安装 &lt;code>Git&lt;/code>，可根据操作系统下载不同版本的 &lt;code>Git&lt;/code>，&lt;code>Windows&lt;/code> 下载地址：https://git-scm.com/download/win 安装过程比较简单，选择默认选项配置即可下一步，不再叙述。&lt;/p>
+&lt;h2 id="12-配置-git">1.2 配置 &lt;code>Git&lt;/code>&lt;/h2>
+&lt;p>设置本地机器默认 &lt;code>commit&lt;/code> 的昵称与 &lt;code>Email&lt;/code>，姓名与 &lt;code>Email&lt;/code> 只用于日志标识，实际推送到远程仓库时，要用有操作权限的账号登录。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>git config --global user.name &lt;span style="color:#4070a0">&amp;#34;ehlxr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git config --global user.email &lt;span style="color:#4070a0">&amp;#34;ehlxr@qq.com&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="二生成-ssh-keys">二、生成 &lt;code>SSH keys&lt;/code>&lt;/h1>
+&lt;p>&lt;code>SSH Keys&lt;/code> 是 &lt;code>GitHub&lt;/code> 推荐的公钥、秘钥形式验证用户合法性的机制，添加 &lt;code>SSH Keys&lt;/code> 可以省去每次都要输入密码的步骤，下面将演示如何在本地计算机生成 &lt;code>SSH Keys&lt;/code> 的公钥、秘钥。&lt;/p></description></item><item><title>[转] JMS 基本概念</title><link>https://3w.vercel.app/2016/07/21/%E8%BD%AC-JMS-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</link><pubDate>Thu, 21 Jul 2016 12:35:43 +0000</pubDate><guid>https://3w.vercel.app/2016/07/21/%E8%BD%AC-JMS-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</guid><description>&lt;p>JMS（JAVA Message Service,java消息服务）API是一个消息服务的标准或者说是规范，允许应用程序组件基于JavaEE平台创建、发送、接收和读取消息。它使分布式通信耦合度更低，消息服务更加可靠以及异步性。&lt;/p>
+&lt;h2 id="基本概念">基本概念&lt;/h2>
+&lt;p>JMS是java的消息服务，JMS的客户端之间可以通过JMS服务进行异步的消息传输。&lt;/p>
+&lt;h2 id="消息模型">消息模型&lt;/h2>
+&lt;ul>
+&lt;li>Point-to-Point(P2P)&lt;/li>
+&lt;li>Publish/Subscribe(Pub/Sub)&lt;/li>
+&lt;/ul>
+&lt;p>即点对点和发布订阅模型&lt;/p></description></item><item><title>Java List与数组之间的转换</title><link>https://3w.vercel.app/2016/07/20/Java-List%E4%B8%8E%E6%95%B0%E7%BB%84%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2/</link><pubDate>Wed, 20 Jul 2016 15:52:33 +0000</pubDate><guid>https://3w.vercel.app/2016/07/20/Java-List%E4%B8%8E%E6%95%B0%E7%BB%84%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2/</guid><description>&lt;h3 id="1-数组转换为list">1. 数组转换为List&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>String&lt;span style="color:#666">[]&lt;/span> arr &lt;span style="color:#666">=&lt;/span> &lt;span style="color:#007020;font-weight:bold">new&lt;/span> String&lt;span style="color:#666">[]&lt;/span> &lt;span style="color:#666">{&lt;/span>&lt;span style="color:#4070a0">&amp;#34;str1&amp;#34;&lt;/span>&lt;span style="color:#666">,&lt;/span> &lt;span style="color:#4070a0">&amp;#34;str2&amp;#34;&lt;/span>&lt;span style="color:#666">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>List&lt;span style="color:#666">&amp;lt;&lt;/span>String&lt;span style="color:#666">&amp;gt;&lt;/span> list &lt;span style="color:#666">=&lt;/span> Arrays&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">asList&lt;/span>&lt;span style="color:#666">(&lt;/span>arr&lt;span style="color:#666">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>MySQL日期函数</title><link>https://3w.vercel.app/2016/07/20/MySQL%E6%97%A5%E6%9C%9F%E5%87%BD%E6%95%B0/</link><pubDate>Wed, 20 Jul 2016 14:16:17 +0000</pubDate><guid>https://3w.vercel.app/2016/07/20/MySQL%E6%97%A5%E6%9C%9F%E5%87%BD%E6%95%B0/</guid><description>&lt;h4 id="1-取得当天">1. 取得当天&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-sql" data-lang="sql">&lt;span style="display:flex;">&lt;span>mysql&lt;span style="color:#666">&amp;gt;&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">SELECT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>curdate();&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">&lt;/span>&lt;span style="color:#666">+&lt;/span>&lt;span style="color:#60a0b0;font-style:italic">------------+
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span>&lt;span style="color:#666">|&lt;/span>&lt;span style="color:#bbb"> &lt;/span>curdate()&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">|&lt;/span>&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">&lt;/span>&lt;span style="color:#666">+&lt;/span>&lt;span style="color:#60a0b0;font-style:italic">------------+
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span>&lt;span style="color:#666">|&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#40a070">2013&lt;/span>&lt;span style="color:#666">-&lt;/span>&lt;span style="color:#40a070">07&lt;/span>&lt;span style="color:#666">-&lt;/span>&lt;span style="color:#40a070">29&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">|&lt;/span>&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">&lt;/span>&lt;span style="color:#666">+&lt;/span>&lt;span style="color:#60a0b0;font-style:italic">------------+
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="2-取得当前日期">2. 取得当前日期&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-sql" data-lang="sql">&lt;span style="display:flex;">&lt;span>mysql&lt;span style="color:#666">&amp;gt;&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">select&lt;/span>&lt;span style="color:#bbb"> &lt;/span>sysdate();&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">&lt;/span>&lt;span style="color:#666">+&lt;/span>&lt;span style="color:#60a0b0;font-style:italic">---------------------+
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span>&lt;span style="color:#666">|&lt;/span>&lt;span style="color:#bbb"> &lt;/span>sysdate()&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">|&lt;/span>&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">&lt;/span>&lt;span style="color:#666">+&lt;/span>&lt;span style="color:#60a0b0;font-style:italic">---------------------+
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span>&lt;span style="color:#666">|&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#40a070">2016&lt;/span>&lt;span style="color:#666">-&lt;/span>&lt;span style="color:#40a070">05&lt;/span>&lt;span style="color:#666">-&lt;/span>&lt;span style="color:#40a070">30&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#40a070">13&lt;/span>:&lt;span style="color:#40a070">58&lt;/span>:&lt;span style="color:#40a070">17&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">|&lt;/span>&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">&lt;/span>&lt;span style="color:#666">+&lt;/span>&lt;span style="color:#60a0b0;font-style:italic">---------------------+
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span>&lt;span style="color:#40a070">1&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">row&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">in&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">set&lt;/span>&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">&lt;/span>mysql&lt;span style="color:#666">&amp;gt;&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">select&lt;/span>&lt;span style="color:#bbb"> &lt;/span>now();&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">&lt;/span>&lt;span style="color:#666">+&lt;/span>&lt;span style="color:#60a0b0;font-style:italic">---------------------+
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span>&lt;span style="color:#666">|&lt;/span>&lt;span style="color:#bbb"> &lt;/span>now()&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">|&lt;/span>&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">&lt;/span>&lt;span style="color:#666">+&lt;/span>&lt;span style="color:#60a0b0;font-style:italic">---------------------+
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span>&lt;span style="color:#666">|&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#40a070">2016&lt;/span>&lt;span style="color:#666">-&lt;/span>&lt;span style="color:#40a070">05&lt;/span>&lt;span style="color:#666">-&lt;/span>&lt;span style="color:#40a070">30&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#40a070">13&lt;/span>:&lt;span style="color:#40a070">58&lt;/span>:&lt;span style="color:#40a070">29&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">|&lt;/span>&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">&lt;/span>&lt;span style="color:#666">+&lt;/span>&lt;span style="color:#60a0b0;font-style:italic">---------------------+
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span>&lt;span style="color:#40a070">1&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">row&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">in&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">set&lt;/span>&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>开始blog，哈哈</title><link>https://3w.vercel.app/2016/07/19/%E5%BC%80%E5%A7%8Bblog%E5%93%88%E5%93%88/</link><pubDate>Tue, 19 Jul 2016 17:16:17 +0000</pubDate><guid>https://3w.vercel.app/2016/07/19/%E5%BC%80%E5%A7%8Bblog%E5%93%88%E5%93%88/</guid><description>public static void main(String args[]){ System.out.println(&amp;#34;hello world&amp;#34;); }</description></item><item><title>Hello World</title><link>https://3w.vercel.app/2016/07/19/Hello-World/</link><pubDate>Tue, 19 Jul 2016 10:47:23 +0000</pubDate><guid>https://3w.vercel.app/2016/07/19/Hello-World/</guid><description>Welcome to Hexo ! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub . Quick Start Create a new post $ hexo new &amp;#34;My New Post&amp;#34; More info: Writing Run server $ hexo server More info: Server Generate static files $ hexo generate More info: Generating</description></item></channel></rss>

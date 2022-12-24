@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Zsh on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/Zsh/</link><description>Recent content in Zsh on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 24 Sep 2016 12:31:21 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/Zsh/rss.xml" rel="self" type="application/rss+xml"/><item><title>Oh My Zsh 替换你的 Bash Shell</title><link>https://3w.vercel.app/2016/09/24/using-oh-my-zsh/</link><pubDate>Sat, 24 Sep 2016 12:31:21 +0000</pubDate><guid>https://3w.vercel.app/2016/09/24/using-oh-my-zsh/</guid><description>&lt;blockquote>
+&lt;p>Oh-My-Zsh is an open source, community-driven framework for managing your ZSH configuration. It comes bundled with a ton of helpful functions, helpers, plugins, themes, and a few things that make you shout&amp;hellip;&lt;/p>
+&lt;/blockquote>
+&lt;p>
+&lt;a href="http://ohmyz.sh/" title="Oh My ZSH!" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+Oh My ZSH!
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>&lt;/p>
+&lt;p>&lt;img src="https://3w.vercel.app/imgs/img-lazy-loading.gif" data-src="https://cdn.jsdelivr.net/gh/0vo/oss/images/OMZLogo_BnW.png" alt="Oh My Zsh" />&lt;/p>
+&lt;!-- {% img https://cdn.jsdelivr.net/gh/0vo/oss/images/OMZLogo_BnW.png 200 'Oh My Zsh'%} -->
+&lt;h1 id="1-oh-my-zsh-简介">1. Oh My Zsh 简介&lt;/h1>
+&lt;p>无意中看见了 Linux 的一款 Shell，相比于 Bash 极其美艳，决定入坑试水一下，不试不知道，一试绝对有惊喜，不仅外观美艳而且功能强大，那还有不替换 Bash 的理由吗？搞起搞起&amp;hellip;&amp;hellip;&lt;/p></description></item></channel></rss>

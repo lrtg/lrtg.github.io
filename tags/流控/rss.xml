@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>流控 on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/%E6%B5%81%E6%8E%A7/</link><description>Recent content in 流控 on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 19 Jul 2019 09:51:25 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/%E6%B5%81%E6%8E%A7/rss.xml" rel="self" type="application/rss+xml"/><item><title>按比例控制流量的一种实现</title><link>https://3w.vercel.app/2019/07/19/control-traffic-by-rate/</link><pubDate>Fri, 19 Jul 2019 09:51:25 +0000</pubDate><guid>https://3w.vercel.app/2019/07/19/control-traffic-by-rate/</guid><description>&lt;p>网关做灰度的时候，要控制流量的比例，比如 3:7 的分发流量到两个不同版本的服务上去。刚开始的想法是每次流量过来生成 100 以内的随机数，随机数落在那个区间就转到那个版本的服务上去，但是发现这样无法较精准的保证 3:7 的比例，因为有可能某段时间内生成的随机数大范围的落在某个区间内，比如请求了 100 次，每次生成的随机数都是大于 30 的，这样 70% 比例的服务就承受了 100% 的流量。&lt;/p>
+&lt;p>接下来想到了第二种解决方案，能够保证 10（基数） 倍的流量比例正好是 3:7，思路如下：&lt;/p>
+&lt;p>1、生成 0 - 99 的数组（集合）
+2、打乱数组（集合）的顺序，为了防止出现某比例的流量集中出现
+3、全局的计数器，要考虑原子性
+4、从数组（集合）中取出计数器和 100 取余后位置的值
+5、判断取到的值落在那个区间&lt;/p></description></item></channel></rss>

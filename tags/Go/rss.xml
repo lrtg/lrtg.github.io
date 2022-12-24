@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Go on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/Go/</link><description>Recent content in Go on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 26 Jan 2018 21:27:56 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/Go/rss.xml" rel="self" type="application/rss+xml"/><item><title>Golang 反射使用总结</title><link>https://3w.vercel.app/2018/01/26/golang-reflect/</link><pubDate>Fri, 26 Jan 2018 21:27:56 +0000</pubDate><guid>https://3w.vercel.app/2018/01/26/golang-reflect/</guid><description>&lt;p>Go 语言中反射的操作主要定义在标准库
+&lt;a href="https://golang.org/pkg/reflect/" title="&amp;lt;code&amp;gt;reflect&amp;lt;/code&amp;gt;" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+&lt;code>reflect&lt;/code>
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 中，在标准库中定义了两种类型来表现运行时的对象信息，分别是：
+&lt;a href="https://golang.org/pkg/reflect/#Value" title="&amp;lt;code&amp;gt;reflect.Value&amp;lt;/code&amp;gt;" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+&lt;code>reflect.Value&lt;/code>
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>（反射对象的类型）和
+&lt;a href="https://golang.org/pkg/reflect/#Type" title="&amp;lt;code&amp;gt;reflect.Type&amp;lt;/code&amp;gt;" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+&lt;code>reflect.Type&lt;/code>
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>（反射对象的值），Go 语言中所有反射操作都是基于这两个类型进行的。&lt;/p>
+&lt;p>{% img
+&lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/golang-reflect.jpg" title="https://cdn.jsdelivr.net/gh/0vo/oss/images/golang-reflect.jpg" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+https://cdn.jsdelivr.net/gh/0vo/oss/images/golang-reflect.jpg
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 350 %}&lt;/p>
+&lt;!-- ![golang-reflect][1] -->
+&lt;p>为了方便演示操作（
+&lt;a href="https://github.com/ehlxr/go-utils/blob/master/common/reflect/main.go" title="完整代码示例" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+完整代码示例
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>），首先定义以下结构体以及字段、方法：&lt;/p></description></item><item><title>Go 常用代码块</title><link>https://3w.vercel.app/2017/12/06/go-commons-code-snippets/</link><pubDate>Wed, 06 Dec 2017 10:07:54 +0000</pubDate><guid>https://3w.vercel.app/2017/12/06/go-commons-code-snippets/</guid><description>&lt;blockquote>
+&lt;p>总结备忘一下常用的的 Go 代码片段&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="遍历目录下的文件">遍历目录下的文件&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020;font-weight:bold">func&lt;/span> &lt;span style="color:#06287e">getFilelist&lt;/span>(r &lt;span style="color:#902000">string&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> err &lt;span style="color:#666">:=&lt;/span> filepath.&lt;span style="color:#06287e">Walk&lt;/span>(r, &lt;span style="color:#007020;font-weight:bold">func&lt;/span>(p &lt;span style="color:#902000">string&lt;/span>, f os.FileInfo, err &lt;span style="color:#902000">error&lt;/span>) &lt;span style="color:#902000">error&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">if&lt;/span> f &lt;span style="color:#666">==&lt;/span> &lt;span style="color:#007020;font-weight:bold">nil&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#007020;font-weight:bold">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">if&lt;/span> p &lt;span style="color:#666">==&lt;/span> r &lt;span style="color:#666">||&lt;/span> f.&lt;span style="color:#06287e">IsDir&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#007020;font-weight:bold">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fmt.&lt;span style="color:#06287e">Println&lt;/span>(p)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#007020;font-weight:bold">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> })
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">if&lt;/span> err &lt;span style="color:#666">!=&lt;/span> &lt;span style="color:#007020;font-weight:bold">nil&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fmt.&lt;span style="color:#06287e">Printf&lt;/span>(&lt;span style="color:#4070a0">&amp;#34;filepath.Walk() returned %v\n&amp;#34;&lt;/span>, err)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>[转] Go Cheat Sheet</title><link>https://3w.vercel.app/2017/08/24/golang-cheat-sheet/</link><pubDate>Thu, 24 Aug 2017 14:18:53 +0000</pubDate><guid>https://3w.vercel.app/2017/08/24/golang-cheat-sheet/</guid><description>&lt;h1 id="go-cheat-sheet">Go Cheat Sheet&lt;/h1>
+&lt;h2 id="credits">Credits&lt;/h2>
+&lt;p>Most example code taken from
+&lt;a href="http://tour.golang.org/" title="A Tour of Go" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+A Tour of Go
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>, which is an excellent introduction to Go.
+If you&amp;rsquo;re new to Go, do that tour. Seriously.&lt;/p>
+&lt;h2 id="go-in-a-nutshell">Go in a Nutshell&lt;/h2>
+&lt;ul>
+&lt;li>Imperative language&lt;/li>
+&lt;li>Statically typed&lt;/li>
+&lt;li>Syntax tokens similar to C (but less parentheses and no semicolons) and the structure to Oberon-2&lt;/li>
+&lt;li>Compiles to native code (no JVM)&lt;/li>
+&lt;li>No classes, but structs with methods&lt;/li>
+&lt;li>Interfaces&lt;/li>
+&lt;li>No implementation inheritance. There&amp;rsquo;s
+&lt;a href="http://golang.org/doc/effective%5Fgo.html#embedding" title="type embedding" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+type embedding
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>, though.&lt;/li>
+&lt;li>Functions are first class citizens&lt;/li>
+&lt;li>Functions can return multiple values&lt;/li>
+&lt;li>Has closures&lt;/li>
+&lt;li>Pointers, but not pointer arithmetic&lt;/li>
+&lt;li>Built-in concurrency primitives: Goroutines and Channels&lt;/li>
+&lt;/ul></description></item><item><title>[转] Java 程序员的 Golang 入门笔记</title><link>https://3w.vercel.app/2017/07/22/from-java-to-golang/</link><pubDate>Sat, 22 Jul 2017 11:23:10 +0000</pubDate><guid>https://3w.vercel.app/2017/07/22/from-java-to-golang/</guid><description>&lt;blockquote>
+&lt;p>最近抽空学习了一下 &lt;code>Go&lt;/code> 语言，好多特性感觉非常棒，由于高效的开发效率以及性能，现在好多优秀的开源项目都是基于 &lt;code>Go&lt;/code> 开发，比如 &lt;code>Docker&lt;/code>、&lt;code>etcd&lt;/code>、&lt;code>consul&lt;/code>、&lt;code>Kubernetes&lt;/code> 等。&lt;code>Go&lt;/code> 势必会在互联网技术的服务化，容器化的将来大展拳脚。正好网上看到一篇关于 &lt;code>Java&lt;/code> 程序员入门 &lt;code>Golang&lt;/code> 的文章，写的挺好的，所以特此转载过来，再加上自己的一些学习经验，供大家参考。&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>Golang&lt;/code> 从 &lt;code>09&lt;/code> 年发布，中间经历了多个版本的演进，已经渐渐趋于成熟，其媲美于 &lt;code>C&lt;/code> 语言的性能、&lt;code>Python&lt;/code> 的开发效率，又被称为 21 世纪的 &lt;code>C&lt;/code> 语言，尤其适合开发后台服务。这篇文章主要是介绍 &lt;code>Golang&lt;/code> 的一些主要特性，和 &lt;code>Java&lt;/code> 做一个对比，以便更好的理解 &lt;code>Golang&lt;/code> 这门语言。&lt;/p>
+&lt;p>关于 &lt;code>Golang&lt;/code> 环境的搭建就不讲了，可以参考
+&lt;a href="https://golang.org/doc/install" title="官方文档" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+官方文档
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 或者大神
+&lt;a href="https://github.com/astaxie" title="astaxie" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+astaxie
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 的开源书籍
+&lt;a href="https://github.com/astaxie/build-web-application-with-golang/blob/master/zh/01.0.md" title="build-web-application-with-golang" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+build-web-application-with-golang
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 的相关篇章。下面我没让你就从 &lt;code>Go&lt;/code> 版本的&lt;code> Hello World&lt;/code> 开始。&lt;/p></description></item></channel></rss>

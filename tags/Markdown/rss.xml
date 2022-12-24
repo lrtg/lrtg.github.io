@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Markdown on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/Markdown/</link><description>Recent content in Markdown on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 19 Oct 2016 10:47:23 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/Markdown/rss.xml" rel="self" type="application/rss+xml"/><item><title>[转]用 Markdown 写印象笔记（Evernote）</title><link>https://3w.vercel.app/2016/10/19/%E8%BD%AC%E7%94%A8-Markdown-%E5%86%99%E5%8D%B0%E8%B1%A1%E7%AC%94%E8%AE%B0Evernote/</link><pubDate>Wed, 19 Oct 2016 10:47:23 +0000</pubDate><guid>https://3w.vercel.app/2016/10/19/%E8%BD%AC%E7%94%A8-Markdown-%E5%86%99%E5%8D%B0%E8%B1%A1%E7%AC%94%E8%AE%B0Evernote/</guid><description>&lt;p>使用印象笔记很久了，什么都觉得很好，就是不支持 Markdown 书写语法，实在是太遗憾了。今天发现网上有人介绍了一款 Sublime 的一个插件
+&lt;a href="https://packagecontrol.io/packages/Evernote" title="Evernote" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+Evernote
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>，尝试了一下觉得还是一个不错的方案，正好我也很喜欢使用 Sublime 编辑器，如此甚好，哈哈&amp;hellip;&lt;/p>
+&lt;!-- ![][2] -->
+&lt;p>{% img
+&lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/2016101901.png" title="https://cdn.jsdelivr.net/gh/0vo/oss/images/2016101901.png" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+https://cdn.jsdelivr.net/gh/0vo/oss/images/2016101901.png
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 400 %}&lt;/p></description></item></channel></rss>

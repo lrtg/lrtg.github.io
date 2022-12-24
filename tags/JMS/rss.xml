@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>JMS on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/JMS/</link><description>Recent content in JMS on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 21 Jul 2016 12:35:43 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/JMS/rss.xml" rel="self" type="application/rss+xml"/><item><title>[转] JMS 基本概念</title><link>https://3w.vercel.app/2016/07/21/%E8%BD%AC-JMS-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</link><pubDate>Thu, 21 Jul 2016 12:35:43 +0000</pubDate><guid>https://3w.vercel.app/2016/07/21/%E8%BD%AC-JMS-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</guid><description>&lt;p>JMS（JAVA Message Service,java消息服务）API是一个消息服务的标准或者说是规范，允许应用程序组件基于JavaEE平台创建、发送、接收和读取消息。它使分布式通信耦合度更低，消息服务更加可靠以及异步性。&lt;/p>
+&lt;h2 id="基本概念">基本概念&lt;/h2>
+&lt;p>JMS是java的消息服务，JMS的客户端之间可以通过JMS服务进行异步的消息传输。&lt;/p>
+&lt;h2 id="消息模型">消息模型&lt;/h2>
+&lt;ul>
+&lt;li>Point-to-Point(P2P)&lt;/li>
+&lt;li>Publish/Subscribe(Pub/Sub)&lt;/li>
+&lt;/ul>
+&lt;p>即点对点和发布订阅模型&lt;/p></description></item></channel></rss>

@@ -1,0 +1,241 @@
+<!doctype html><html lang=zh-cn data-theme=light><head><meta charset=utf-8><meta name=viewport content="width=device-width"><meta name=theme-color content="#222" media="(prefers-color-scheme: light)"><meta name=generator content="Hugo 0.106.0"><link rel="shortcut icon" type=image/x-icon href=https://cdn.jsdelivr.net/gh/0vo/oss/images/favicon.ico><link rel=icon type=image/x-icon href=https://cdn.jsdelivr.net/gh/0vo/oss/images/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://cdn.jsdelivr.net/gh/0vo/oss/images/favicon.ico><link rel=icon type=image/png sizes=32x32 href=https://cdn.jsdelivr.net/gh/0vo/oss/images/favicon.ico><link rel=apple-touch-icon sizes=180x180 href=https://cdn.jsdelivr.net/gh/0vo/oss/images/favicon.ico><meta itemprop=name content="[转]Tmux 快捷键速查表"><meta itemprop=description content="# Tmux 快捷键 & 速查表
+
+启动新会话：
+
+tmux [new -s 会话名 -n 窗口名]
+
+恢复会话：
+
+tmux at [-t 会话名]
+
+列出所有会话：
+
+tmux ls
+
+<a name=&#34;killSessions&#34;></a>关闭会话：
+
+tmux kill-session -t 会话名
+
+<a name=&#34;killAllSessions&#34;></a>关闭所有会话：
+
+tmux ls | grep : | cut -d. -f1 | awk {print substr($1, 0, length($1)-1)} | xargs kill"><meta itemprop=datePublished zgotmplz><meta itemprop=dateModified zgotmplz><meta itemprop=image content="https://cdn.jsdelivr.net/gh/0vo/oss/images/logo.png"><meta itemprop=keywords content="Tmux"><meta property="og:type" content="article"><meta property="og:title" content="[转]Tmux 快捷键速查表"><meta property="og:description" content="# Tmux 快捷键 & 速查表
+
+启动新会话：
+
+tmux [new -s 会话名 -n 窗口名]
+
+恢复会话：
+
+tmux at [-t 会话名]
+
+列出所有会话：
+
+tmux ls
+
+<a name=&#34;killSessions&#34;></a>关闭会话：
+
+tmux kill-session -t 会话名
+
+<a name=&#34;killAllSessions&#34;></a>关闭所有会话：
+
+tmux ls | grep : | cut -d. -f1 | awk {print substr($1, 0, length($1)-1)} | xargs kill"><meta property="og:image" content="https://cdn.jsdelivr.net/gh/0vo/oss/images/logo.png"><meta property="og:image:width" content="312"><meta property="og:image:height" content="312"><meta property="og:image:type" content="image/jpeg/png/svg/jpg"><meta property="og:url" content="https://3w.vercel.app/2017/10/25/tmux-cheat-sheet/"><meta property="og:site_name" content="Ehlxr's Blog"><meta property="og:locale" content="zh-CN"><meta property="article:author" content="!!@_@ ᵛᵉ"><meta property="article:published_time" content="2017-10-25 14:45:24 +0000 UTC"><meta property="article:modified_time" content="2017-10-25 14:45:24 +0000 UTC"><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/font-awesome/6.1.2/css/all.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.css><link rel=stylesheet href=/css/main.min.998107b15847afff78b24be292bda346522b9d039e6e5e04cac8cbe280e4002b.css><style type=text/css>.post-footer,.flinks-list-footer hr:after{content:"~ 我可是有底线的哟 ~"}</style><link rel=stylesheet type=text/css href=/css/custom_style.css><script type=text/javascript>(function(){localDB={set:function(e,t,n){if(n===0)return;const s=new Date,o=n*864e5,i={value:t,expiry:s.getTime()+o};localStorage.setItem(e,JSON.stringify(i))},get:function(e){const t=localStorage.getItem(e);if(!t)return void 0;const n=JSON.parse(t),s=new Date;return s.getTime()>n.expiry?(localStorage.removeItem(e),void 0):n.value}},theme={active:function(){const e=localDB.get("theme");if(e==null)return;theme.toggle(e),window.matchMedia("(prefers-color-scheme: dark)").addListener(function(e){theme.toggle(e.matches?"dark":"light")})},toggle:function(e){document.documentElement.setAttribute("data-theme",e),localDB.set("theme",e,2);const t=document.querySelector("iframe.giscus-frame");if(t){const n={setConfig:{theme:e}};t.contentWindow.postMessage({giscus:n},"https://giscus.app")}}},theme.active()})(window)</script><script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":true,"path":"tmux-cheat-sheet","permalink":"https://3w.vercel.app/2017/10/25/tmux-cheat-sheet/","title":"[转]Tmux 快捷键速查表"}</script><script type=text/javascript>document.addEventListener("DOMContentLoaded",()=>{var e=document.createElement("script");e.charset="UTF-8",e.src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",e.async=!1,e.defer=!0,document.head.appendChild(e),e.onload=function(){NexT.utils.fmtBusuanzi()}})</script><title>[转]Tmux 快捷键速查表 - Ehlxr's Blog</title><noscript><link rel=stylesheet href=/css/noscript.css></noscript></head><body itemscope itemtype=http://schema.org/WebPage class=use-motion><div class=headband></div><main class=main><header class=header itemscope itemtype=http://schema.org/WPHeader><div class=header-inner><div class=site-brand-container><div class=site-nav-toggle><div class=toggle aria-label=切换导航栏 role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div></div><div class=site-meta><a href=/ class=brand rel=start><i class=logo-line></i><h1 class=site-title>Ehlxr's Blog</h1><i class=logo-line></i></a><p class=site-subtitle itemprop=description>「闲言碎语」</p></div><div class=site-nav-right><div class="toggle popup-trigger"><i class="fa fa-search fa-fw fa-lg"></i></div></div></div><nav class=site-nav><ul class="main-menu menu"><li class="menu-item menu-item-home"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-home hvr-icon"></i>首页</a></li><li class="menu-item menu-item-about"><a href=/about/ class=hvr-icon-pulse rel=section><i class="fa fa-user hvr-icon"></i>关于</a></li><li class="menu-item menu-item-archive"><a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档</a></li><li class="menu-item menu-item-search"><a role=button class="popup-trigger hvr-icon-pulse"><i class="fa fa-search fa-fw hvr-icon"></i>搜索</a></li></ul></nav><div class=search-pop-overlay><div class="popup search-popup"><div class=search-header><span class=search-icon><i class="fa fa-search"></i></span><div class=search-input-container><input autocomplete=off autocapitalize=off maxlength=80 placeholder=搜索... spellcheck=false type=search class=search-input></div><span class=popup-btn-close role=button><i class="fa fa-times-circle"></i></span></div><div class="search-result-container no-result"><div class=search-result-icon><i class="fa fa-spinner fa-pulse fa-5x"></i></div></div></div></div></div><div class="toggle sidebar-toggle" role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div><aside class=sidebar><div class="sidebar-inner sidebar-nav-active sidebar-toc-active"><ul class=sidebar-nav><li class=sidebar-nav-toc>文章目录</li><li class=sidebar-nav-overview>站点概览</li></ul><div class=sidebar-panel-container><div class="post-toc-wrap sidebar-panel"><div class="post-toc animated"><nav id=TableOfContents><ul><li><a href=#会话>会话</a></li><li><a href=#a-namewindowstabsa窗口-标签页><a name=WindowsTabs></a>窗口 (标签页)</a></li><li><a href=#调整窗口排序>调整窗口排序</a></li><li><a href=#a-namepanessplitsa窗格分割窗口><a name=PanesSplits></a>窗格（分割窗口）</a></li><li><a href=#a-namesyncpanesa同步窗格><a name=syncPanes></a>同步窗格</a></li><li><a href=#调整窗格尺寸>调整窗格尺寸</a></li><li><a href=#文本复制模式>文本复制模式：</a></li><li><a href=#杂项>杂项：</a></li><li><a href=#配置选项>配置选项：</a></li><li><a href=#配置文件tmuxconf>配置文件（~/.tmux.conf）：</a></li></ul></nav></div></div><div class="site-overview-wrap sidebar-panel"><div class="site-author site-overview-item animated" itemprop=author itemscope itemtype=http://schema.org/Person><img class=site-author-image itemprop=image alt="!!@_@ ᵛᵉ" src=/imgs/img-lazy-loading.gif data-src=https://cdn.jsdelivr.net/gh/0vo/oss/images/logo.png><p class=site-author-name itemprop=name>!!@_@ ᵛᵉ</p><div class=site-description itemprop=description>瞻前顾后，惶惶不可终日</div></div><div class="site-state-wrap site-overview-item animated"><nav class=site-state><div class="site-state-item site-state-posts"><a href=/archives/><span class=site-state-item-count>85</span>
+<span class=site-state-item-name>日志</span></a></div><div class="site-state-item site-state-categories"><a href=/categories/><span class=site-state-item-count>21</span>
+<span class=site-state-item-name>分类</span></a></div><div class="site-state-item site-state-tags"><a href=/tags/><span class=site-state-item-count>66</span>
+<span class=site-state-item-name>标签</span></a></div></nav></div><div class="links-of-social site-overview-item animated"><span class=links-of-social-item><a href=https://github.com/ehlxr title="Github → https://github.com/ehlxr" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-github fa-fw hvr-icon"></i></a></span>
+<span class=links-of-social-item><a href=http://t.me/ehlxr title="TG → http://t.me/ehlxr" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-telegram fa-fw hvr-icon"></i></a></span></div><div class="cc-license animated" itemprop=license><a href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh class=cc-opacity rel=noopener target=_blank title=共享知识><img src=/imgs/img-lazy-loading.gif data-src=/imgs/cc/small/by_nc_sa.svg alt=共享知识></a></div><div class="links-of-blogroll site-overview-item animated"><div class=links-of-blogroll-title><i class="fa fa-globe fa-fw"></i>友情链接</div><ul class=links-of-blogroll-list><li class=links-of-blogroll-item><a href=https://github.com/hugo-next/hugo-theme-next title=https://github.com/hugo-next/hugo-theme-next target=_blank>NexT</a></li><li class=links-of-blogroll-item><a href=https://ehlxr.me title=https://ehlxr.me target=_blank>Ehlxr</a></li><li class=links-of-blogroll-item><a href=https://ehlxr.top title=https://ehlxr.top target=_blank>Home</a></li></ul></div></div></div></div><div id=siteinfo-card-widget class=sidebar-card-widget><div class=item-headline><i class="fas fa-chart-line"></i>
+<span>网站资讯</span></div><div class=siteinfo><div class=siteinfo-item><div class=item-name><i class="fa-solid fa-calendar-check"></i>已运行：</div><div class=item-count id=runTimes data-publishdate=2016-07-19T10:47:23+00:00></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-user"></i>总访客数：</div><div class=item-count id=busuanzi_value_site_uv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-eye"></i>页面浏览：</div><div class=item-count id=busuanzi_value_site_pv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-font"></i>总字数：</div><div class=item-count id=wordsCount data-count=104379></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-mug-hot"></i>阅读约：</div><div class=item-count id=readTimes data-times=253></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-clock-rotate-left"></i>最后更新于：</div><div class=item-count id=last-push-date data-lastpushdate=2022-07-10T13:12:14+00:00></div></div></div></div></aside><div class=sidebar-dimmer></div></header><div class=tool-buttons><div id=goto-comments class="button goto-comments" title=直达评论><i class="fas fa-comments"></i></div><div class=back-to-top role=button title=返回顶部><i class="fa fa-arrow-up"></i>
+<span>0%</span></div></div><div class=reading-progress-bar></div><noscript><div class=noscript-warning>Theme NexT works best with JavaScript enabled</div></noscript><div class="main-inner post posts-expand"><div class=post-block><article itemscope itemtype=http://schema.org/Article class=post-content lang><link itemprop=mainEntityOfPage href=https://3w.vercel.app/2017/10/25/tmux-cheat-sheet/><span hidden itemprop=author itemscope itemtype=http://schema.org/Person><meta itemprop=image content="https://cdn.jsdelivr.net/gh/0vo/oss/images/logo.png"><meta itemprop=name content="!!@_@ ᵛᵉ"></span><span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization><meta itemprop=name content="!!@_@ ᵛᵉ"><meta itemprop=description content="瞻前顾后，惶惶不可终日"></span><span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork><meta itemprop=name content="[转]Tmux 快捷键速查表"><meta itemprop=description content="# Tmux 快捷键 & 速查表
+
+启动新会话：
+
+tmux [new -s 会话名 -n 窗口名]
+
+恢复会话：
+
+tmux at [-t 会话名]
+
+列出所有会话：
+
+tmux ls
+
+<a name=&#34;killSessions&#34;></a>关闭会话：
+
+tmux kill-session -t 会话名
+
+<a name=&#34;killAllSessions&#34;></a>关闭所有会话：
+
+tmux ls | grep : | cut -d. -f1 | awk {print substr($1, 0, length($1)-1)} | xargs kill"></span><header class=post-header><h1 class=post-title itemprop="name headline">[转]Tmux 快捷键速查表</h1><div class=post-meta-container><div class=post-meta-items><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-calendar"></i></span>
+<span class=post-meta-item-text>发表于：</span>
+<time title="发表于：2017-10-25 14:45:24 +0000 UTC" itemprop="dateCreated datePublished" datetime="2017-10-25 14:45:24 +0000 UTC">2017-10-25</time></span>
+<span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-folder-open"></i></span>
+<span class=post-meta-item-text>分类于：</span>
+<span itemprop=about itemscope itemtype=http://schema.org/Thing><a href=/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7 itemprop=url rel=index><span itemprop=name>开发工具</span></a></span></span></div><div class=post-meta-items><span class=post-meta-item title=字数><span class=post-meta-item-icon><i class="far fa-file-word"></i></span>
+<span class=post-meta-item-text>字数：</span><span>1461</span></span>
+<span class=post-meta-item title=阅读><span class=post-meta-item-icon><i class="far fa-clock"></i></span>
+<span class=post-meta-item-text>阅读：&ap;</span>
+<span>3分钟</span></span>
+<span class=post-meta-item title=浏览><span class=post-meta-item-icon><i class="far fa-eye"></i></span>
+<span class=post-meta-item-text>浏览：</span>
+<span id=busuanzi_value_page_pv data-path=/2017/10/25/tmux-cheat-sheet/><i class="fa fa-sync fa-spin"></i></span></span></div></div></header><div class="post-body autonumber" itemprop=articleBody><h1 id=tmux-快捷键--速查表>Tmux 快捷键 & 速查表</h1><p>启动新会话：</p><pre><code>tmux [new -s 会话名 -n 窗口名]
+</code></pre><p>恢复会话：</p><pre><code>tmux at [-t 会话名]
+</code></pre><p>列出所有会话：</p><pre><code>tmux ls
+</code></pre><p><a name=killSessions></a>关闭会话：</p><pre><code>tmux kill-session -t 会话名
+</code></pre><p><a name=killAllSessions></a>关闭所有会话：</p><pre><code>tmux ls | grep : | cut -d. -f1 | awk '{print substr($1, 0, length($1)-1)}' | xargs kill
+</code></pre><h1 id=在-tmux-中按下-tmux-前缀-ctrlb然后>在 Tmux 中，按下 Tmux 前缀 <code>ctrl+b</code>，然后：</h1><h2 id=会话>会话</h2><pre><code>:new&lt;回车&gt;  启动新会话
+s           列出所有会话
+$           重命名当前会话
+</code></pre><h2 id=a-namewindowstabsa窗口-标签页><a name=WindowsTabs></a>窗口 (标签页)</h2><pre><code>c  创建新窗口
+w  列出所有窗口
+n  后一个窗口
+p  前一个窗口
+f  查找窗口
+,  重命名当前窗口
+&amp;  关闭当前窗口
+</code></pre><h2 id=调整窗口排序>调整窗口排序</h2><pre><code>swap-window -s 3 -t 1  交换 3 号和 1 号窗口
+swap-window -t 1       交换当前和 1 号窗口
+move-window -t 1       移动当前窗口到 1 号
+</code></pre><h2 id=a-namepanessplitsa窗格分割窗口><a name=PanesSplits></a>窗格（分割窗口）</h2><pre><code>%  垂直分割
+&quot;  水平分割
+o  交换窗格
+x  关闭窗格
+⍽  左边这个符号代表空格键 - 切换布局
+q 显示每个窗格是第几个，当数字出现的时候按数字几就选中第几个窗格
+{ 与上一个窗格交换位置
+} 与下一个窗格交换位置
+z 切换窗格最大化/最小化
+</code></pre><h2 id=a-namesyncpanesa同步窗格><a name=syncPanes></a>同步窗格</h2><p>这么做可以切换到想要的窗口，输入 Tmux 前缀和一个冒号呼出命令提示行，然后输入：</p><div class=highlight><pre tabindex=0 style=background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback><span style=display:flex><span>:setw synchronize-panes
+</span></span></code></pre></div><p>你可以指定开或关，否则重复执行命令会在两者间切换。
+这个选项值针对某个窗口有效，不会影响别的会话和窗口。
+完事儿之后再次执行命令来关闭。
+<a href=http://blog.sanctum.geek.nz/sync-tmux-panes/ title=帮助 rel="noopener external nofollow noreferrer" target=_blank class=exturl>帮助
+<i class="fa fa-external-link-alt"></i></a></p><h2 id=调整窗格尺寸>调整窗格尺寸</h2><p>如果你不喜欢默认布局，可以重调窗格的尺寸。虽然这很容易实现，但一般不需要这么干。这几个命令用来调整窗格：</p><pre><code>PREFIX : resize-pane -D          当前窗格向下扩大 1 格
+PREFIX : resize-pane -U          当前窗格向上扩大 1 格
+PREFIX : resize-pane -L          当前窗格向左扩大 1 格
+PREFIX : resize-pane -R          当前窗格向右扩大 1 格
+PREFIX : resize-pane -D 20       当前窗格向下扩大 20 格
+PREFIX : resize-pane -t 2 -L 20  编号为 2 的窗格向左扩大 20 格
+</code></pre><h2 id=文本复制模式>文本复制模式：</h2><p>按下**前缀 [**进入文本复制模式。可以使用方向键在屏幕中移动光标。默认情况下，方向键是启用的。在配置文件中启用 Vim 键盘布局来切换窗口、调整窗格大小。Tmux 也支持 Vi 模式。要是想启用 Vi 模式，只需要把下面这一行添加到 .tmux.conf 中：</p><pre><code>setw -g mode-keys vi
+</code></pre><p>启用这条配置后，就可以使用 h、j、k、l 来移动光标了。</p><p>想要退出文本复制模式的话，按下回车键就可以了。一次移动一格效率低下，在 Vi 模式启用的情况下，可以辅助一些别的快捷键高效工作。</p><p>例如，可以使用 w 键逐词移动，使用 b 键逐词回退。使用 f 键加上任意字符跳转到当前行第一次出现该字符的位置，使用 F 键达到相反的效果。</p><pre><code>vi             emacs        功能
+^              M-m          反缩进
+Escape         C-g          清除选定内容
+Enter          M-w          复制选定内容
+j              Down         光标下移
+h              Left         光标左移
+l              Right        光标右移
+L                           光标移到尾行
+M              M-r          光标移到中间行
+H              M-R          光标移到首行
+k              Up           光标上移
+d              C-u          删除整行
+D              C-k          删除到行末
+$              C-e          移到行尾
+:              g            前往指定行
+C-d            M-Down       向下滚动半屏
+C-u            M-Up         向上滚动半屏
+C-f            Page down    下一页
+w              M-f          下一个词
+p              C-y          粘贴
+C-b            Page up      上一页
+b              M-b          上一个词
+q              Escape       退出
+C-Down or J    C-Down       向下翻
+C-Up or K      C-Up         向下翻
+n              n            继续搜索
+?              C-r          向前搜索
+/              C-s          向后搜索
+0              C-a          移到行首
+Space          C-Space      开始选中
+               C-t          字符调序
+</code></pre><h2 id=杂项>杂项：</h2><pre><code>d  退出 tmux（tmux 仍在后台运行）
+t  窗口中央显示一个数字时钟
+?  列出所有快捷键
+:  命令提示符
+</code></pre><h2 id=配置选项>配置选项：</h2><pre><code># 鼠标支持 - 设置为 on 来启用鼠标
+* setw -g mode-mouse off
+* set -g mouse-select-pane off
+* set -g mouse-resize-pane off
+* set -g mouse-select-window off
+
+# 设置默认终端模式为 256color
+set -g default-terminal &quot;screen-256color&quot;
+
+# 启用活动警告
+setw -g monitor-activity on
+set -g visual-activity on
+
+# 居中窗口列表
+set -g status-justify centre
+
+# 最大化/恢复窗格
+unbind Up bind Up new-window -d -n tmp \; swap-pane -s tmp.1 \; select-window -t tmp
+unbind Down
+bind Down last-window \; swap-pane -s tmp.1 \; kill-window -t tmp
+</code></pre><h2 id=配置文件tmuxconf>配置文件（~/.tmux.conf）：</h2><div class=highlight><pre tabindex=0 style=background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># 基础设置</span>
+</span></span><span style=display:flex><span><span style=color:#007020>set</span> -g default-terminal <span style=color:#4070a0>&#34;screen-256color&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007020>set</span> -g display-time <span style=color:#40a070>3000</span>
+</span></span><span style=display:flex><span><span style=color:#007020>set</span> -g escape-time <span style=color:#40a070>0</span>
+</span></span><span style=display:flex><span><span style=color:#007020>set</span> -g history-limit <span style=color:#40a070>65535</span>
+</span></span><span style=display:flex><span><span style=color:#007020>set</span> -g base-index <span style=color:#40a070>1</span>
+</span></span><span style=display:flex><span><span style=color:#007020>set</span> -g pane-base-index <span style=color:#40a070>1</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># 前缀绑定 (Ctrl+a)</span>
+</span></span><span style=display:flex><span><span style=color:#007020>set</span> -g prefix ^a
+</span></span><span style=display:flex><span>unbind ^b
+</span></span><span style=display:flex><span><span style=color:#007020>bind</span> a send-prefix
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># 分割窗口</span>
+</span></span><span style=display:flex><span>unbind <span style=color:#4070a0>&#39;&#34;&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#007020>bind</span> - splitw -v
+</span></span><span style=display:flex><span>unbind %
+</span></span><span style=display:flex><span><span style=color:#007020>bind</span> | splitw -h
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># 选中窗口</span>
+</span></span><span style=display:flex><span>bind-key k <span style=color:#007020;font-weight:700>select</span>-pane -U
+</span></span><span style=display:flex><span>bind-key j <span style=color:#007020;font-weight:700>select</span>-pane -D
+</span></span><span style=display:flex><span>bind-key h <span style=color:#007020;font-weight:700>select</span>-pane -L
+</span></span><span style=display:flex><span>bind-key l <span style=color:#007020;font-weight:700>select</span>-pane -R
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># copy-mode 将快捷键设置为 vi 模式</span>
+</span></span><span style=display:flex><span>setw -g mode-keys vi
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># 启用鼠标(Tmux v2.1)</span>
+</span></span><span style=display:flex><span><span style=color:#007020>set</span> -g mouse on
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># 更新配置文件</span>
+</span></span><span style=display:flex><span><span style=color:#007020>bind</span> r source-file ~/.tmux.conf <span style=color:#4070a0;font-weight:700>\;</span> display <span style=color:#4070a0>&#34;已更新&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic>#&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># Tmux Plugin Manager(Tmux v2.1)</span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># Tmux Resurrect</span>
+</span></span><span style=display:flex><span><span style=color:#007020>set</span> -g @plugin <span style=color:#4070a0>&#39;tmux-plugins/tmux-resurrect&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># List of plugins</span>
+</span></span><span style=display:flex><span><span style=color:#007020>set</span> -g @plugin <span style=color:#4070a0>&#39;tmux-plugins/tpm&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#007020>set</span> -g @plugin <span style=color:#4070a0>&#39;tmux-plugins/tmux-sensible&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># Other examples:</span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># set -g @plugin &#39;github_username/plugin_name&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># set -g @plugin &#39;git@github.com/user/plugin&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># set -g @plugin &#39;git@bitbucket.com/user/plugin&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic># Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)</span>
+</span></span><span style=display:flex><span>run <span style=color:#4070a0>&#39;~/.tmux/plugins/tpm/tpm&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic>#&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span>
+</span></span></code></pre></div><hr><p><a href=https://gist.github.com/ryerh/14b7c24dfd623ef8edc7 title=原文地址 rel="noopener external nofollow noreferrer" target=_blank class=exturl>原文地址
+<i class="fa fa-external-link-alt"></i></a></p></div><footer class=post-footer><div class=post-tags><a href=/tags/Tmux>Tmux</a></div><div class=addthis_inline_share_toolbox style=text-align:center></div><hr><div class=post-copyright><img src=/imgs/cc/cc.svg width=75 height=75 align=right><ul><li class=post-copyright-title><strong>文章标题：</strong>
+[转]Tmux 快捷键速查表</li><li class=post-copyright-author><strong>本文作者：</strong>
+!!@_@ ᵛᵉ</li><li class=post-copyright-link><strong>本文链接：</strong>
+<a id=post-cr-link href=https://3w.vercel.app/2017/10/25/tmux-cheat-sheet/ title="[转]Tmux 快捷键速查表">https://3w.vercel.app/2017/10/25/tmux-cheat-sheet/</a></li><li class=post-copyright-license><strong>版权声明：</strong>
+本博客所有文章除特别声明外，均采用 <i class="fab fa-fw fa-creative-commons"></i><a target=_blank href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh>BY-NC-SA</a> 许可协议。转载请注明出处！</li></ul></div><div class=post-nav><div class="post-nav-next post-nav-item"><a href=/2017/12/06/go-commons-code-snippets/ rel=next title="Go 常用代码块"><i class="fa fa-chevron-left"></i> Go 常用代码块</a></div><div class="post-nav-prev post-nav-item"><a href=/2017/08/24/golang-cheat-sheet/ rel=prev title="[转] Go Cheat Sheet">[转] Go Cheat Sheet
+<i class="fa fa-chevron-right"></i></a></div></div></footer></article></div><div id=comments class=post-comments><div class=comment-head><div class=comment-headline><i class="fas fa-comments fa-fw"></i>
+<span>评论交流</span></div></div><div class=comment-wrap><div><div class=comment-loading><i class="fa fa-sync fa-spin"></i></div><div class=giscus-container></div></div></div></div></div></main><footer class=footer><div class=footer-inner><div class=copyright>&copy;
+<span itemprop=copyrightYear>2016 - 2022</span>
+<span class=with-love><i class="fa fa-heart"></i></span>
+<span class=author itemprop=copyrightHolder>!!@_@ ᵛᵉ</span></div><div class=powered-by>由 <a href=https://gohugo.io title=0.106.0 target=_blank>Hugo</a> & <a href=https://github.com/hugo-next/hugo-theme-next title=4.4.1 target=_blank>Hugo NexT.Gemini</a> 强力驱动</div><div class=vendors-list><a target=_blank href=https://vercel.com title=Vercel><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/vercel.svg alt=Vercel></a>
+<span>提供CDN/云资源支持</span></div></div></footer><script type=text/javascript src=https://cdn.staticfile.org/animejs/3.2.1/anime.min.js defer></script>
+<script type=text/javascript src=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.js defer></script>
+<script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":false,"save":"manual"},"busuanzi":{"pageview":true},"copybtn":true,"darkmode":false,"giscus":{"cfg":{"category":"Announcements","categoryid":"DIC_kwDOIl7oGc4CTAV4","emit":true,"inputposition":"top","mapping":"pathname","reactions":false,"repo":"ehlxr/hugo-giscus","repoid":"R_kgDOIl7oGQ","theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://3w.vercel.app/","i18n":{"ds_day":" 天前","ds_days":" 天 ","ds_hour":" 小时前","ds_hours":" 小时 ","ds_just":"刚刚","ds_min":" 分钟前","ds_mins":" 分钟","ds_month":" 个月前","ds_years":" 年 ","empty":"没有找到任何搜索结果：${query}","hits":"","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"path":"/searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":true,"transition":{"collheader":"zoomIn","postblock":"fadeIn","postbody":"fadeInDown","postheader":"zoomIn","sidebar":"zoomInLeft"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"statis":{"enable":true,"plugin":"busuanzi"},"vendor":{"plugins":"qiniu","router":"https://cdn.staticfile.org"},"version":"4.4.1"}</script><script type=text/javascript src=/js/main.min.d220dba15706cd4489956dbb3f83a2f8cc66110755ad099565db154c43450cf4.js defer></script></body></html>

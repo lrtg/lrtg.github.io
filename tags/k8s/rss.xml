@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>k8s on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/k8s/</link><description>Recent content in k8s on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 12 Jan 2018 09:23:01 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/k8s/rss.xml" rel="self" type="application/rss+xml"/><item><title>Kubernetes 学习笔记之 MiniKube 安装</title><link>https://3w.vercel.app/2018/01/12/kubernetes-minikube-installation/</link><pubDate>Fri, 12 Jan 2018 09:23:01 +0000</pubDate><guid>https://3w.vercel.app/2018/01/12/kubernetes-minikube-installation/</guid><description>&lt;p>Kubernetes 集群的搭建是有一定难度的，尤其是对于初学者来说，好多概念和原理不懂，即使有现成的教程也会出现很多不可预知的问题，很容易打击学习的积极性，就此弃坑。好在 Kubernetes 社区提供了可以在本地开发和体验的极简集群安装 MiniKube，对于入门学习来说很方便。&lt;/p>
+&lt;p>{% img
+&lt;a href="https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1fo7n00rkl6j20b40b4goj.jpg" title="https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1fo7n00rkl6j20b40b4goj.jpg" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1fo7n00rkl6j20b40b4goj.jpg
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 300 %}&lt;/p>
+&lt;!-- ![minikube][1] -->
+&lt;p>MiniKube 官方安装介绍已经非常详细了，可以参考
+&lt;a href="https://github.com/kubernetes/minikube#installation" title="installation" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+installation
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>。但是在国内由于网络访问原因（懂的），即使有梯子也很折腾，所以记录一下阿里修改后的 MiniKube 安装。使用阿里修改后的 MiniKube 就可以从阿里云的镜像地址来获取所需 Docker 镜像和配置，其它的并没有差异，下文着重介绍。&lt;/p></description></item></channel></rss>

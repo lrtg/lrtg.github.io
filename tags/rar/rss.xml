@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>rar on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/rar/</link><description>Recent content in rar on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 22 Dec 2016 15:39:45 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/rar/rss.xml" rel="self" type="application/rss+xml"/><item><title>CentOS 安装 rar、zip 解压缩</title><link>https://3w.vercel.app/2016/12/22/CentOS-%E5%AE%89%E8%A3%85-rarzip-%E8%A7%A3%E5%8E%8B%E7%BC%A9/</link><pubDate>Thu, 22 Dec 2016 15:39:45 +0000</pubDate><guid>https://3w.vercel.app/2016/12/22/CentOS-%E5%AE%89%E8%A3%85-rarzip-%E8%A7%A3%E5%8E%8B%E7%BC%A9/</guid><description>&lt;p>Windows 系统压缩的 rar 和 zip 文件，在 Linux 系统下是无法通过 tar 命令解压缩的，需要使用 rar 和 zip 命令来解压缩。下面记录一下 rar 和 zip 安装和简单的使用。&lt;/p>
+&lt;h1 id="一rar-安装使用">一、rar 安装使用&lt;/h1>
+&lt;p>Linux 系统下使用 rarlinux 解压缩 rar 压缩文件，下载页面：http://www.rarsoft.com/download.htm。&lt;/p>
+&lt;h2 id="11-下载系统对应的版本">1.1 下载系统对应的版本&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ wget http://www.rarsoft.com/rar/rarlinux-x64-5.4.0.tar.gz
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="12-解压安装">1.2 解压、安装&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ tar -zxvf rarlinux-x64-5.4.0.tar.gz
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#007020">cd&lt;/span> rar
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ make
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>

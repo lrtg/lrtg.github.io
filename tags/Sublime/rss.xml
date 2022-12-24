@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sublime on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/Sublime/</link><description>Recent content in Sublime on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 24 Oct 2016 17:30:55 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/Sublime/rss.xml" rel="self" type="application/rss+xml"/><item><title>设置 Sublime Text3 主题透明</title><link>https://3w.vercel.app/2016/10/24/%E8%AE%BE%E7%BD%AE-Sublime-Text3-%E4%B8%BB%E9%A2%98%E9%80%8F%E6%98%8E/</link><pubDate>Mon, 24 Oct 2016 17:30:55 +0000</pubDate><guid>https://3w.vercel.app/2016/10/24/%E8%AE%BE%E7%BD%AE-Sublime-Text3-%E4%B8%BB%E9%A2%98%E9%80%8F%E6%98%8E/</guid><description>&lt;h1 id="1-下载安装包">1. 下载安装包&lt;/h1>
+&lt;p>下载地址：
+&lt;a href="https://github.com/vhanla/SublimeTextTrans" title="SublimeTextTrans" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+SublimeTextTrans
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>。&lt;/p>
+&lt;h1 id="2-安装插件">2. 安装插件&lt;/h1>
+&lt;p>解压到 Sublime Text3 的 Packages 存放目录下，命名为：&lt;code>SublimeTextTrans&lt;/code>。点击 Sublime Text3 的 &lt;code>Preferences -&amp;gt; Browse Packages&lt;/code> 打开 Packages 存放目录，一般情况是在 &lt;code>C:\Users\YOURNAME\AppData\Roaming\Sublime Text 3\Packages&lt;/code> 目录下。&lt;/p>
+&lt;h1 id="3-设置-sublime-text3-的透明度级别">3. 设置 Sublime Text3 的透明度级别。&lt;/h1>
+&lt;p>点击 Sublime Text3 的 &lt;code>Preferences -&amp;gt; Package Setting -&amp;gt; SublimeTextTrans -&amp;gt; Setting - User&lt;/code> 就可以设置透明度的级别了。&lt;/p></description></item><item><title>Sublime Text 插件安装</title><link>https://3w.vercel.app/2016/07/25/Sublime-Text-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85/</link><pubDate>Mon, 25 Jul 2016 21:06:57 +0000</pubDate><guid>https://3w.vercel.app/2016/07/25/Sublime-Text-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85/</guid><description>&lt;blockquote>
+&lt;p>Sublime Text 官方介绍：&lt;/p>
+&lt;blockquote>
+&lt;p>“Sublime Text is a sophisticated text editor for code, markup and prose.You&amp;rsquo;ll love the slick user interface, extraordinary features and amazing performance.”&lt;/p>
+&lt;/blockquote>
+&lt;/blockquote>
+&lt;p>Sublime Text 是一款优秀的轻量级编辑器，而且支持跨平台，支持Windows、Linux、Mac OS X 等主流操作系统。虽然是一款收费软件，但也允许人们&lt;strong>无限期免费使用&lt;/strong>。（
+&lt;a href="http://www.sublimetext.com/3" title="官方下载地址" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+官方下载地址
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>）&lt;/p>
+&lt;p>Sublime Text 具有漂亮的用户界面和强大可扩展插件功能，本文介绍如何安装 Sublime Text 插件。&lt;/p></description></item></channel></rss>

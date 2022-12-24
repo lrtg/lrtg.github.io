@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>kernel on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/kernel/</link><description>Recent content in kernel on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 10 Jan 2017 11:01:09 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/kernel/rss.xml" rel="self" type="application/rss+xml"/><item><title>[转] CentOS 升级 kernel</title><link>https://3w.vercel.app/2017/01/10/%E8%BD%AC-CentOS-%E5%8D%87%E7%BA%A7-kernel/</link><pubDate>Tue, 10 Jan 2017 11:01:09 +0000</pubDate><guid>https://3w.vercel.app/2017/01/10/%E8%BD%AC-CentOS-%E5%8D%87%E7%BA%A7-kernel/</guid><description>&lt;h1 id="一手动档">一、手动档&lt;/h1>
+&lt;p>手动档就是从源码开始编译内核安装，好处是可以自己选择任意版本的内核，缺点就是耗时长，编译安装消耗系统资源&lt;/p>
+&lt;h2 id="11获取-kernel-源码">1.1、获取 kernel 源码&lt;/h2>
+&lt;p>这世界上最伟大的 Linux 内核源码下载地址是
+&lt;a href="https://kernel.org/" title="kernel" rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+kernel
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a> 官网，选择一个稳定版本下载即可&lt;/p>
+&lt;h2 id="12解压并清理">1.2、解压并清理&lt;/h2>
+&lt;p>官方要求将其解压到 &lt;code>/usr/src&lt;/code> 目录，其实在哪都可以，为了规范一点索性也解压到此位置，然后为了防止编译残留先做一次清理动作&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 下载内核源码&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.8.6.tar.xz
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 解压并移动到 /usr/src&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ tar -Jxvf linux-4.8.6.tar.xz
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ mv linux-4.8.6 /usr/src/kernels
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 执行清理（没 gcc 的要装一下）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#007020">cd&lt;/span> /usr/src/kernels/linux-4.8.6
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ make mrproper &lt;span style="color:#666">&amp;amp;&amp;amp;&lt;/span> make clean
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>

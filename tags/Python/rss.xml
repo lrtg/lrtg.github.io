@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Python on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/Python/</link><description>Recent content in Python on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 07 Jan 2017 19:23:22 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/Python/rss.xml" rel="self" type="application/rss+xml"/><item><title>CentOS 7 安装Python3、pip3</title><link>https://3w.vercel.app/2017/01/07/CentOS-7-%E5%AE%89%E8%A3%85Python3pip3/</link><pubDate>Sat, 07 Jan 2017 19:23:22 +0000</pubDate><guid>https://3w.vercel.app/2017/01/07/CentOS-7-%E5%AE%89%E8%A3%85Python3pip3/</guid><description>&lt;p>CentOS 7 默认安装了 Python 2，当需要使用 Python 3 的时候，可以手动下载 Python 源码后编译安装。&lt;/p>
+&lt;h1 id="一安装-python-3">一、安装 Python 3&lt;/h1>
+&lt;h2 id="11-安装准备">1.1 安装准备&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo mkdir /usr/local/python3 &lt;span style="color:#60a0b0;font-style:italic"># 创建安装目录&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 下载 Python 源文件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wget --no-check-certificate https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tgz
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic"># 注意：wget获取https的时候要加上：--no-check-certificate&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ tar -xzvf Python-3.6.0.tgz &lt;span style="color:#60a0b0;font-style:italic"># 解压缩包&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#007020">cd&lt;/span> Python-3.6.0 &lt;span style="color:#60a0b0;font-style:italic"># 进入解压目录&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>

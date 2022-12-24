@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>分布式事务 on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/</link><description>Recent content in 分布式事务 on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 25 Jan 2019 15:59:11 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/rss.xml" rel="self" type="application/rss+xml"/><item><title>可靠消息最终一致性分布式事务实现方案</title><link>https://3w.vercel.app/2019/01/25/eventually-consistency/</link><pubDate>Fri, 25 Jan 2019 15:59:11 +0000</pubDate><guid>https://3w.vercel.app/2019/01/25/eventually-consistency/</guid><description>&lt;p>提到分布式应用，就不得不考虑分布式事务。在分布式事务中，常见的有 &lt;code>CAP&lt;/code>，&lt;code>BASE&lt;/code> 理论，解决方案也有很多种，比如：&lt;code>2PC&lt;/code>、&lt;code>TCC&lt;/code> 、最终一致性等。&lt;/p>
+&lt;p>&lt;code>2PC&lt;/code>（两阶段提交）比较适合单块应用，跨多个库的分布式事务。因为严重依赖于数据库层面来搞定复杂的事务，效率很低，绝对不适合高并发的场景，而且，对于微服务而言，不推荐一个服务出现跨多个数据库操作， 如果需要操作其它数据库数据，推荐通过调用别的服务接口来实现。&lt;/p>
+&lt;p>&lt;code>TCC&lt;/code> 属于强一致性事务的方案，适用资金流转业务相关业务，比如：支付、交易等场景。根据 &lt;code>CAP&lt;/code> 理论，这种实现需要牺牲可用性。&lt;/p>
+&lt;p>如果是一般的分布式事务场景，比如：订单插入之后要调用库存服务更新库存，库存数据没有资金那么的敏感，可以用可靠消息最终一致性方案。&lt;/p>
+&lt;p>下面是一种可靠消息最终一致性事务方案的实现流程：&lt;/p></description></item><item><title>浅谈分布式事务</title><link>https://3w.vercel.app/2019/01/25/distributed-system-transaction/</link><pubDate>Fri, 25 Jan 2019 15:57:42 +0000</pubDate><guid>https://3w.vercel.app/2019/01/25/distributed-system-transaction/</guid><description>&lt;p>通俗的理解，事务是一组原子操作单元。我们希望一些列的操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。&lt;/p>
+&lt;p>传统的单机应用系统一般使用一个关系型数据库，利用数据库事务来保证数据的一致性，下面先了解一下本地数据库事务的一些特性。&lt;/p>
+&lt;h2 id="一本地数据库事务">一、本地数据库事务&lt;/h2>
+&lt;p>事务从数据库角度说，就是一组 &lt;code>SQL&lt;/code> 指令，要么全部执行成功，若因为某个原因其中一条指令执行有错误，则撤销先前执行过的所有指令。&lt;/p>
+&lt;p>关系型数据库（例如：&lt;code>MySQL&lt;/code>、&lt;code>SQL Server&lt;/code>、&lt;code>Oracle&lt;/code> 等）事务都有以下几个特性：&lt;strong>原子性&lt;/strong>（&lt;code>Atomicity&lt;/code>）、&lt;strong>一致性&lt;/strong>（&lt;code>Consistency&lt;/code>）、&lt;strong>隔离性或独立性&lt;/strong>（&lt;code>Isolation&lt;/code>）&lt;strong>和持久性&lt;/strong>（&lt;code>Durabilily&lt;/code>），简称就是 &lt;strong>ACID&lt;/strong>。&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>原子性&lt;/strong>：表示事务执行过程中的任何失败都将导致事务所做的任何修改失效。&lt;/li>
+&lt;li>&lt;strong>一致性&lt;/strong>：表示当事务执行失败时，所有被该事务影响的数据都应该恢复到事务执行前的状态。&lt;/li>
+&lt;li>&lt;strong>隔离性&lt;/strong>：表示在事务执行过程中对数据的修改，在事务提交之前对其他事务不可见。&lt;/li>
+&lt;li>&lt;strong>持久性&lt;/strong>：表示已提交的数据在事务执行失败时，数据的状态都应该正确。&lt;/li>
+&lt;/ul></description></item></channel></rss>

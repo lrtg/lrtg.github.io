@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Node.js on Ehlxr's Blog</title><link>https://3w.vercel.app/tags/Node.js/</link><description>Recent content in Node.js on Ehlxr's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 30 Jul 2016 16:19:03 +0000</lastBuildDate><atom:link href="https://3w.vercel.app/tags/Node.js/rss.xml" rel="self" type="application/rss+xml"/><item><title>CentOS 7 安装 Node.js</title><link>https://3w.vercel.app/2016/07/30/CentOS-7-%E5%AE%89%E8%A3%85-Node.js/</link><pubDate>Sat, 30 Jul 2016 16:19:03 +0000</pubDate><guid>https://3w.vercel.app/2016/07/30/CentOS-7-%E5%AE%89%E8%A3%85-Node.js/</guid><description>&lt;blockquote>
+&lt;p>
+&lt;a href="https://nodejs.org/en/" title="Node.js® is a JavaScript runtime built on Chrome&amp;amp;rsquo;s V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. Node.js&amp;amp;rsquo; package ecosystem, npm, is the largest ecosystem of open source libraries in the world." rel="noopener external nofollow noreferrer" target="_blank" class=" exturl">
+Node.js® is a JavaScript runtime built on Chrome&amp;rsquo;s V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. Node.js&amp;rsquo; package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
+&lt;i class="fa fa-external-link-alt">&lt;/i>
+&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="1-下载源码安装文件">1. 下载源码安装文件&lt;/h1>
+&lt;h2 id="11-在线安装">1.1 在线安装&lt;/h2>
+&lt;p>通过以下命令下载源文件：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:2;-o-tab-size:2;tab-size:2;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>wget https://nodejs.org/dist/v4.4.7/node-v4.4.7.tar.gz
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
